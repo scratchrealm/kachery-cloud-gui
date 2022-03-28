@@ -36,11 +36,13 @@ const getProjectMembershipsHandler = async (request: GetProjectMembershipsReques
     const projectIds = projects.map(ch => (ch.projectId))
 
     const collection = db.collection('kacherycloud.projectMemberships')
-    const results = userId ?
-        await collection.where('projectId', 'in', projectIds).get() :
-        await collection.get()
+    const resultDocs = projectIds.length > 0 ? (
+        userId ?
+            (await collection.where('projectId', 'in', projectIds).get()).docs :
+            (await collection.get()).docs
+    ) : []
     const projectMemberships: ProjectMembership[] = []
-    for (let doc of results.docs) {
+    for (let doc of resultDocs) {
         const x = doc.data()
         if (isProjectMembership(x)) {
             projectMemberships.push(x)

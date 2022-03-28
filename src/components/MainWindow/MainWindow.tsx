@@ -25,7 +25,7 @@ const MainWindow: FunctionComponent<Props> = () => {
         <div>
             <div>
                 <ApplicationBar
-                    title={"kacheryhub2"}
+                    title={"kachery cloud"}
                     onHome={handleHome}
                     logo={undefined}
                 />

@@ -22,10 +22,6 @@ const ProjectsTable: FunctionComponent<Props> = () => {
 
     const columns = useMemo(() => ([
         {
-            key: 'projectId',
-            label: 'Project ID'
-        },
-        {
             key: 'projectName',
             label: 'Project name'
         },
@@ -51,13 +47,13 @@ const ProjectsTable: FunctionComponent<Props> = () => {
         (projects || []).map((project) => ({
             key: project.projectId.toString(),
             columnValues: {
-                projectId: {
-                    text: project.projectId.toString(),
-                    element: <Hyperlink onClick={() => {setRoute({page: 'project', projectId: project.projectId})}}>{project.projectId}</Hyperlink>
-                },
                 projectName: {
                     text: project.projectName.toString(),
-                    element: <Hyperlink onClick={() => {setRoute({page: 'project', projectId: project.projectId})}}>{project.projectName}</Hyperlink>
+                    element: (
+                        <Hyperlink onClick={() => {setRoute({page: 'project', projectId: project.projectId})}}>
+                            {project.projectName} ({project.projectId})
+                        </Hyperlink>
+                    )
                 },
                 ownerId: project.ownerId.toString(),
                 timestampCreated: timeSince(project.timestampCreated),

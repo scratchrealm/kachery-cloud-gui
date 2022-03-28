@@ -19,7 +19,7 @@ const deleteProjectHandler = async (request: DeleteProjectRequest, verifiedUserI
     const collection = db.collection('kacherycloud.projects')
     const docSnapshot = await collection.doc(projectId.toString()).get()
     if (!docSnapshot.exists) {
-        throw Error('Project does not exists')
+        throw Error(`Project does not exist in deleteProjectHandler: ${projectId}`)
     }
     const project = docSnapshot.data()
     if (!isProject(project)) {

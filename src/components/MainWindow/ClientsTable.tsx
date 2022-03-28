@@ -16,7 +16,7 @@ const ClientsTable: FunctionComponent<Props> = () => {
 
     const {setRoute} = useRoute()
 
-    const { clients, refreshClients, addClient, deleteClient } = useClients()
+    const { clients, refreshClients, deleteClient } = useClients()
 
     const columns = useMemo(() => ([
         {

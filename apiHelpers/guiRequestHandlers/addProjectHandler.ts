@@ -36,7 +36,7 @@ const addProjectHandler = async (request: AddProjectRequest, verifiedUserId: Use
             public: true
         }
     }
-    await collection.doc(projectName).set(project)
+    await collection.doc(projectId).set(project)
 
     const req2: AddProjectMembershipRequest = {
         type: 'addProjectMembership',

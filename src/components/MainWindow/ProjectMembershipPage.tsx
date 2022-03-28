@@ -30,7 +30,7 @@ const ProjectMembershipPage: FunctionComponent<Props> = ({projectId, memberId}) 
             },
             {
                 key: 'memberId',
-                label: 'Node',
+                label: 'Member',
                 value: <Hyperlink onClick={() => {setRoute({page: 'user', userId: projectMembership.memberId})}}>{projectMembership.memberId.toString()}</Hyperlink>
             },
             {
@@ -46,13 +46,13 @@ const ProjectMembershipPage: FunctionComponent<Props> = ({projectId, memberId}) 
     }
 
     if (!projectMembership) {
-        return <span>Project node not found: {projectId} {memberId}</span>
+        return <span>Project membership not found: {projectId} {memberId}</span>
     }
 
     if (!tableData) return <div />
     return (
         <div>
-            <h3>Project node</h3>
+            <h3>Project membership</h3>
             <Table className="NiceTable2">
                 <TableBody>
                     {

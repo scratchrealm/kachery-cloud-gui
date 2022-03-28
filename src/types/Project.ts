@@ -1,4 +1,4 @@
-import { isBoolean, isNumber, isString, isUserId, optional, UserId, _validateObject } from "../commonInterface/kacheryTypes"
+import { isBoolean, isNull, isNumber, isOneOf, isString, isUserId, optional, UserId, _validateObject } from "../commonInterface/kacheryTypes"
 
 export type ProjectSettings = {
     public: boolean
@@ -7,8 +7,12 @@ export type ProjectSettings = {
     }
     ipfsUploadGateway?: {
         hostName: string
-        authenticationToken?: string
+        authenticationToken?: string | null // null means hidden, undefined means not present
     }
+}
+
+const isStringOrNull = (x: any) => {
+    return isOneOf([isString, isNull])
 }
 
 export const isProjectSettings = (y: any): y is ProjectSettings => (
@@ -22,7 +26,7 @@ export const isProjectSettings = (y: any): y is ProjectSettings => (
         ipfsUploadGateway: optional((a: any) => (
             _validateObject(a, {
                 hostName: isString,
-                authenticationToken: optional(isString)
+                authenticationToken: optional(isStringOrNull)
             })
         ))
     })

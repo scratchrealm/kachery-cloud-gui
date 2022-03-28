@@ -40,9 +40,11 @@ const getClientInfoHandler = async (request: GetClientInfoRequest, verifiedClien
     const uniqueProjectIds = [...new Set(projectIds)]
 
     const projectsCollection = db.collection('kacherycloud.projects')
-    const projectsResults = await projectsCollection.where('projectId', 'in', uniqueProjectIds).get()
+    const projectsResultDocs = uniqueProjectIds.length > 0 ? (
+        (await projectsCollection.where('projectId', 'in', uniqueProjectIds).get()).docs
+    ) : []
     const projects: Project[] = []
-    for (let snapshot of projectsResults.docs) {
+    for (let snapshot of projectsResultDocs) {
         const project = snapshot.data()
         if (isProject(project)) {
             hideSecretsInProject(project)

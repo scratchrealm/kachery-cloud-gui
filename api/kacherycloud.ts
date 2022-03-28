@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
-import getClientInfoHandler from '../apiHelpers/kacheryhubRequestHandlers/getClientInfoHandler'
+import getClientInfoHandler from '../apiHelpers/kacherycloudRequestHandlers/getClientInfoHandler'
 import { hexToPublicKey, verifySignature } from '../src/commonInterface/crypto/signatures'
 import { JSONValue, nodeIdToPublicKeyHex } from '../src/commonInterface/kacheryTypes'
 import { isKacherycloudRequest } from '../src/types/KacherycloudRequest'
@@ -7,11 +7,11 @@ import { isKacherycloudRequest } from '../src/types/KacherycloudRequest'
 module.exports = (req: VercelRequest, res: VercelResponse) => {    
     const {body: request} = req
 
-    if (!isKacherycloudRequest(request)) {
-        throw Error('Invalid kacherycloud request')
-    }
-
     ;(async () => {
+        if (!isKacherycloudRequest(request)) {
+            throw Error('Invalid kacherycloud request')
+        }
+
         const { payload, fromClientId, signature } = request
         const { timestamp } = payload
         const elapsed = Date.now() - timestamp

@@ -12,7 +12,7 @@ const setProjectMembershipPermissionsHandler = async (request: SetProjectMembers
     const projectsCollection = db.collection('kacherycloud.projects')
     const projectDocSnapshot = await projectsCollection.doc(projectId.toString()).get()
     if (!projectDocSnapshot.exists) {
-        throw Error('Project does not exist.')
+        throw Error('Project does not exist in setProjectMembershipPermissionsHandler.')
     }
     const project = projectDocSnapshot.data()
     if (!isProject(project)) {
