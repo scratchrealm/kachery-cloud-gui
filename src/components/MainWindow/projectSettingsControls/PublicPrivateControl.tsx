@@ -19,7 +19,6 @@ const PublicPrivateControl: FunctionComponent<Props> = ({projectId, projectSetti
     }, [projectId, projectSettings, setProjectSettings])
     return (
         <div>
-            <span style={{color: 'blue'}}>Hostname:</span>
             <EditBooleanOpt
                 label="public"
                 value={projectSettings.public}

@@ -33,9 +33,9 @@ export const isProjectSettings = (y: any): y is ProjectSettings => (
 )
 
 export type Project = {
-    projectName: string
     projectId: string
     ownerId: UserId
+    label: string
     timestampCreated: number
     timestampLastModified: number
     settings: ProjectSettings
@@ -43,9 +43,9 @@ export type Project = {
 
 export const isProject = (x: any): x is Project => {
     return _validateObject(x, {
-        projectName: isString,
         projectId: isString,
         ownerId: isUserId,
+        label: isString,
         timestampCreated: isNumber,
         timestampLastModified: isNumber,
         settings: isProjectSettings

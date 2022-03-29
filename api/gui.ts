@@ -14,6 +14,10 @@ import { UserId } from '../src/commonInterface/kacheryTypes'
 import { isGuiRequest } from '../src/types/GuiRequest'
 import getProjectMembershipsHandler from '../apiHelpers/guiRequestHandlers/getProjectMembershipsHandler'
 import setProjectMembershipPermissionsHandler from '../apiHelpers/guiRequestHandlers/setProjectMembershipPermissionsHandler'
+import getUserSettingsHandler from '../apiHelpers/guiRequestHandlers/getUserSettingsHandler'
+import setUserSettingsHandler from '../apiHelpers/guiRequestHandlers/setUserSettingsHandler'
+import setClientInfoHandler from '../apiHelpers/guiRequestHandlers/setClientInfoHandler'
+import setProjectInfoHandler from '../apiHelpers/guiRequestHandlers/setProjectInfoHandler'
 
 const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY
 
@@ -115,6 +119,28 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
                 throw Error('ReCaptcha required')
             }
             return await setProjectMembershipPermissionsHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'getUserSettings') {
+            // no recaptcha required
+            return await getUserSettingsHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'setUserSettings') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await setUserSettingsHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'setClientInfo') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await setClientInfoHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'setProjectInfo') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await setProjectInfoHandler(request, verifiedUserId)
         }
         else {
             throw Error(`Unexpected request type: ${request.type}`)

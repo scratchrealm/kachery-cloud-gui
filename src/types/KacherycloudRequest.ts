@@ -2,6 +2,7 @@ import { isArrayOf, isBoolean, isEqualTo, isNodeId, isNumber, isOneOf, isSignatu
 import { Client, isClient } from "./Client"
 import { isProject, Project } from "./Project"
 import { isProjectMembership, ProjectMembership } from "./ProjectMembership"
+import { isUserSettings, UserSettings } from "./User"
 
 //////////////////////////////////////////////////////////////////////////////////
 // getClientInfo
@@ -37,6 +38,7 @@ export type GetClientInfoResponse = {
     client?: Client
     projects?: Project[]
     projectMemberships?: ProjectMembership[]
+    userSettings?: UserSettings
 }
 
 export const isGetClientInfoResponse = (x: any): x is GetClientInfoResponse => {
@@ -45,7 +47,8 @@ export const isGetClientInfoResponse = (x: any): x is GetClientInfoResponse => {
         found: isBoolean,
         client: optional(isClient),
         projects: optional(isArrayOf(isProject)),
-        projectMemberships: optional(isArrayOf(isProjectMembership))
+        projectMemberships: optional(isArrayOf(isProjectMembership)),
+        userSettings: optional(isUserSettings)
     })
 }
 

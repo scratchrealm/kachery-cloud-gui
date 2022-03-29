@@ -22,8 +22,8 @@ const ProjectsTable: FunctionComponent<Props> = () => {
 
     const columns = useMemo(() => ([
         {
-            key: 'projectName',
-            label: 'Project name'
+            key: 'project',
+            label: 'Project'
         },
         {
             key: 'ownerId',
@@ -47,11 +47,11 @@ const ProjectsTable: FunctionComponent<Props> = () => {
         (projects || []).map((project) => ({
             key: project.projectId.toString(),
             columnValues: {
-                projectName: {
-                    text: project.projectName.toString(),
+                project: {
+                    text: project.label,
                     element: (
                         <Hyperlink onClick={() => {setRoute({page: 'project', projectId: project.projectId})}}>
-                            {project.projectName} ({project.projectId})
+                            {project.label} ({project.projectId})
                         </Hyperlink>
                     )
                 },
@@ -67,13 +67,10 @@ const ProjectsTable: FunctionComponent<Props> = () => {
         deleteProject(projectId)
     }, [deleteProject])
 
-    if (!projects) {
-        return <span>Loading projects...</span>
-    }
-
     return (
         <div>
             <h3>Projects</h3>
+            <p>Kachery cloud resources are organized into projects.</p>
             <IconButton onClick={refreshProjects} title="Refresh projects"><Refresh /></IconButton>
             <IconButton onClick={addVisible.show} title="Add project"><AddCircle /></IconButton>
             {
@@ -83,6 +80,11 @@ const ProjectsTable: FunctionComponent<Props> = () => {
                         onClose={addVisible.hide}
                     />
                 )
+            }
+            {
+                !projects ? (
+                    <div>Loading projects...</div>
+                ) : <span />
             }
             <NiceTable
                 columns={columns}

@@ -3,6 +3,7 @@ import { isClient } from "../../src/types/Client";
 import { GetClientInfoRequest, GetClientInfoResponse } from "../../src/types/KacherycloudRequest";
 import { isProject, Project } from "../../src/types/Project";
 import { isProjectMembership, ProjectMembership } from "../../src/types/ProjectMembership";
+import { isUserSettings } from "../../src/types/User";
 import firestoreDatabase from '../common/firestoreDatabase';
 import hideSecretsInProject from "../guiRequestHandlers/helpers/hideSecretsInProject";
 
@@ -55,12 +56,20 @@ const getClientInfoHandler = async (request: GetClientInfoRequest, verifiedClien
         }
     }
 
+    const usersCollection = db.collection('kacherycloud.users')
+    const userSnapshot = await usersCollection.doc(client.ownerId.toString()).get()
+    const userSettings = userSnapshot.exists ? userSnapshot.data() : {}
+    if (!isUserSettings(userSettings)) {
+        throw Error('Invalid user settings in database')
+    }
+
     return {
         type: 'getClientInfo',
         found: true,
         client,
         projects,
-        projectMemberships
+        projectMemberships,
+        userSettings
     }
 }
 

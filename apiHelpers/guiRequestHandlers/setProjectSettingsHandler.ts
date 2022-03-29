@@ -16,6 +16,9 @@ const setProjectSettingsHandler = async (request: SetProjectSettingsRequest, ver
     if (!isProject(project)) {
         throw Error('Invalid project')
     }
+    if (project.ownerId !== verifiedUserId) {
+        throw Error('Not authorized to set project settings for this project.')
+    }
     copyHiddenFields(projectSettings, project.settings)
     project.settings = projectSettings
     project.timestampLastModified = Date.now()

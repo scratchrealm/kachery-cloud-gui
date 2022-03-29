@@ -38,12 +38,12 @@ const useProjects = () => {
         })()
     }, [userId, googleIdToken, refreshCode, setErrorMessage])
 
-    const addProject = useCallback((projectName: string) => {
+    const addProject = useCallback((label: string) => {
         if (!userId) return
             ; (async () => {
                 const req: AddProjectRequest = {
                     type: 'addProject',
-                    projectName,
+                    label,
                     ownerId: userId,
                     auth: { userId, googleIdToken }
                 }

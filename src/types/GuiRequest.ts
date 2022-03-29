@@ -1,8 +1,9 @@
-import { isArrayOf, isEqualTo, isNodeId, isNumber, isOneOf, isSignature, isString, isUserId, NodeId, optional, Signature, UserId, _validateObject } from "../commonInterface/kacheryTypes"
+import { isArrayOf, isEqualTo, isNodeId, isOneOf, isSignature, isString, isUserId, NodeId, optional, Signature, UserId, _validateObject } from "../commonInterface/kacheryTypes"
 import { Auth, isAuth } from "./Auth"
 import { Client, isClient } from "./Client"
 import { isProject, isProjectSettings, Project, ProjectSettings } from "./Project"
 import { isProjectMembership, isProjectMembershipPermissions, ProjectMembership, ProjectMembershipPermissions } from "./ProjectMembership"
+import { isUserSettings, UserSettings } from "./User"
 
 //////////////////////////////////////////////////////////////////////////////////
 // getProjects
@@ -38,7 +39,7 @@ export const isGetProjectsResponse = (x: any): x is GetProjectsResponse => {
 
 export type AddProjectRequest = {
     type: 'addProject'
-    projectName: string
+    label: string
     ownerId: UserId
     auth: Auth
 }
@@ -46,7 +47,7 @@ export type AddProjectRequest = {
 export const isAddProjectRequest = (x: any): x is AddProjectRequest => {
     return _validateObject(x, {
         type: isEqualTo('addProject'),
-        projectName: isString,
+        label: isString,
         ownerId: isUserId,
         auth: isAuth
     })
@@ -115,6 +116,64 @@ export type SetProjectSettingsResponse = {
 export const isSetProjectSettingsResponse = (x: any): x is SetProjectSettingsResponse => {
     return _validateObject(x, {
         type: isEqualTo('setProjectSettings')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// setUserSettings
+
+export type SetUserSettingsRequest = {
+    type: 'setUserSettings'
+    userId: UserId
+    userSettings: UserSettings
+    auth: Auth
+}
+
+export const isSetUserSettingsRequest = (x: any): x is SetUserSettingsRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('setUserSettings'),
+        userId: isUserId,
+        userSettings: isUserSettings,
+        auth: isAuth
+    })
+}
+
+export type SetUserSettingsResponse = {
+    type: 'setUserSettings'
+}
+
+export const isSetUserSettingsResponse = (x: any): x is SetUserSettingsResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('setUserSettings')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// getUserSettings
+
+export type GetUserSettingsRequest = {
+    type: 'getUserSettings'
+    userId: UserId
+    auth: Auth
+}
+
+export const isGetUserSettingsRequest = (x: any): x is GetUserSettingsRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('getUserSettings'),
+        userId: isUserId,
+        auth: isAuth
+    })
+}
+
+export type GetUserSettingsResponse = {
+    type: 'getUserSettings',
+    userSettings: UserSettings
+}
+
+export const isGetUserSettingsResponse = (x: any): x is GetUserSettingsResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('getUserSettings'),
+        userSettings: isUserSettings
     })
 }
 
@@ -243,10 +302,10 @@ export type AddClientRequest = {
     type: 'addClient'
     clientId: NodeId
     label: string
+    defaultProjectId?: string
     ownerId: UserId
     verificationDocument: {
         type: 'addClient'
-        timestamp: number
     }
     verificationSignature: Signature
     auth: Auth
@@ -257,11 +316,11 @@ export const isAddClientRequest = (x: any): x is AddClientRequest => {
         type: isEqualTo('addClient'),
         clientId: isNodeId,
         label: isString,
+        defaultProjectId: optional(isString),
         ownerId: isUserId,
         verificationDocument: (a: any) => (
             _validateObject(a, {
-                type: isEqualTo('addClient'),
-                timestamp: isNumber
+                type: isEqualTo('addClient')
             })
         ),
         verificationSignature: isSignature,
@@ -338,6 +397,67 @@ export const isGetClientsResponse = (x: any): x is GetClientsResponse => {
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// setClientInfo
+
+export type SetClientInfoRequest = {
+    type: 'setClientInfo'
+    clientId: NodeId
+    label?: string
+    defaultProjectId?: string
+    auth: Auth
+}
+
+export const isSetClientInfoRequest = (x: any): x is SetClientInfoRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('setClientInfo'),
+        clientId: isNodeId,
+        label: optional(isString),
+        defaultProjectId: optional(isString),
+        auth: isAuth
+    })
+}
+
+export type SetClientInfoResponse = {
+    type: 'setClientInfo'
+}
+
+export const isSetClientInfoResponse = (x: any): x is SetClientInfoResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('setClientInfo')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// setProjectInfo
+
+export type SetProjectInfoRequest = {
+    type: 'setProjectInfo'
+    projectId: string
+    label?: string
+    auth: Auth
+}
+
+export const isSetProjectInfoRequest = (x: any): x is SetProjectInfoRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('setProjectInfo'),
+        projectId: isString,
+        label: optional(isString),
+        defaultProjectId: optional(isString),
+        auth: isAuth
+    })
+}
+
+export type SetProjectInfoResponse = {
+    type: 'setProjectInfo'
+}
+
+export const isSetProjectInfoResponse = (x: any): x is SetProjectInfoResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('setProjectInfo')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type GuiRequest =
     GetProjectsRequest |
@@ -350,7 +470,11 @@ export type GuiRequest =
     SetProjectMembershipPermissionsRequest |
     AddClientRequest |
     DeleteClientRequest |
-    GetClientsRequest
+    GetClientsRequest |
+    GetUserSettingsRequest |
+    SetUserSettingsRequest |
+    SetClientInfoRequest |
+    SetProjectInfoRequest
 
 export const isGuiRequest = (x: any): x is GuiRequest => {
     return isOneOf([
@@ -364,7 +488,11 @@ export const isGuiRequest = (x: any): x is GuiRequest => {
         isSetProjectMembershipPermissionsRequest,
         isAddClientRequest,
         isDeleteClientRequest,
-        isGetClientsRequest
+        isGetClientsRequest,
+        isGetUserSettingsRequest,
+        isSetUserSettingsRequest,
+        isSetClientInfoRequest,
+        isSetProjectInfoRequest
     ])(x)
 }
 
@@ -379,7 +507,11 @@ export type GuiResponse =
     SetProjectMembershipPermissionsResponse |
     AddClientResponse |
     DeleteClientResponse |
-    GetClientsResponse
+    GetClientsResponse |
+    GetUserSettingsResponse |
+    SetUserSettingsResponse |
+    SetClientInfoResponse |
+    SetProjectInfoResponse
 
 export const isGuiResponse = (x: any): x is GuiResponse => {
     return isOneOf([
@@ -393,6 +525,10 @@ export const isGuiResponse = (x: any): x is GuiResponse => {
         isSetProjectMembershipPermissionsResponse,
         isAddClientResponse,
         isDeleteClientResponse,
-        isGetClientsResponse
+        isGetClientsResponse,
+        isGetUserSettingsResponse,
+        isSetUserSettingsResponse,
+        isSetClientInfoResponse,
+        isSetProjectInfoResponse
     ])(x)
 }

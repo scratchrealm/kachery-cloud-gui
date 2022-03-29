@@ -2,32 +2,28 @@ import { UserId } from "../../src/commonInterface/kacheryTypes";
 import { Project } from "../../src/types/Project";
 import { AddProjectMembershipRequest, AddProjectRequest, AddProjectResponse, SetProjectMembershipPermissionsRequest } from "../../src/types/GuiRequest";
 import firestoreDatabase from '../common/firestoreDatabase';
-import randomAlphaString from "./helpers/randomAlphaString";
+import { randomAlphaLowerString } from "./helpers/randomAlphaString";
 import addProjectMembershipHandler from "./addProjectMembershipHandler";
 import setProjectMembershipPermissionsHandler from "./setProjectMembershipPermissionsHandler";
 
 const MAX_NUM_PROJECTS_PER_USER = 3
 
 const addProjectHandler = async (request: AddProjectRequest, verifiedUserId: UserId): Promise<AddProjectResponse> => {
-    const { projectName, ownerId } = request
+    const { label, ownerId } = request
     if (verifiedUserId !== ownerId) {
         throw Error('Not authorized')
     }
 
     const db = firestoreDatabase()
     const collection = db.collection('kacherycloud.projects')
-    const results = await collection.where('projectName', '==', projectName).get()
-    if (results.docs.length > 0) {
-        throw Error('Project with this name already exists.')
-    }
     const results2 = await collection.where('ownerId', '==', ownerId).get()
     if (results2.docs.length + 1 > MAX_NUM_PROJECTS_PER_USER) {
         throw Error(`User cannot own more than ${MAX_NUM_PROJECTS_PER_USER} projects`)
     }
-    const projectId = randomAlphaString(10)
+    const projectId = randomAlphaLowerString(10)
     
     const project: Project = {
-        projectName,
+        label,
         projectId,
         ownerId,
         timestampCreated: Date.now(),

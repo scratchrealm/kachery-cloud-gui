@@ -7,17 +7,17 @@ import firestoreDatabase from '../common/firestoreDatabase';
 const MAX_NUM_CLIENTS_PER_USER = 5
 
 const addClientHandler = async (request: AddClientRequest, verifiedUserId: UserId): Promise<AddClientResponse> => {
-    const { clientId, ownerId, label } = request
+    const { clientId, ownerId, label, defaultProjectId } = request
 
     if (ownerId !== verifiedUserId) {
         throw Error('Mismatch between ownerId and verifiedUserId')
     }
 
     // we need to verify that the user owns the client
-    const elapsed = Date.now() - request.verificationDocument.timestamp
-    if ((elapsed < -3000) || (elapsed > 60 * 1000)) {
-        throw Error('Invalid timestamp when verifying control of client')
-    }
+    // const elapsed = Date.now() - request.verificationDocument.timestamp
+    // if ((elapsed < -3000) || (elapsed > 60 * 1000)) {
+    //     throw Error('Invalid timestamp when verifying control of client')
+    // }
     if (!verifySignature(request.verificationDocument, hexToPublicKey(nodeIdToPublicKeyHex(request.clientId)), request.verificationSignature)) {
         throw Error('Invalid verification signature')
     }
@@ -38,9 +38,10 @@ const addClientHandler = async (request: AddClientRequest, verifiedUserId: UserI
         clientId,
         ownerId,
         timestampCreated: Date.now(),
-        label
+        label,
+        defaultProjectId
     }
-    await clientsCollection.add(client)
+    await clientsCollection.doc(clientId.toString()).set(client)
     return {
         type: 'addClient'
     }

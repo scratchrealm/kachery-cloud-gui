@@ -6,6 +6,7 @@ import ProjectMembershipPage from './ProjectMembershipPage';
 import ProjectPage from './ProjectPage';
 import HomePage from './HomePage';
 import ClientPage from './ClientPage';
+import RegisterClientPage from './RegisterClientPage';
 
 type Props = {
 
@@ -30,7 +31,7 @@ const MainWindow: FunctionComponent<Props> = () => {
                     logo={undefined}
                 />
             </div>
-            <div style={{margin: 20}}>
+            <div style={{margin: 20, maxWidth: 1000}}>
                 {
                     errorMessage ? (
                         <span style={{color: 'red'}}>{errorMessage}</span>
@@ -51,6 +52,12 @@ const MainWindow: FunctionComponent<Props> = () => {
                     ) : route.page === 'client' ? (
                         <ClientPage
                             clientId={route.clientId}
+                        />
+                    ) : route.page === 'registerClient' ? (
+                        <RegisterClientPage
+                            clientId={route.clientId}
+                            signature={route.signature}
+                            label={route.label}
                         />
                     ) : <span />
                 }

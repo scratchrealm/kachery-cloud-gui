@@ -1,4 +1,4 @@
-import { NodeId, UserId } from 'commonInterface/kacheryTypes'
+import { isNodeId, isSignature, NodeId, Signature, UserId } from 'commonInterface/kacheryTypes'
 import QueryString from 'querystring'
 import { useCallback, useMemo } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -18,6 +18,11 @@ export type Route = {
 } | {
     page: 'user',
     userId: UserId
+} | {
+    page: 'registerClient',
+    clientId: NodeId,
+    signature: Signature,
+    label: string
 }
 
 const useRoute = () => {
@@ -61,6 +66,22 @@ const useRoute = () => {
             }
         }
     }
+    else if (p.startsWith('/registerClient')) {
+        const x = p.split('/')
+        if (x.length === 3) {
+            const clientId = x[2]
+            const signature = query.signature
+            const label = query.label as string
+            if ((isNodeId(clientId)) && (isSignature(signature))) {
+                route = {
+                    page: 'registerClient',
+                    clientId,
+                    signature,
+                    label
+                }
+            }
+        }
+    }
 
     const setRoute = useCallback((route: Route) => {
         const query2 = {...query}
@@ -76,6 +97,11 @@ const useRoute = () => {
         }
         else if (route.page === 'user') {
             pathname2 = `/user/${route.userId}`
+        }
+        else if (route.page === 'registerClient') {
+            pathname2 = `/registerClient/${route.clientId}`
+            query2['signature'] = route.signature.toString()
+            query2['label'] = route.label.toString()
         }
         const search2 = queryString(query2)
         history.push({...location, pathname: pathname2, search: search2})

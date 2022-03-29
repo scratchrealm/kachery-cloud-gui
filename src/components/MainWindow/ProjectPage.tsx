@@ -1,7 +1,12 @@
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import guiApiRequest from 'common/guiApiRequest';
 import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
+import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useRoute from 'components/useRoute';
+import useErrorMessage from 'errorMessageContext/useErrorMessage';
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import { SetProjectInfoRequest } from 'types/GuiRequest';
+import EditableTextField from './EditableTextField';
 import ProjectMembershipsTable from './ProjectMembershipsTable';
 import ProjectSettingsView from './ProjectSettingsView';
 import useProjectMemberships from './useProjectMemberships';
@@ -12,7 +17,7 @@ type Props = {
 }
 
 const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
-    const { projects, setProjectSettings } = useProjects()
+    const { projects, setProjectSettings, refreshProjects } = useProjects()
     const { projectMemberships, addProjectMembership, deleteProjectMembership } = useProjectMemberships()
     const { setRoute } = useRoute()
 
@@ -26,15 +31,44 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
         ) : undefined
     ), [projectMemberships, project])
 
+    const { setErrorMessage } = useErrorMessage()
+
+    const { userId, googleIdToken } = useSignedIn()
+
+    const handleChangeLabel = useCallback((newLabel: string) => {
+        if (!userId) return
+        if (!googleIdToken) return
+        ;(async () => {
+            const req: SetProjectInfoRequest = {
+                type: 'setProjectInfo',
+                projectId,
+                label: newLabel,
+                auth: {userId, googleIdToken}
+            }
+            await guiApiRequest(req, {reCaptcha: true, setErrorMessage})
+            refreshProjects()
+        })()
+    }, [userId, googleIdToken, projectId, refreshProjects, setErrorMessage])
+
     const tableData = useMemo(() => {
         if (!project) return undefined
         return [
-            { key: 'projectId', label: 'Project', value: project.projectId.toString() },
+            {
+                key: 'projectLabel',
+                label: 'Project label',
+                value: (
+                    <EditableTextField
+                        value={project.label}
+                        onChange={handleChangeLabel}
+                    />
+                )
+            },
+            { key: 'projectId', label: 'Project ID', value: project.projectId.toString() },
             { key: 'ownerId', label: 'Owner', value: project.ownerId.toString() },
             { key: 'timestampCreated', label: 'Created', value: `${new Date(project.timestampCreated)}` },
             { key: 'timestampLastModified', label: 'Modified', value: `${new Date(project.timestampLastModified)}` }
         ]
-    }, [project])
+    }, [project, handleChangeLabel])
 
     const handleBack = useCallback(() => {
         setRoute({page: 'home'})

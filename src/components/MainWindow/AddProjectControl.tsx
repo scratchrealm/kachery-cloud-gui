@@ -7,17 +7,17 @@ type Props = {
 }
 
 const AddProjectControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
-    const [editProjectName, setEditProjectName] = useState<string>('')
+    const [editLabel, setEditLabel] = useState<string>('')
     
     const handleAdd = useCallback(() => {
-        onAdd(editProjectName)
+        onAdd(editLabel)
         onClose && onClose()
-    }, [onClose, editProjectName, onAdd])
+    }, [onClose, editLabel, onAdd])
     const okayToAdd = useMemo(() => {
-        return isValidProjectName(editProjectName)
-    }, [editProjectName])
+        return isValidLabel(editLabel)
+    }, [editLabel])
     const handleChange = useCallback((event: any) => {
-        setEditProjectName(event.target.value)
+        setEditLabel(event.target.value)
     }, [])
     return (
         <div>
@@ -26,7 +26,7 @@ const AddProjectControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
                     <TableRow>
                         <TableCell>Project name</TableCell>
                         <TableCell>
-                            <input type="text" value={editProjectName} onChange={handleChange} />
+                            <input type="text" value={editLabel} onChange={handleChange} />
                         </TableCell>
                     </TableRow>
                 </TableBody>
@@ -37,7 +37,7 @@ const AddProjectControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
     )
 }
 
-const isValidProjectName = (x: string) => {
+const isValidLabel = (x: string) => {
     return x.length >= 3
 }
 
