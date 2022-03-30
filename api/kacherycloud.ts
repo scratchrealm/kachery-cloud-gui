@@ -1,8 +1,10 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
+import finalizeIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/finalizeIpfsUploadHandler'
 import getClientInfoHandler from '../apiHelpers/kacherycloudRequestHandlers/getClientInfoHandler'
+import initiateIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateIpfsUploadHandler'
 import { hexToPublicKey, verifySignature } from '../src/commonInterface/crypto/signatures'
 import { JSONValue, nodeIdToPublicKeyHex } from '../src/commonInterface/kacheryTypes'
-import { isKacherycloudRequest } from '../src/types/KacherycloudRequest'
+import { isFinalizeIpfsUploadRequest, isGetClientInfoRequest, isInitiateIpfsUploadRequest, isKacherycloudRequest } from '../src/types/KacherycloudRequest'
 
 module.exports = (req: VercelRequest, res: VercelResponse) => {    
     const {body: request} = req
@@ -23,8 +25,14 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         const verifiedClientId = fromClientId
 
-        if (payload.type === 'getClientInfo') {
+        if (isGetClientInfoRequest(request)) {
             return await getClientInfoHandler(request, verifiedClientId)
+        }
+        else if (isInitiateIpfsUploadRequest(request)) {
+            return await initiateIpfsUploadHandler(request, verifiedClientId)
+        }
+        else if (isFinalizeIpfsUploadRequest(request)) {
+            return await finalizeIpfsUploadHandler(request, verifiedClientId)
         }
         else {
             throw Error(`Unexpected request type: ${payload.type}`)

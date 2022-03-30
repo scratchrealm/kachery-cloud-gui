@@ -1,4 +1,4 @@
-import { isArrayOf, isBoolean, isEqualTo, isNodeId, isNumber, isOneOf, isSignature, NodeId, optional, Signature, _validateObject } from "../commonInterface/kacheryTypes"
+import { isArrayOf, isBoolean, isEqualTo, isNodeId, isNumber, isOneOf, isSignature, isString, NodeId, optional, Signature, _validateObject } from "../commonInterface/kacheryTypes"
 import { Client, isClient } from "./Client"
 import { isProject, Project } from "./Project"
 import { isProjectMembership, ProjectMembership } from "./ProjectMembership"
@@ -53,21 +53,111 @@ export const isGetClientInfoResponse = (x: any): x is GetClientInfoResponse => {
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// initiateIpfsUpload
+
+export type InitiateIpfsUploadRequest = {
+    payload: {
+        type: 'initiateIpfsUpload'
+        timestamp: number
+        size: number
+    }
+    fromClientId: NodeId
+    signature: Signature
+}
+
+export const isInitiateIpfsUploadRequest = (x: any): x is InitiateIpfsUploadRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('initiateIpfsUpload'),
+            timestamp: isNumber,
+            size: isNumber
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: isNodeId,
+        signature: isSignature
+    })
+}
+
+export type InitiateIpfsUploadResponse = {
+    type: 'initiateIpfsUpload'
+    signedUploadUrl: string
+    objectKey: string
+}
+
+export const isInitiateIpfsUploadResponse = (x: any): x is InitiateIpfsUploadResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('initiateIpfsUpload'),
+        signedUploadUrl: isString,
+        objectKey: isString
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// finalizeIpfsUpload
+
+export type FinalizeIpfsUploadRequest = {
+    payload: {
+        type: 'finalizeIpfsUpload'
+        timestamp: number
+        objectKey: string
+    }
+    fromClientId: NodeId
+    signature: Signature
+}
+
+export const isFinalizeIpfsUploadRequest = (x: any): x is FinalizeIpfsUploadRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('finalizeIpfsUpload'),
+            timestamp: isNumber,
+            objectKey: isString
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: isNodeId,
+        signature: isSignature
+    })
+}
+
+export type FinalizeIpfsUploadResponse = {
+    type: 'finalizeIpfsUpload'
+    cid: string
+}
+
+export const isFinalizeIpfsUploadResponse = (x: any): x is FinalizeIpfsUploadResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('finalizeIpfsUpload'),
+        cid: isString
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type KacherycloudRequest =
-    GetClientInfoRequest
+    GetClientInfoRequest |
+    InitiateIpfsUploadRequest |
+    FinalizeIpfsUploadRequest
 
 export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
     return isOneOf([
-        isGetClientInfoRequest
+        isGetClientInfoRequest,
+        isInitiateIpfsUploadRequest,
+        isFinalizeIpfsUploadRequest
     ])(x)
 }
 
 export type KacherycloudResponse =
-    GetClientInfoResponse
+    GetClientInfoResponse |
+    InitiateIpfsUploadResponse |
+    FinalizeIpfsUploadResponse
 
 export const isKacherycloudResponse = (x: any): x is KacherycloudResponse => {
     return isOneOf([
-        isGetClientInfoResponse
+        isGetClientInfoResponse,
+        isInitiateIpfsUploadRequest,
+        isInitiateIpfsUploadResponse
     ])(x)
 }
