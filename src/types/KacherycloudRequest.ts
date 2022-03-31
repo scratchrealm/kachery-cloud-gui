@@ -177,7 +177,8 @@ export const isFindIpfsFileResponse = (x: any): x is FindIpfsFileResponse => {
         type: isEqualTo('findIpfsFile'),
         found: isBoolean,
         projectId: optional(isString),
-        cid: optional(isString)
+        size: optional(isNumber),
+        url: optional(isString)
     })
 }
 

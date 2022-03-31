@@ -75,6 +75,7 @@ const findIpfsFileHandler = async (request: FindIpfsFileRequest, verifiedClientI
         url,
         timestamp: Date.now()
     }
+    removeUndefinedFields(logItem)
     await usageLogCollection.add(logItem)
 
     return {
@@ -84,6 +85,10 @@ const findIpfsFileHandler = async (request: FindIpfsFileRequest, verifiedClientI
         size,
         url
     }
+}
+
+const removeUndefinedFields = (obj: {[key: string]: any}) => {
+    Object.keys(obj).forEach(key => obj[key] === undefined ? delete obj[key] : {})
 }
 
 export default findIpfsFileHandler
