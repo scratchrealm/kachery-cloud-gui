@@ -7,6 +7,9 @@ import ProjectPage from './ProjectPage';
 import HomePage from './HomePage';
 import ClientPage from './ClientPage';
 import RegisterClientPage from './RegisterClientPage';
+import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
+import logo from './logo.png'
+import kacheryLogoFull from './kacheryLogoFull.png'
 
 type Props = {
 
@@ -22,13 +25,15 @@ const MainWindow: FunctionComponent<Props> = () => {
 
     const {errorMessage} = useErrorMessage()
 
+    const { signedIn } = useSignedIn()
+
     return (
         <div>
             <div>
                 <ApplicationBar
                     title={"kachery cloud"}
                     onHome={handleHome}
-                    logo={undefined}
+                    logo={kacheryLogoFull}
                 />
             </div>
             <div style={{margin: 20, maxWidth: 1000}}>
@@ -38,28 +43,35 @@ const MainWindow: FunctionComponent<Props> = () => {
                     ) : <span />
                 }
                 {
-                    route.page === 'home' ? (
-                        <HomePage />
-                    ) : route.page === 'project' ? (
-                        <ProjectPage
-                            projectId={route.projectId}
-                        />
-                    ) : route.page === 'projectMembership' ? (
-                        <ProjectMembershipPage
-                            projectId={route.projectId}
-                            memberId={route.memberId}
-                        />
-                    ) : route.page === 'client' ? (
-                        <ClientPage
-                            clientId={route.clientId}
-                        />
-                    ) : route.page === 'registerClient' ? (
-                        <RegisterClientPage
-                            clientId={route.clientId}
-                            signature={route.signature}
-                            label={route.label}
-                        />
-                    ) : <span />
+                    signedIn ? (
+                        route.page === 'home' ? (
+                            <HomePage />
+                        ) : route.page === 'project' ? (
+                            <ProjectPage
+                                projectId={route.projectId}
+                            />
+                        ) : route.page === 'projectMembership' ? (
+                            <ProjectMembershipPage
+                                projectId={route.projectId}
+                                memberId={route.memberId}
+                            />
+                        ) : route.page === 'client' ? (
+                            <ClientPage
+                                clientId={route.clientId}
+                            />
+                        ) : route.page === 'registerClient' ? (
+                            <RegisterClientPage
+                                clientId={route.clientId}
+                                signature={route.signature}
+                                label={route.label}
+                            />
+                        ) : <span />
+                    ) : (
+                        <div>
+                            <h3>Welcome to kachery cloud.</h3>
+                            <h3>Sign in above to get started.</h3>
+                        </div>
+                    )
                 }
             </div>
         </div>

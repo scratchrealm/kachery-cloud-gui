@@ -2,6 +2,7 @@ import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { Client, isClient } from "../../src/types/Client";
 import { IpfsFile, isIpfsFile } from "../../src/types/IpfsFile";
 import { FindIpfsFileRequest, FindIpfsFileResponse } from "../../src/types/KacherycloudRequest";
+import { FindIpfsFileLogItem } from "../../src/types/LogItem";
 import { isProject, Project } from '../../src/types/Project';
 import firestoreDatabase from '../common/firestoreDatabase';
 
@@ -65,15 +66,16 @@ const findIpfsFileHandler = async (request: FindIpfsFileRequest, verifiedClientI
     const url = ipfsFile.url
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
-    await usageLogCollection.add({
-        type: 'finalizeIpfsUpload',
+    const logItem: FindIpfsFileLogItem = {
+        type: 'findIpfsFile',
         clientId,
         projectId: ipfsFile.projectId,
         userId: client?.ownerId,
         size,
         url,
         timestamp: Date.now()
-    })
+    }
+    await usageLogCollection.add(logItem)
 
     return {
         type: 'findIpfsFile',

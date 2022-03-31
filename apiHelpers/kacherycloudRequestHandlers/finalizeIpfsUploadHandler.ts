@@ -3,6 +3,7 @@ import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { isClient } from "../../src/types/Client";
 import { IpfsFile } from "../../src/types/IpfsFile";
 import { FinalizeIpfsUploadRequest, FinalizeIpfsUploadResponse } from "../../src/types/KacherycloudRequest";
+import { FinalizeIpfsdUploadLogItem } from "../../src/types/LogItem";
 import { isProject } from "../../src/types/Project";
 import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
@@ -71,7 +72,7 @@ const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, ver
     }
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
-    await usageLogCollection.add({
+    const logItem: FinalizeIpfsdUploadLogItem = {
         type: 'finalizeIpfsUpload',
         clientId: client.clientId,
         projectId,
@@ -81,7 +82,8 @@ const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, ver
         url,
         alreadyExisted,
         timestamp: Date.now()
-    })
+    }
+    await usageLogCollection.add(logItem)
 
     return {
         type: 'finalizeIpfsUpload',
@@ -103,7 +105,7 @@ const headObject = async (key: string): Promise<HeadObjectOutput> => {
     })
 }
 
-// unused but maybe useful
+// unused but maybe useful in the future
 const putObject = async (params: PutObjectRequest): Promise<{cid: string}> => {
     return new Promise<{cid: string}>((resolve, reject) => {
         const request = s3.putObject(params)

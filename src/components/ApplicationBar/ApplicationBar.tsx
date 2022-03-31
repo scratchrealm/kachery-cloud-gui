@@ -45,12 +45,12 @@ const ApplicationBar: FunctionComponent<Props> = ({ title, logo, onHome }) => {
 
     return (
         <span>
-            <AppBar position="static" style={{height: appBarHeight, color: 'white'}}>
+            <AppBar position="static" style={{height: appBarHeight, color: 'white', background: 'rgb(22, 22, 66)'}}>
                 <Toolbar>
                 {
                     logo && (<img src={logo} alt="logo" height={30} style={{paddingBottom: 5, cursor: 'pointer'}} onClick={onHome} />)
                 }
-                &nbsp;&nbsp;&nbsp;<div style={homeButtonStyle} onClick={onHome}>{title}</div>
+                {/* &nbsp;&nbsp;&nbsp;<div style={homeButtonStyle} onClick={onHome}>{title}</div> */}
                 <span style={{marginLeft: 'auto'}} />
                 {
                     signedIn && (

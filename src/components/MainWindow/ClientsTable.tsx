@@ -82,16 +82,16 @@ const ClientsTable: FunctionComponent<Props> = () => {
             </p>
             <IconButton onClick={refreshClients} title="Refresh clients"><Refresh /></IconButton>
             {/* <IconButton onClick={addVisible.show} title="Add client"><AddCircle /></IconButton> */}
-            {
-                !clients ? (
-                    <div>Loading clients...</div>
-                ) : <span />
-            }
             <NiceTable
                 columns={columns}
                 rows={rows}
                 onDeleteRow={handleDeleteClient}
             />
+            {
+                !clients ? (
+                    <div>Loading clients...</div>
+                ) : <span />
+            }
         </div>
     )
 }

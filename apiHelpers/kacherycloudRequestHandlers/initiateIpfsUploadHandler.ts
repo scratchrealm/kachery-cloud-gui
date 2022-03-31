@@ -1,6 +1,7 @@
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { isClient } from "../../src/types/Client";
 import { InitiateIpfsUploadRequest, InitiateIpfsUploadResponse } from "../../src/types/KacherycloudRequest";
+import { InitiateIpfsUploadLogItem } from "../../src/types/LogItem";
 import { isProject } from "../../src/types/Project";
 import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
@@ -53,7 +54,7 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
     const signedUploadUrl = await getSignedUrl(objectKey)
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
-    await usageLogCollection.add({
+    const logItem: InitiateIpfsUploadLogItem = {
         type: 'initiateIpfsUpload',
         clientId: client.clientId,
         projectId,
@@ -61,7 +62,8 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
         size,
         objectKey,
         timestamp: Date.now()
-    })
+    }
+    await usageLogCollection.add(logItem)
 
     return {
         type: 'initiateIpfsUpload',

@@ -81,16 +81,16 @@ const ProjectsTable: FunctionComponent<Props> = () => {
                     />
                 )
             }
-            {
-                !projects ? (
-                    <div>Loading projects...</div>
-                ) : <span />
-            }
             <NiceTable
                 columns={columns}
                 rows={rows}
                 onDeleteRow={handleDeleteProject}
             />
+            {
+                !projects ? (
+                    <div>Loading projects...</div>
+                ) : <span />
+            }
         </div>
     )
 }
