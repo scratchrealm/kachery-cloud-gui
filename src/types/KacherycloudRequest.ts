@@ -135,29 +135,80 @@ export const isFinalizeIpfsUploadResponse = (x: any): x is FinalizeIpfsUploadRes
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// findIpfsFile
+
+export type FindIpfsFileRequest = {
+    payload: {
+        type: 'findIpfsFile'
+        timestamp: number
+        cid: string
+        projectId?: string
+    }
+    fromClientId?: NodeId
+    signature?: Signature
+}
+
+export const isFindIpfsFileRequest = (x: any): x is FindIpfsFileRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('findIpfsFile'),
+            timestamp: isNumber,
+            cid: isString,
+            projectId: optional(isString)
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: optional(isNodeId),
+        signature: optional(isSignature)
+    })
+}
+
+export type FindIpfsFileResponse = {
+    type: 'findIpfsFile'
+    found: boolean
+    projectId?: string
+    size?: number
+    url?: string
+}
+
+export const isFindIpfsFileResponse = (x: any): x is FindIpfsFileResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('findIpfsFile'),
+        found: isBoolean,
+        projectId: optional(isString),
+        cid: optional(isString)
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type KacherycloudRequest =
     GetClientInfoRequest |
     InitiateIpfsUploadRequest |
-    FinalizeIpfsUploadRequest
+    FinalizeIpfsUploadRequest |
+    FindIpfsFileRequest
 
 export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
     return isOneOf([
         isGetClientInfoRequest,
         isInitiateIpfsUploadRequest,
-        isFinalizeIpfsUploadRequest
+        isFinalizeIpfsUploadRequest,
+        isFindIpfsFileRequest
     ])(x)
 }
 
 export type KacherycloudResponse =
     GetClientInfoResponse |
     InitiateIpfsUploadResponse |
-    FinalizeIpfsUploadResponse
+    FinalizeIpfsUploadResponse |
+    FindIpfsFileResponse
 
 export const isKacherycloudResponse = (x: any): x is KacherycloudResponse => {
     return isOneOf([
         isGetClientInfoResponse,
         isInitiateIpfsUploadRequest,
-        isInitiateIpfsUploadResponse
+        isInitiateIpfsUploadResponse,
+        isFindIpfsFileResponse
     ])(x)
 }

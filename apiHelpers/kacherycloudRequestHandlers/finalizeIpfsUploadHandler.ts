@@ -1,6 +1,7 @@
 import { HeadObjectOutput, PutObjectRequest } from "aws-sdk/clients/s3";
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { isClient } from "../../src/types/Client";
+import { IpfsFile } from "../../src/types/IpfsFile";
 import { FinalizeIpfsUploadRequest, FinalizeIpfsUploadResponse } from "../../src/types/KacherycloudRequest";
 import { isProject } from "../../src/types/Project";
 import { isProjectMembership } from "../../src/types/ProjectMembership";
@@ -49,24 +50,24 @@ const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, ver
     }
     const cid = x.Metadata.cid
 
-    const e = cid.slice(-6)
-    const linkObjectKey = `projects/${projectId}/ipfs/${e[0]}${e[1]}/${e[2]}${e[3]}/${e[4]}${e[5]}/${cid}.link`
-    const alreadyExisted = await objectExists(linkObjectKey)
+    const ipfsFilesCollection = db.collection('kacherycloud.ipfsFiles')
+    const ifKey = `${projectId}.${cid}`
+    const ipfsFileSnapshot = await ipfsFilesCollection.doc(ifKey).get()
+    const alreadyExisted = ipfsFileSnapshot.exists
+    let url: string
     if (alreadyExisted) {
+        url = ipfsFileSnapshot.data()['url']
         await deleteObject(objectKey)
     }
     else {
-        const params2: PutObjectRequest = {
-            Bucket: "kachery-cloud",
-            Key: linkObjectKey,
-            ContentType: "application/octet-stream",
-            Body: objectKey,
-            ACL: "public-read",
-            Metadata: {
-                'link-key': objectKey
-            }
+        url = `https://kachery-cloud.s3.filebase.com/${objectKey}`
+        const ipfsFile: IpfsFile = {
+            projectId,
+            cid,
+            size,
+            url
         }
-        await putObject(params2)
+        await ipfsFilesCollection.doc(ifKey).set(ipfsFile)
     }
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
@@ -77,7 +78,7 @@ const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, ver
         userId,
         size,
         objectKey,
-        linkObjectKey,
+        url,
         alreadyExisted,
         timestamp: Date.now()
     })
@@ -102,6 +103,7 @@ const headObject = async (key: string): Promise<HeadObjectOutput> => {
     })
 }
 
+// unused but maybe useful
 const putObject = async (params: PutObjectRequest): Promise<{cid: string}> => {
     return new Promise<{cid: string}>((resolve, reject) => {
         const request = s3.putObject(params)
@@ -137,6 +139,7 @@ const deleteObject = async (key: string): Promise<void> => {
     })
 }
 
+// unused but maybe useful
 const objectExists = async (key: string): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
         s3.headObject({

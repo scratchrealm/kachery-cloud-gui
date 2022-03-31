@@ -29,6 +29,12 @@ const deleteProjectHandler = async (request: DeleteProjectRequest, verifiedUserI
         throw Error('Not authorized')
     }
     batch.delete(collection.doc(projectId.toString()))
+
+    const ipfsFilesCollection = db.collection('kacherycloud.ipfsFiles')
+    const ipfsFilesResult = await ipfsFilesCollection.where('projectId', '==', projectId).get()
+    ipfsFilesResult.forEach(doc => {
+        batch.delete(doc.ref)
+    })
     
     await batch.commit()
     
