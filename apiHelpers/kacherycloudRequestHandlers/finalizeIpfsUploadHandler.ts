@@ -50,6 +50,9 @@ const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, ver
         throw Error(`File too large *: ${size} > ${MAX_UPLOAD_SIZE}`)
     }
     const cid = x.Metadata.cid
+    if (!cid) {
+        throw Error(`No cid field in metaData of object: ${objectKey}`)
+    }
 
     const ipfsFilesCollection = db.collection('kacherycloud.ipfsFiles')
     const ifKey = `${projectId}.${cid}`
