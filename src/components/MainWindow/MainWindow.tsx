@@ -1,15 +1,14 @@
+import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useErrorMessage from 'errorMessageContext/useErrorMessage';
 import React, { FunctionComponent, useCallback } from 'react';
 import ApplicationBar from '../ApplicationBar/ApplicationBar';
 import useRoute from '../useRoute';
+import ClientPage from './ClientPage';
+import HomePage from './HomePage';
+import kacheryLogoFull from './kacheryLogoFull.png';
 import ProjectMembershipPage from './ProjectMembershipPage';
 import ProjectPage from './ProjectPage';
-import HomePage from './HomePage';
-import ClientPage from './ClientPage';
 import RegisterClientPage from './RegisterClientPage';
-import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
-import logo from './logo.png'
-import kacheryLogoFull from './kacheryLogoFull.png'
 
 type Props = {
 
