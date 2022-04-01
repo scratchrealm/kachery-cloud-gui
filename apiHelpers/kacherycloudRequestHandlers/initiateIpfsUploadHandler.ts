@@ -7,6 +7,7 @@ import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { randomAlphaLowerString } from "../guiRequestHandlers/helpers/randomAlphaString";
 import s3 from "./s3";
+import { getSignedUploadUrl } from "./s3Helpers";
 
 export const MAX_UPLOAD_SIZE = 50 * 1000 * 1000
 
@@ -51,7 +52,7 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
     const u = uploadId
     const objectKey = `projects/${projectId}/uploads/${u[0]}${u[1]}/${u[2]}${u[3]}/${u[4]}${u[5]}/${u}`
 
-    const signedUploadUrl = await getSignedUrl(objectKey)
+    const signedUploadUrl = await getSignedUploadUrl(objectKey)
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
     const logItem: InitiateIpfsUploadLogItem = {
@@ -72,19 +73,6 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
     }
 }
 
-const getSignedUrl = async (key: string): Promise<string> => {
-    return new Promise((resolve, reject) =>{
-        s3.getSignedUrl('putObject', {
-            Bucket: 'kachery-cloud',
-            Key: key,
-            Expires: 60 * 1 // seconds
-        }, (err, url) => {
-            if (err) {
-                reject(new Error(`Error gettings signed url: ${err.message}`))
-            }
-            resolve(url)
-        })
-    })
-}
+
 
 export default initiateIpfsUploadHandler

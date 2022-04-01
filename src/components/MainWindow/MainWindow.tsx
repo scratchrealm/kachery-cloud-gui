@@ -9,6 +9,7 @@ import kacheryLogoFull from './kacheryLogoFull.png';
 import ProjectMembershipPage from './ProjectMembershipPage';
 import ProjectPage from './ProjectPage';
 import RegisterClientPage from './RegisterClientPage';
+import TimingPage from './TimingPage';
 
 type Props = {
 
@@ -42,7 +43,10 @@ const MainWindow: FunctionComponent<Props> = () => {
                     ) : <span />
                 }
                 {
-                    signedIn ? (
+                    route.page === 'timing' ? (
+                        <TimingPage />
+                    )
+                    : signedIn ? (
                         route.page === 'home' ? (
                             <HomePage />
                         ) : route.page === 'project' ? (
@@ -66,10 +70,7 @@ const MainWindow: FunctionComponent<Props> = () => {
                             />
                         ) : <span />
                     ) : (
-                        <div>
-                            <h3>Welcome to kachery cloud.</h3>
-                            <h3>Sign in above to get started.</h3>
-                        </div>
+                        <HomePage />
                     )
                 }
             </div>

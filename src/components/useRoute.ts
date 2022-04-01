@@ -23,6 +23,8 @@ export type Route = {
     clientId: NodeId,
     signature: Signature,
     label: string
+} | {
+    page: 'timing'
 }
 
 const useRoute = () => {
@@ -82,6 +84,11 @@ const useRoute = () => {
             }
         }
     }
+    else if (p === '/timing') {
+        route = {
+            page: 'timing'
+        }
+    }
 
     const setRoute = useCallback((route: Route) => {
         const query2 = {...query}
@@ -102,6 +109,9 @@ const useRoute = () => {
             pathname2 = `/registerClient/${route.clientId}`
             query2['signature'] = route.signature.toString()
             query2['label'] = route.label.toString()
+        }
+        else if (route.page === 'timing') {
+            pathname2 = '/timing'
         }
         const search2 = queryString(query2)
         history.push({...location, pathname: pathname2, search: search2})
