@@ -1,4 +1,4 @@
-import { isEqualTo, isNumber, _validateObject } from "../commonInterface/kacheryTypes"
+import { isEqualTo, isNumber, isString, _validateObject } from "../commonInterface/kacheryTypes"
 
 export type TimingRequest = {
     type: 'timing'
@@ -19,7 +19,11 @@ export type TimingResponse = {
         getFilebaseObject: number,
         getFilebaseObjectViaHttp: number,
         deleteFilebaseObject: number,
-        downloadFromIPFSGateway: number
+        downloadFromIPFSGateway: number,
+        downloadFromIPFSGatewayAfterDelay: number
+    },
+    misc: {
+        deletedCIDExample: string
     }
 }
 
@@ -34,7 +38,13 @@ export const isTimingResponse = (x: any): x is TimingResponse => (
                 getFilebaseObject: isNumber,
                 getFilebaseObjectViaHttp: isNumber,
                 deleteFilebaseObject: isNumber,
-                downloadFromIPFSGateway: isNumber
+                downloadFromIPFSGateway: isNumber,
+                downloadFromIPFSGatewayAfterDelay: isNumber
+            })
+        ),
+        misc: (y: any) => (
+            _validateObject(y, {
+                deletedCIDExample: isString
             })
         )
     })

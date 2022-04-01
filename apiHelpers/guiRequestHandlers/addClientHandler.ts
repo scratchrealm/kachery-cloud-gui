@@ -4,7 +4,7 @@ import { Client } from "../../src/types/Client"
 import { AddClientRequest, AddClientResponse } from "../../src/types/GuiRequest";
 import firestoreDatabase from '../common/firestoreDatabase';
 
-const MAX_NUM_CLIENTS_PER_USER = 5
+const MAX_NUM_CLIENTS_PER_USER = 25
 
 const addClientHandler = async (request: AddClientRequest, verifiedUserId: UserId): Promise<AddClientResponse> => {
     const { clientId, ownerId, label, defaultProjectId } = request

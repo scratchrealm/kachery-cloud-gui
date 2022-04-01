@@ -21,7 +21,7 @@ type Status = 'waiting' | 'starting' | 'running' | 'error' | 'finished'
 const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, label}) => {
     const {userId, googleIdToken, signedIn} = useSignedIn()
     const [status, setStatus] = useState<Status>('waiting')
-    const { setErrorMessage } = useErrorMessage()
+    const { errorMessage, setErrorMessage } = useErrorMessage()
     const { setRoute } = useRoute()
     const { projects, addProject } = useProjects()
     const [defaultProjectId, setDefaultProjectId] = useState<string>('')
@@ -61,9 +61,13 @@ const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, labe
                         googleIdToken
                     }
                 }
-                await guiApiRequest(req, {reCaptcha: true, setErrorMessage})
-                setStatus('finished')
-                setRoute({page: 'home'})
+                const response = await guiApiRequest(req, {reCaptcha: true, setErrorMessage})
+                if (response) {
+                    setStatus('finished')
+                }
+                else {
+                    setStatus('error')
+                }
             }
         })()
     }, [status, userId, clientId, setErrorMessage, signature, googleIdToken, setRoute, editLabel, defaultProjectId])
@@ -135,12 +139,31 @@ const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, labe
                     <p style={{color: 'red'}}>You must select a default project above.</p>
                 )
             }
-            <p>
-            Would you like to associate this client with this logged in user?
-            </p>
-            <Button onClick={handleYes} disabled={!okayToProceed || (status !== 'waiting')}>
-                Yes, proceed
-            </Button>
+            {
+                (okayToProceed && (status === 'waiting')) && (
+                    <div>
+                        <p>Would you like to associate this client with this logged in user?</p>
+                        <Button onClick={handleYes}>
+                            Yes, proceed
+                        </Button>
+                    </div>
+                )
+            }
+            {
+                (status === 'running') && (
+                    <p>Please wait...</p>
+                )
+            }
+            {
+                (status === 'finished') && (
+                    <p>Your client was successfully registered.</p>
+                )
+            }
+            {
+                status === 'error' && (
+                    <p><span style={{color: 'red'}}>Error registering client: {errorMessage}</span></p>
+                )
+            }
         </div>
     )
 }

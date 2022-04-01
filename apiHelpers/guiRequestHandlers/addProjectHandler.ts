@@ -6,7 +6,7 @@ import { randomAlphaLowerString } from "./helpers/randomAlphaString";
 import addProjectMembershipHandler from "./addProjectMembershipHandler";
 import setProjectMembershipPermissionsHandler from "./setProjectMembershipPermissionsHandler";
 
-const MAX_NUM_PROJECTS_PER_USER = 3
+const MAX_NUM_PROJECTS_PER_USER = 12
 
 const addProjectHandler = async (request: AddProjectRequest, verifiedUserId: UserId): Promise<AddProjectResponse> => {
     const { label, ownerId } = request
