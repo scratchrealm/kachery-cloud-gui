@@ -3,11 +3,13 @@ import { Client, isClient } from "../../src/types/Client";
 import { IpfsFile, isIpfsFile } from "../../src/types/IpfsFile";
 import { FindIpfsFileRequest, FindIpfsFileResponse } from "../../src/types/KacherycloudRequest";
 import { FindIpfsFileLogItem } from "../../src/types/LogItem";
+import { isMutableRecord } from "../../src/types/MutableRecord";
 import { isProject, Project } from '../../src/types/Project';
 import firestoreDatabase from '../common/firestoreDatabase';
 
 const findIpfsFileHandler = async (request: FindIpfsFileRequest, verifiedClientId?: NodeId): Promise<FindIpfsFileResponse> => {
-    const { cid, projectId } = request.payload
+    const { cid } = request.payload
+    let projectId  = request.payload.projectId
     const clientId = verifiedClientId
 
     const db = firestoreDatabase()
@@ -35,7 +37,7 @@ const findIpfsFileHandler = async (request: FindIpfsFileRequest, verifiedClientI
     const ipfsFilesCollection = db.collection('kacherycloud.ipfsFiles')
     let ipfsFile: IpfsFile
     if (projectId) {
-        const ifKey = `${projectId}.${cid}`
+        const ifKey = `${projectId}:${cid}`
         const ipfsFileSnapshot = await ipfsFilesCollection.doc(ifKey).get()
         if (!ipfsFileSnapshot.exists) {
             return {
@@ -68,14 +70,15 @@ const findIpfsFileHandler = async (request: FindIpfsFileRequest, verifiedClientI
     const usageLogCollection = db.collection('kacherycloud.usageLog')
     const logItem: FindIpfsFileLogItem = {
         type: 'findIpfsFile',
+        found: true,
         clientId,
         projectId: ipfsFile.projectId,
         userId: client?.ownerId,
+        cid,
         size,
         url,
         timestamp: Date.now()
     }
-    removeUndefinedFields(logItem)
     await usageLogCollection.add(logItem)
 
     return {
@@ -85,10 +88,6 @@ const findIpfsFileHandler = async (request: FindIpfsFileRequest, verifiedClientI
         size,
         url
     }
-}
-
-const removeUndefinedFields = (obj: {[key: string]: any}) => {
-    Object.keys(obj).forEach(key => obj[key] === undefined ? delete obj[key] : {})
 }
 
 export default findIpfsFileHandler

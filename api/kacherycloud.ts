@@ -2,10 +2,12 @@ import { VercelRequest, VercelResponse } from '@vercel/node'
 import finalizeIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/finalizeIpfsUploadHandler'
 import findIpfsFileHandler from '../apiHelpers/kacherycloudRequestHandlers/findIpfsFileHandler'
 import getClientInfoHandler from '../apiHelpers/kacherycloudRequestHandlers/getClientInfoHandler'
+import getMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/getMutableHandler'
 import initiateIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateIpfsUploadHandler'
+import setMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/setMutableHandler'
 import { hexToPublicKey, verifySignature } from '../src/commonInterface/crypto/signatures'
 import { JSONValue, NodeId, nodeIdToPublicKeyHex } from '../src/commonInterface/kacheryTypes'
-import { isFinalizeIpfsUploadRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isInitiateIpfsUploadRequest, isKacherycloudRequest } from '../src/types/KacherycloudRequest'
+import { isFinalizeIpfsUploadRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetMutableRequest, isInitiateIpfsUploadRequest, isKacherycloudRequest, isSetMutableRequest } from '../src/types/KacherycloudRequest'
 
 module.exports = (req: VercelRequest, res: VercelResponse) => {    
     const {body: request} = req
@@ -58,6 +60,12 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         else if (isFindIpfsFileRequest(request)) {
             return await findIpfsFileHandler(request, verifiedClientId)
+        }
+        else if (isSetMutableRequest(request)) {
+            return await setMutableHandler(request, verifiedClientId)
+        }
+        else if (isGetMutableRequest(request)) {
+            return await getMutableHandler(request, verifiedClientId)
         }
         else {
             throw Error(`Unexpected request type: ${payload.type}`)

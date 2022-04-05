@@ -27,8 +27,8 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
     const client = clientSnapshot.data()
     if (!isClient(client)) throw Error('Invalid client in database')
 
-    const projectId = client.defaultProjectId
-    if (!projectId) throw Error('No default project ID')
+    const projectId = request.payload.projectId || client.defaultProjectId
+    if (!projectId) throw Error('No project ID')
     const userId = client.ownerId
     const projectsCollection = db.collection('kacherycloud.projects')
     const projectSnapshot = await projectsCollection.doc(projectId).get()
@@ -37,7 +37,7 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
     if (!isProject(project)) throw Error('Invalid project in database')
 
     const projectMembershipsCollection = db.collection('kacherycloud.projectMemberships')
-    const pmKey = projectId.toString() + '.' + userId.toString()
+    const pmKey = projectId.toString() + ':' + userId.toString()
     const projectMembershipSnapshot = await projectMembershipsCollection.doc(pmKey).get()
     if (!projectMembershipSnapshot.exists) {
         throw Error(`User ${userId} is not a member of project ${projectId}`)
@@ -50,7 +50,7 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
 
     const uploadId = randomAlphaLowerString(20)
     const u = uploadId
-    const objectKey = `projects/${projectId}/uploads/${u[0]}${u[1]}/${u[2]}${u[3]}/${u[4]}${u[5]}/${u}`
+    const objectKey = `projects/${projectId}/uploads/${u[0]}${u[1]}/${u[2]}${u[3]}/${u[4]}${u[5]}/${uploadId}`
 
     const signedUploadUrl = await getSignedUploadUrl(objectKey)
 

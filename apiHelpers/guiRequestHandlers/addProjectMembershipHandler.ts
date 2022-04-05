@@ -23,7 +23,7 @@ const addProjectMembershipHandler = async (request: AddProjectMembershipRequest,
     }
 
     const collection = db.collection('kacherycloud.projectMemberships')
-    const key = projectId.toString() + '.' + memberId.toString()
+    const key = projectId.toString() + ':' + memberId.toString()
     const docSnapshot = await collection.doc(key).get()
     if (docSnapshot.exists) {
         throw Error('Project member already exists')
@@ -37,7 +37,7 @@ const addProjectMembershipHandler = async (request: AddProjectMembershipRequest,
             write: false
         }
     }
-    await collection.doc(projectId.toString() + '.' + memberId.toString()).set(projectMembership)
+    await collection.doc(projectId.toString() + ':' + memberId.toString()).set(projectMembership)
     return {
         type: 'addProjectMembership'
     }

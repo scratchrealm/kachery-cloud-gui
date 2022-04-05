@@ -2,16 +2,21 @@ import { HeadObjectOutput, PutObjectRequest } from "aws-sdk/clients/s3";
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { isClient } from "../../src/types/Client";
 import { IpfsFile } from "../../src/types/IpfsFile";
-import { FinalizeIpfsUploadRequest, FinalizeIpfsUploadResponse } from "../../src/types/KacherycloudRequest";
-import { FinalizeIpfsUploadLogItem } from "../../src/types/LogItem";
+import { FinalizeIpfsUploadRequest, FinalizeIpfsUploadResponse, SetMutableRequest, SetMutableResponse } from "../../src/types/KacherycloudRequest";
+import { FinalizeIpfsUploadLogItem, SetMutableLogItem } from "../../src/types/LogItem";
+import { MutableRecord } from "../../src/types/MutableRecord";
 import { isProject } from "../../src/types/Project";
 import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { MAX_UPLOAD_SIZE } from "./initiateIpfsUploadHandler";
 import { deleteObject, headObject } from "./s3Helpers";
 
-const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, verifiedClientId: NodeId): Promise<FinalizeIpfsUploadResponse> => {
-    const { objectKey } = request.payload
+const setMutableHandler = async (request: SetMutableRequest, verifiedClientId: NodeId): Promise<SetMutableResponse> => {
+    const { mutableKey, cid } = request.payload
+
+    if (!isValidCid(cid)) {
+        throw Error('invalid CID')
+    }
 
     const clientId = verifiedClientId
 
@@ -43,55 +48,38 @@ const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, ver
         throw Error(`User ${userId} does not have write access on project ${projectId}`)
     }
 
-    const x = await headObject(objectKey)
-    const size = x.ContentLength
-    if (size > MAX_UPLOAD_SIZE) {
-        await deleteObject(objectKey)
-        throw Error(`File too large *: ${size} > ${MAX_UPLOAD_SIZE}`)
+    const mutablesCollection = db.collection('kacherycloud.mutables')
+    const mKey = `${projectId}:${mutableKey.replace('/', ':')}`
+    const mutableSnapshot = await mutablesCollection.doc(mKey).get()
+    const alreadyExisted = mutableSnapshot.exists
+    const mutableRecord: MutableRecord = {
+        projectId,
+        mutableKey,
+        cid
     }
-    const cid = x.Metadata.cid
-    if (!cid) {
-        throw Error(`No cid field in metaData of object: ${objectKey}`)
-    }
-
-    const ipfsFilesCollection = db.collection('kacherycloud.ipfsFiles')
-    const ifKey = `${projectId}:${cid}`
-    const ipfsFileSnapshot = await ipfsFilesCollection.doc(ifKey).get()
-    const alreadyExisted = ipfsFileSnapshot.exists
-    let url: string
-    if (alreadyExisted) {
-        url = ipfsFileSnapshot.data()['url']
-        await deleteObject(objectKey)
-    }
-    else {
-        url = `https://kachery-cloud.s3.filebase.com/${objectKey}`
-        const ipfsFile: IpfsFile = {
-            projectId,
-            cid,
-            size,
-            url
-        }
-        await ipfsFilesCollection.doc(ifKey).set(ipfsFile)
-    }
+    await mutablesCollection.doc(mKey).set(mutableRecord)
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
-    const logItem: FinalizeIpfsUploadLogItem = {
-        type: 'finalizeIpfsUpload',
+    const logItem: SetMutableLogItem = {
+        type: 'setMutable',
         clientId: client.clientId,
         projectId,
         userId,
-        size,
-        objectKey,
-        url,
+        mutableKey,
+        cid,
         alreadyExisted,
         timestamp: Date.now()
     }
     await usageLogCollection.add(logItem)
 
     return {
-        type: 'finalizeIpfsUpload',
-        cid
+        type: 'setMutable',
+        projectId
     }
 }
 
-export default finalizeIpfsUploadHandler
+const isValidCid = (x: string) => {
+    return x.length < 100
+}
+
+export default setMutableHandler

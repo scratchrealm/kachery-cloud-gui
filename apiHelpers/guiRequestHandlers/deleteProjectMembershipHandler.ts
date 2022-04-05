@@ -26,11 +26,11 @@ const deleteProjectMembershipHandler = async (request: DeleteProjectMembershipRe
     }
 
     const collection = db.collection('kacherycloud.projectMemberships')
-    const docSnapshot = await collection.doc(projectId.toString() + '.' + memberId.toString()).get()
+    const docSnapshot = await collection.doc(projectId.toString() + ':' + memberId.toString()).get()
     if (!docSnapshot.exists) {
         throw Error('Project member does not exists')
     }
-    await collection.doc(projectId.toString() + '.' + memberId.toString()).delete()
+    await collection.doc(projectId.toString() + ':' + memberId.toString()).delete()
     return {
         type: 'deleteProjectMembership'
     }
