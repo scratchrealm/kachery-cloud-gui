@@ -1,4 +1,4 @@
-import { isBoolean, isEqualTo, isNodeId, isNumber, isOneOf, isString, isUserId, NodeId, optional, UserId, _validateObject } from "../commonInterface/kacheryTypes";
+import { isBoolean, isEqualTo, isNodeId, isNumber, isOneOf, isSha1Hash, isString, isUserId, NodeId, optional, Sha1Hash, UserId, _validateObject } from "../commonInterface/kacheryTypes";
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -134,12 +134,72 @@ export const isGetMutableLogItem = (x: any): x is GetMutableLogItem => (
 
 ///////////////////////////////////////////////////////////////////////////
 
+export type InitiateTaskResultUploadLogItem = {
+    type: 'initiateTaskResultUpload'
+    clientId: NodeId
+    projectId: string
+    userId: UserId
+    taskType: string
+    taskInputHash: Sha1Hash
+    size: number
+    objectKey: string
+    timestamp: number
+}
+
+export const isInitiateTaskResultUploadLogItem = (x: any): x is InitiateTaskResultUploadLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('initiateTaskResultUpload'),
+        clientId: isNodeId,
+        projectId: isString,
+        userId: isUserId,
+        taskType: isString,
+        taskInputHash: isSha1Hash,
+        size: isNumber,
+        objectKey: isString,
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
+export type FinalizeTaskResultUploadLogItem = {
+    type: 'finalizeTaskResultUpload'
+    clientId: NodeId
+    projectId: string
+    userId: UserId
+    taskType: string
+    taskInputHash: Sha1Hash
+    size: number
+    objectKey: string
+    alreadyExisted: boolean
+    timestamp: number
+}
+
+export const isFinalizeTaskResultUploadLogItem = (x: any): x is FinalizeTaskResultUploadLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('finalizeTaskResultUpload'),
+        clientId: isNodeId,
+        projectId: isString,
+        userId: isUserId,
+        taskType: isString,
+        taskInputHash: isSha1Hash,
+        size: isNumber,
+        objectKey: isString,
+        alreadyExisted: isBoolean,
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
 export type LogItem =
     InitiateIpfsUploadLogItem
     | FinalizeIpfsUploadLogItem
     | FindIpfsFileLogItem
     | SetMutableLogItem
     | GetMutableLogItem
+    | InitiateTaskResultUploadLogItem
+    | FinalizeTaskResultUploadLogItem
 
 export const isLogItem = (x: any): x is LogItem => (
     isOneOf([
@@ -147,6 +207,8 @@ export const isLogItem = (x: any): x is LogItem => (
         isFinalizeIpfsUploadLogItem,
         isfindIpfsFileLogItem,
         isSetMutableLogItem,
-        isGetMutableLogItem
+        isGetMutableLogItem,
+        isInitiateTaskResultUploadLogItem,
+        isFinalizeTaskResultUploadLogItem
     ])(x)
 )

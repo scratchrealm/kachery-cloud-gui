@@ -1,4 +1,4 @@
-import { isArrayOf, isBoolean, isEqualTo, isNodeId, isNumber, isOneOf, isSignature, isString, NodeId, optional, Signature, _validateObject } from "../commonInterface/kacheryTypes"
+import { isArrayOf, isBoolean, isEqualTo, isNodeId, isNumber, isOneOf, isSha1Hash, isSignature, isString, NodeId, optional, Sha1Hash, Signature, _validateObject } from "../commonInterface/kacheryTypes"
 import { Client, isClient } from "./Client"
 import { isProject, Project } from "./Project"
 import { isProjectMembership, ProjectMembership } from "./ProjectMembership"
@@ -49,6 +49,48 @@ export const isGetClientInfoResponse = (x: any): x is GetClientInfoResponse => {
         projects: optional(isArrayOf(isProject)),
         projectMemberships: optional(isArrayOf(isProjectMembership)),
         userSettings: optional(isUserSettings)
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// getProjectInfo
+
+export type GetProjectBucketBaseUrlRequest = {
+    payload: {
+        type: 'getProjectBucketBaseUrl'
+        timestamp: number
+        projectId: string
+    }
+    fromClientId?: NodeId
+    signature?: Signature
+}
+
+export const isGetProjectBucketBaseUrlRequest = (x: any): x is GetProjectBucketBaseUrlRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('getProjectBucketBaseUrl'),
+            timestamp: isNumber,
+            projectId: isString
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: optional(isNodeId),
+        signature: optional(isSignature)
+    })
+}
+
+export type GetProjectBucketBaseUrlResponse = {
+    type: 'getProjectBucketBaseUrl'
+    found: boolean
+    bucketBaseUrl?: string
+}
+
+export const isGetProjectBucketBaseUrlResponse = (x: any): x is GetProjectBucketBaseUrlResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('getProjectBucketBaseUrl'),
+        found: isBoolean,
+        bucketBaseURl: optional(isString)
     })
 }
 
@@ -277,41 +319,144 @@ export const isGetMutableResponse = (x: any): x is GetMutableResponse => {
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// initiateTaskResultUpload
+
+export type InitiateTaskResultUploadRequest = {
+    payload: {
+        type: 'initiateTaskResultUpload'
+        timestamp: number
+        taskType: string
+        taskInputHash: Sha1Hash
+        size: number
+        projectId?: string
+    }
+    fromClientId: NodeId
+    signature: Signature
+}
+
+export const isInitiateTaskResultUploadRequest = (x: any): x is InitiateTaskResultUploadRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('initiateTaskResultUpload'),
+            timestamp: isNumber,
+            taskType: isString,
+            taskInputHash: isSha1Hash,
+            size: isNumber,
+            projectId: optional(isString)
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: isNodeId,
+        signature: isSignature
+    })
+}
+
+export type InitiateTaskResultUploadResponse = {
+    type: 'initiateTaskResultUpload'
+    signedUploadUrl: string
+}
+
+export const isInitiateTaskResultUploadResponse = (x: any): x is InitiateTaskResultUploadResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('initiateTaskResultUpload'),
+        signedUploadUrl: isString
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// finalizeTaskResultUpload
+
+export type FinalizeTaskResultUploadRequest = {
+    payload: {
+        type: 'finalizeTaskResultUpload'
+        timestamp: number
+        taskType: string
+        taskInputHash: Sha1Hash
+        size: number
+        projectId?: string
+    }
+    fromClientId: NodeId
+    signature: Signature
+}
+
+export const isFinalizeTaskResultUploadRequest = (x: any): x is FinalizeTaskResultUploadRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('finalizeTaskResultUpload'),
+            timestamp: isNumber,
+            taskType: isString,
+            taskInputHash: isSha1Hash,
+            size: isNumber,
+            projectId: optional(isString)
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: isNodeId,
+        signature: isSignature
+    })
+}
+
+export type FinalizeTaskResultUploadResponse = {
+    type: 'finalizeTaskResultUpload'
+}
+
+export const isFinalizeTaskResultUploadResponse = (x: any): x is FinalizeTaskResultUploadResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('finalizeTaskResultUpload')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type KacherycloudRequest =
     GetClientInfoRequest |
+    GetProjectBucketBaseUrlRequest |
     InitiateIpfsUploadRequest |
     FinalizeIpfsUploadRequest |
     FindIpfsFileRequest |
     SetMutableRequest |
-    GetMutableRequest
+    GetMutableRequest |
+    InitiateTaskResultUploadRequest |
+    FinalizeTaskResultUploadRequest
 
 export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
     return isOneOf([
         isGetClientInfoRequest,
+        isGetProjectBucketBaseUrlRequest,
         isInitiateIpfsUploadRequest,
         isFinalizeIpfsUploadRequest,
         isFindIpfsFileRequest,
         isSetMutableRequest,
-        isGetMutableRequest
+        isGetMutableRequest,
+        isInitiateTaskResultUploadRequest,
+        isFinalizeTaskResultUploadRequest
     ])(x)
 }
 
 export type KacherycloudResponse =
     GetClientInfoResponse |
+    GetProjectBucketBaseUrlResponse |
+    GetProjectBucketBaseUrlResponse |
     InitiateIpfsUploadResponse |
     FinalizeIpfsUploadResponse |
     FindIpfsFileResponse |
     SetMutableResponse |
-    GetMutableRequest
+    GetMutableResponse |
+    InitiateTaskResultUploadResponse |
+    FinalizeTaskResultUploadResponse
 
 export const isKacherycloudResponse = (x: any): x is KacherycloudResponse => {
     return isOneOf([
         isGetClientInfoResponse,
+        isGetProjectBucketBaseUrlResponse,
         isInitiateIpfsUploadResponse,
         isFinalizeIpfsUploadResponse,
         isFindIpfsFileResponse,
         isSetMutableResponse,
-        isGetMutableResponse
+        isGetMutableResponse,
+        isInitiateTaskResultUploadResponse,
+        isFinalizeTaskResultUploadResponse
     ])(x)
 }

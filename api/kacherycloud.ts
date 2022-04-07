@@ -1,13 +1,16 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
 import finalizeIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/finalizeIpfsUploadHandler'
+import finalizeTaskResultUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/finalizeTaskResultUploadHandler'
 import findIpfsFileHandler from '../apiHelpers/kacherycloudRequestHandlers/findIpfsFileHandler'
 import getClientInfoHandler from '../apiHelpers/kacherycloudRequestHandlers/getClientInfoHandler'
 import getMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/getMutableHandler'
+import getProjectBucketBaseUrlHandler from '../apiHelpers/kacherycloudRequestHandlers/getProjectBucketBaseUrlHandler'
 import initiateIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateIpfsUploadHandler'
+import initiateTaskResultUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateTaskResultUploadHandler'
 import setMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/setMutableHandler'
 import { hexToPublicKey, verifySignature } from '../src/commonInterface/crypto/signatures'
 import { JSONValue, NodeId, nodeIdToPublicKeyHex } from '../src/commonInterface/kacheryTypes'
-import { isFinalizeIpfsUploadRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetMutableRequest, isInitiateIpfsUploadRequest, isKacherycloudRequest, isSetMutableRequest } from '../src/types/KacherycloudRequest'
+import { isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isSetMutableRequest } from '../src/types/KacherycloudRequest'
 
 module.exports = (req: VercelRequest, res: VercelResponse) => {    
     const {body: request} = req
@@ -52,6 +55,9 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         if (isGetClientInfoRequest(request)) {
             return await getClientInfoHandler(request, verifiedClientId)
         }
+        else if (isGetProjectBucketBaseUrlRequest(request)) {
+            return await getProjectBucketBaseUrlHandler(request, verifiedClientId)
+        }
         else if (isInitiateIpfsUploadRequest(request)) {
             return await initiateIpfsUploadHandler(request, verifiedClientId)
         }
@@ -66,6 +72,12 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         else if (isGetMutableRequest(request)) {
             return await getMutableHandler(request, verifiedClientId)
+        }
+        else if (isInitiateTaskResultUploadRequest(request)) {
+            return await initiateTaskResultUploadHandler(request, verifiedClientId)
+        }
+        else if (isFinalizeTaskResultUploadRequest(request)) {
+            return await finalizeTaskResultUploadHandler(request, verifiedClientId)
         }
         else {
             throw Error(`Unexpected request type: ${payload.type}`)

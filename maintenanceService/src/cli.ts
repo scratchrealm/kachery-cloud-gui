@@ -64,7 +64,7 @@ const main = async () => {
         }
         const a = await projectUsagesCollection.get()
         for (let doc of a.docs) {
-            console.log('------------------------')
+            console.log('=============================')
             console.log(doc.data())
         }
         await sleepMsec(5000)
