@@ -1,4 +1,5 @@
 import { isBoolean, isEqualTo, isNodeId, isNumber, isOneOf, isSha1Hash, isString, isUserId, NodeId, optional, Sha1Hash, UserId, _validateObject } from "../commonInterface/kacheryTypes";
+import { isPubsubChannelName, PubsubChannelName } from "./PubsubMessage";
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -139,8 +140,8 @@ export type InitiateTaskResultUploadLogItem = {
     clientId: NodeId
     projectId: string
     userId: UserId
-    taskType: string
-    taskInputHash: Sha1Hash
+    taskName: string
+    taskJobId: Sha1Hash
     size: number
     objectKey: string
     timestamp: number
@@ -152,8 +153,8 @@ export const isInitiateTaskResultUploadLogItem = (x: any): x is InitiateTaskResu
         clientId: isNodeId,
         projectId: isString,
         userId: isUserId,
-        taskType: isString,
-        taskInputHash: isSha1Hash,
+        taskName: isString,
+        taskJobId: isSha1Hash,
         size: isNumber,
         objectKey: isString,
         timestamp: isNumber
@@ -167,8 +168,8 @@ export type FinalizeTaskResultUploadLogItem = {
     clientId: NodeId
     projectId: string
     userId: UserId
-    taskType: string
-    taskInputHash: Sha1Hash
+    taskName: string
+    taskJobId: Sha1Hash
     size: number
     objectKey: string
     alreadyExisted: boolean
@@ -181,11 +182,57 @@ export const isFinalizeTaskResultUploadLogItem = (x: any): x is FinalizeTaskResu
         clientId: isNodeId,
         projectId: isString,
         userId: isUserId,
-        taskType: isString,
-        taskInputHash: isSha1Hash,
+        taskName: isString,
+        taskJobId: isSha1Hash,
         size: isNumber,
         objectKey: isString,
         alreadyExisted: isBoolean,
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
+export type SubscribeToPubsubChannelLogItem = {
+    type: 'subscribeToPubsubChannel'
+    clientId: NodeId
+    projectId: string
+    userId: UserId
+    channelName: PubsubChannelName
+    timestamp: number
+}
+
+export const isSubscribeToPubsubChannelLogItem = (x: any): x is SubscribeToPubsubChannelLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('subscribeToPubsubChannel'),
+        clientId: isNodeId,
+        projectId: isString,
+        userId: isUserId,
+        channelName: isPubsubChannelName,
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
+export type PublishToPubsubChannelLogItem = {
+    type: 'publishToPubsubChannel'
+    clientId: NodeId
+    projectId: string
+    userId: UserId
+    channelName: PubsubChannelName
+    messageType: string
+    timestamp: number
+}
+
+export const isPublishToPubsubChannelLogItem = (x: any): x is PublishToPubsubChannelLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('publishToPubsubChannel'),
+        clientId: isNodeId,
+        projectId: isString,
+        userId: isUserId,
+        channelName: isPubsubChannelName,
+        messageType: isString,
         timestamp: isNumber
     })
 )
@@ -200,6 +247,8 @@ export type LogItem =
     | GetMutableLogItem
     | InitiateTaskResultUploadLogItem
     | FinalizeTaskResultUploadLogItem
+    | SubscribeToPubsubChannelLogItem
+    | PublishToPubsubChannelLogItem
 
 export const isLogItem = (x: any): x is LogItem => (
     isOneOf([
@@ -209,6 +258,8 @@ export const isLogItem = (x: any): x is LogItem => (
         isSetMutableLogItem,
         isGetMutableLogItem,
         isInitiateTaskResultUploadLogItem,
-        isFinalizeTaskResultUploadLogItem
+        isFinalizeTaskResultUploadLogItem,
+        isSubscribeToPubsubChannelLogItem,
+        isPublishToPubsubChannelLogItem
     ])(x)
 )

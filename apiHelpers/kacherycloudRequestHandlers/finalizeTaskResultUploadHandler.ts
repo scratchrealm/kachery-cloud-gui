@@ -9,7 +9,7 @@ import firestoreDatabase from '../common/firestoreDatabase';
 import { deleteObject, headObject } from "./s3Helpers";
 
 const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUploadRequest, verifiedClientId: NodeId): Promise<FinalizeTaskResultUploadResponse> => {
-    const { taskType, taskInputHash, size } = request.payload
+    const { taskName, taskJobId, size } = request.payload
 
     const clientId = verifiedClientId
 
@@ -41,8 +41,8 @@ const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUpload
         throw Error(`User ${userId} does not have write access on project ${projectId}`)
     }
 
-    const s = taskInputHash
-    const objectKey = `projects/${projectId}/taskResults/${taskType}/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`
+    const s = taskJobId
+    const objectKey = `projects/${projectId}/taskResults/${taskName}/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`
 
     const x = await headObject(objectKey)
     const size2 = x.ContentLength
@@ -52,15 +52,15 @@ const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUpload
     }
 
     const taskResultsCollection = db.collection('kacherycloud.taskResults')
-    const trKey = `${projectId}:${taskType}:${taskInputHash}`
+    const trKey = `${projectId}:${taskName}:${taskJobId}`
     const taskResultSnapshot = await taskResultsCollection.doc(trKey).get()
     const alreadyExisted = taskResultSnapshot.exists
     const taskResult: TaskResult = {
         clientId,
         userId,
         projectId,
-        taskType,
-        taskInputHash,
+        taskName,
+        taskJobId,
         size,
         objectKey,
         timestampCreated: Date.now()
@@ -73,8 +73,8 @@ const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUpload
         clientId,
         projectId,
         userId,
-        taskType,
-        taskInputHash,
+        taskName,
+        taskJobId,
         size,
         objectKey,
         alreadyExisted,

@@ -25,6 +25,9 @@ export type Route = {
     label: string
 } | {
     page: 'timing'
+} | {
+    page: 'testTaskBackend',
+    projectId: string
 }
 
 const useRoute = () => {
@@ -89,6 +92,15 @@ const useRoute = () => {
             page: 'timing'
         }
     }
+    else if (p.startsWith('/testTaskBackend')) {
+        const x = p.split('/')
+        if (x.length === 3) {
+            route = {
+                page: 'testTaskBackend',
+                projectId: x[2]
+            }
+        }
+    }
 
     const setRoute = useCallback((route: Route) => {
         const query2 = {...query}
@@ -112,6 +124,9 @@ const useRoute = () => {
         }
         else if (route.page === 'timing') {
             pathname2 = '/timing'
+        }
+        else if (route.page === 'testTaskBackend') {
+            pathname2 = `/testTaskBackend/${route.projectId}`
         }
         const search2 = queryString(query2)
         history.push({...location, pathname: pathname2, search: search2})

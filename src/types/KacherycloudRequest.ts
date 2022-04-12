@@ -2,6 +2,7 @@ import { isArrayOf, isBoolean, isEqualTo, isNodeId, isNumber, isOneOf, isSha1Has
 import { Client, isClient } from "./Client"
 import { isProject, Project } from "./Project"
 import { isProjectMembership, ProjectMembership } from "./ProjectMembership"
+import { isPubsubChannelName, isPubsubMessage, PubsubChannelName, PubsubMessage } from "./PubsubMessage"
 import { isUserSettings, UserSettings } from "./User"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -325,8 +326,8 @@ export type InitiateTaskResultUploadRequest = {
     payload: {
         type: 'initiateTaskResultUpload'
         timestamp: number
-        taskType: string
-        taskInputHash: Sha1Hash
+        taskName: string
+        taskJobId: Sha1Hash
         size: number
         projectId?: string
     }
@@ -339,8 +340,8 @@ export const isInitiateTaskResultUploadRequest = (x: any): x is InitiateTaskResu
         return _validateObject(y, {
             type: isEqualTo('initiateTaskResultUpload'),
             timestamp: isNumber,
-            taskType: isString,
-            taskInputHash: isSha1Hash,
+            taskName: isString,
+            taskJobId: isSha1Hash,
             size: isNumber,
             projectId: optional(isString)
         })
@@ -371,8 +372,8 @@ export type FinalizeTaskResultUploadRequest = {
     payload: {
         type: 'finalizeTaskResultUpload'
         timestamp: number
-        taskType: string
-        taskInputHash: Sha1Hash
+        taskName: string
+        taskJobId: Sha1Hash
         size: number
         projectId?: string
     }
@@ -385,8 +386,8 @@ export const isFinalizeTaskResultUploadRequest = (x: any): x is FinalizeTaskResu
         return _validateObject(y, {
             type: isEqualTo('finalizeTaskResultUpload'),
             timestamp: isNumber,
-            taskType: isString,
-            taskInputHash: isSha1Hash,
+            taskName: isString,
+            taskJobId: isSha1Hash,
             size: isNumber,
             projectId: optional(isString)
         })
@@ -409,6 +410,96 @@ export const isFinalizeTaskResultUploadResponse = (x: any): x is FinalizeTaskRes
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// subscribeToPubsubChannel
+
+export type SubscribeToPubsubChannelRequest = {
+    payload: {
+        type: 'subscribeToPubsubChannel'
+        timestamp: number
+        channelName: PubsubChannelName
+        projectId?: string
+    }
+    fromClientId?: NodeId
+    signature?: Signature
+}
+
+export const isSubscribeToPubsubChannelRequest = (x: any): x is SubscribeToPubsubChannelRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('subscribeToPubsubChannel'),
+            timestamp: isNumber,
+            channelName: isPubsubChannelName,
+            projectId: optional(isString)
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: optional(isNodeId),
+        signature: optional(isSignature)
+    })
+}
+
+export type SubscribeToPubsubChannelResponse = {
+    type: 'subscribeToPubsubChannel'
+    token: string
+    subscribeKey: string
+    uuid: string
+    pubsubChannelName: string
+}
+
+export const isSubscribeToPubsubChannelResponse = (x: any): x is SubscribeToPubsubChannelResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('subscribeToPubsubChannel'),
+        token: isString,
+        subscribeKey: isString,
+        uuid: isString,
+        pubsubChannelName: isString
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// publishToPubsubChannel
+
+export type PublishToPubsubChannelRequest = {
+    payload: {
+        type: 'publishToPubsubChannel'
+        timestamp: number
+        channelName: PubsubChannelName
+        message: PubsubMessage
+        projectId?: string
+    }
+    fromClientId?: NodeId
+    signature?: Signature
+}
+
+export const isPublishToPubsubChannelRequest = (x: any): x is PublishToPubsubChannelRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('publishToPubsubChannel'),
+            timestamp: isNumber,
+            channelName: isPubsubChannelName,
+            message: isPubsubMessage,
+            projectId: optional(isString)
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: optional(isNodeId),
+        signature: optional(isSignature)
+    })
+}
+
+export type PublishToPubsubChannelResponse = {
+    type: 'publishToPubsubChannel'
+}
+
+export const isPublishToPubsubChannelResponse = (x: any): x is PublishToPubsubChannelResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('publishToPubsubChannel')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type KacherycloudRequest =
     GetClientInfoRequest |
@@ -419,7 +510,9 @@ export type KacherycloudRequest =
     SetMutableRequest |
     GetMutableRequest |
     InitiateTaskResultUploadRequest |
-    FinalizeTaskResultUploadRequest
+    FinalizeTaskResultUploadRequest |
+    SubscribeToPubsubChannelRequest |
+    PublishToPubsubChannelRequest
 
 export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
     return isOneOf([
@@ -431,7 +524,9 @@ export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
         isSetMutableRequest,
         isGetMutableRequest,
         isInitiateTaskResultUploadRequest,
-        isFinalizeTaskResultUploadRequest
+        isFinalizeTaskResultUploadRequest,
+        isSubscribeToPubsubChannelRequest,
+        isPublishToPubsubChannelRequest
     ])(x)
 }
 
@@ -445,7 +540,9 @@ export type KacherycloudResponse =
     SetMutableResponse |
     GetMutableResponse |
     InitiateTaskResultUploadResponse |
-    FinalizeTaskResultUploadResponse
+    FinalizeTaskResultUploadResponse |
+    SubscribeToPubsubChannelResponse |
+    PublishToPubsubChannelResponse
 
 export const isKacherycloudResponse = (x: any): x is KacherycloudResponse => {
     return isOneOf([
@@ -457,6 +554,8 @@ export const isKacherycloudResponse = (x: any): x is KacherycloudResponse => {
         isSetMutableResponse,
         isGetMutableResponse,
         isInitiateTaskResultUploadResponse,
-        isFinalizeTaskResultUploadResponse
+        isFinalizeTaskResultUploadResponse,
+        isSubscribeToPubsubChannelResponse,
+        isPublishToPubsubChannelResponse
     ])(x)
 }

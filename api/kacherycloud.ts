@@ -7,10 +7,12 @@ import getMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/getMuta
 import getProjectBucketBaseUrlHandler from '../apiHelpers/kacherycloudRequestHandlers/getProjectBucketBaseUrlHandler'
 import initiateIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateIpfsUploadHandler'
 import initiateTaskResultUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateTaskResultUploadHandler'
+import publishToPubsubChannelHandler from '../apiHelpers/kacherycloudRequestHandlers/publishToPubsubChannelHandler'
 import setMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/setMutableHandler'
+import subscribeToPubsubChannelHandler from '../apiHelpers/kacherycloudRequestHandlers/subscribeToPubsubChannelHandler'
 import { hexToPublicKey, verifySignature } from '../src/commonInterface/crypto/signatures'
 import { JSONValue, NodeId, nodeIdToPublicKeyHex } from '../src/commonInterface/kacheryTypes'
-import { isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isSetMutableRequest } from '../src/types/KacherycloudRequest'
+import { isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isPublishToPubsubChannelRequest, isSetMutableRequest, isSubscribeToPubsubChannelRequest } from '../src/types/KacherycloudRequest'
 
 module.exports = (req: VercelRequest, res: VercelResponse) => {    
     const {body: request} = req
@@ -78,6 +80,12 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         else if (isFinalizeTaskResultUploadRequest(request)) {
             return await finalizeTaskResultUploadHandler(request, verifiedClientId)
+        }
+        else if (isSubscribeToPubsubChannelRequest(request)) {
+            return await subscribeToPubsubChannelHandler(request, verifiedClientId)
+        }
+        else if (isPublishToPubsubChannelRequest(request)) {
+            return await publishToPubsubChannelHandler(request, verifiedClientId)
         }
         else {
             throw Error(`Unexpected request type: ${payload.type}`)

@@ -3,7 +3,6 @@ import { Client, isClient } from "../../src/types/Client";
 import { IpfsFile, isIpfsFile } from "../../src/types/IpfsFile";
 import { FindIpfsFileRequest, FindIpfsFileResponse } from "../../src/types/KacherycloudRequest";
 import { FindIpfsFileLogItem } from "../../src/types/LogItem";
-import { isMutableRecord } from "../../src/types/MutableRecord";
 import { isProject, Project } from '../../src/types/Project';
 import firestoreDatabase from '../common/firestoreDatabase';
 

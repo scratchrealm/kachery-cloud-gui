@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import { Table, TableBody } from '@material-ui/core';
 import React, { FunctionComponent } from 'react';
 import { ProjectSettings } from 'types/Project';
 

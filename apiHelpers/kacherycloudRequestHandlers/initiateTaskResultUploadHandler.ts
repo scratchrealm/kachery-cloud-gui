@@ -1,18 +1,16 @@
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { isClient } from "../../src/types/Client";
-import { InitiateIpfsUploadRequest, InitiateIpfsUploadResponse, InitiateTaskResultUploadRequest, InitiateTaskResultUploadResponse } from "../../src/types/KacherycloudRequest";
-import { InitiateIpfsUploadLogItem, InitiateTaskResultUploadLogItem } from "../../src/types/LogItem";
+import { InitiateTaskResultUploadRequest, InitiateTaskResultUploadResponse } from "../../src/types/KacherycloudRequest";
+import { InitiateTaskResultUploadLogItem } from "../../src/types/LogItem";
 import { isProject } from "../../src/types/Project";
 import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { randomAlphaLowerString } from "../guiRequestHandlers/helpers/randomAlphaString";
-import s3 from "./s3";
 import { getSignedUploadUrl } from "./s3Helpers";
 
 export const MAX_TASK_RESULT_UPLOAD_SIZE = 50 * 1000 * 1000
 
 const initiateTaskResultUploadHandler = async (request: InitiateTaskResultUploadRequest, verifiedClientId: NodeId): Promise<InitiateTaskResultUploadResponse> => {
-    const { taskType, taskInputHash, size } = request.payload
+    const { taskName, taskJobId, size } = request.payload
 
     if (size > MAX_TASK_RESULT_UPLOAD_SIZE) {
         throw Error(`Task result file too large: ${size} > ${MAX_TASK_RESULT_UPLOAD_SIZE}`)
@@ -48,8 +46,8 @@ const initiateTaskResultUploadHandler = async (request: InitiateTaskResultUpload
         throw Error(`User ${userId} does not have write access on project ${projectId}`)
     }
 
-    const s = taskInputHash
-    const objectKey = `projects/${projectId}/taskResults/${taskType}/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`
+    const s = taskJobId
+    const objectKey = `projects/${projectId}/taskResults/${taskName}/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`
 
     const signedUploadUrl = await getSignedUploadUrl(objectKey)
 
@@ -59,8 +57,8 @@ const initiateTaskResultUploadHandler = async (request: InitiateTaskResultUpload
         clientId: client.clientId,
         projectId,
         userId,
-        taskType,
-        taskInputHash,
+        taskName,
+        taskJobId,
         size,
         objectKey,
         timestamp: Date.now()
@@ -72,7 +70,5 @@ const initiateTaskResultUploadHandler = async (request: InitiateTaskResultUpload
         signedUploadUrl
     }
 }
-
-
 
 export default initiateTaskResultUploadHandler

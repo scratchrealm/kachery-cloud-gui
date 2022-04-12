@@ -74,6 +74,10 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
         setRoute({page: 'home'})
     }, [setRoute])
 
+    const handleTestTaskBackend = useCallback(() => {
+        setRoute({page: 'testTaskBackend', projectId})
+    }, [setRoute, projectId])
+
     if (!projects) {
         return <span>Loading...</span>
     }
@@ -118,6 +122,8 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
                 addProjectMembership={addProjectMembership}
                 deleteProjectMembership={deleteProjectMembership}
             />
+            <div>&nbsp;</div>
+            <Hyperlink onClick={handleTestTaskBackend}>Test task backend</Hyperlink>
         </div>
     )
 }
