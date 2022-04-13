@@ -47,7 +47,7 @@ const publishToPubsubChannelHandler = async (request: PublishToPubsubChannelRequ
     }
 
     const pubsubChannelName = `${projectId}.${channelName}`
-    await publishMessage(pubsubChannelName, message)
+    await publishPubsubMessage(pubsubChannelName, message)
 
     const db = firestoreDatabase()
     const usageLogCollection = db.collection('kacherycloud.usageLog')
@@ -67,7 +67,7 @@ const publishToPubsubChannelHandler = async (request: PublishToPubsubChannelRequ
     }
 }
 
-const publishMessage = async (pubsubChannelName: string, message: PubsubMessage) => {
+export const publishPubsubMessage = async (pubsubChannelName: string, message: PubsubMessage) => {
     return new Promise<void>((resolve, reject) => {
         pubnub.publish(
             {

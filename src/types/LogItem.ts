@@ -239,6 +239,100 @@ export const isPublishToPubsubChannelLogItem = (x: any): x is PublishToPubsubCha
 
 ///////////////////////////////////////////////////////////////////////////
 
+export type CreateFeedLogItem = {
+    type: 'createFeed'
+    clientId: NodeId
+    projectId: string
+    userId: UserId
+    feedId: string
+    timestamp: number
+}
+
+export const isCreateFeedLogItem = (x: any): x is CreateFeedLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('createFeed'),
+        clientId: isNodeId,
+        projectId: isString,
+        userId: isUserId,
+        feedId: isString,
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
+export type AppendFeedMessagesLogItem = {
+    type: 'appendFeedMessages'
+    clientId: NodeId
+    projectId: string
+    userId: UserId
+    feedId: string
+    numMessages: number
+    size: number
+    timestamp: number
+}
+
+export const isAppendFeedMessagesLogItem = (x: any): x is AppendFeedMessagesLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('appendFeedMessages'),
+        clientId: isNodeId,
+        projectId: isString,
+        userId: isUserId,
+        feedId: isString,
+        numMessages: isNumber,
+        size: isNumber,
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
+export type GetFeedMessagesLogItem = {
+    type: 'getFeedMessages'
+    clientId?: NodeId
+    projectId: string
+    userId?: UserId
+    feedId: string
+    numMessages: number
+    timestamp: number
+}
+
+export const isGetFeedMessagesLogItem = (x: any): x is GetFeedMessagesLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('getFeedMessages'),
+        clientId: optional(isNodeId),
+        projectId: isString,
+        userId: optional(isUserId),
+        feedId: isString,
+        numMessages: isNumber,
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
+export type GetFeedInfoLogItem = {
+    type: 'getFeedInfo'
+    clientId?: NodeId
+    projectId: string
+    userId?: UserId
+    feedId: string
+    timestamp: number
+}
+
+export const isGetFeedInfoLogItem = (x: any): x is GetFeedInfoLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('getFeedInfo'),
+        clientId: optional(isNodeId),
+        projectId: isString,
+        userId: optional(isUserId),
+        feedId: isString,
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
 export type LogItem =
     InitiateIpfsUploadLogItem
     | FinalizeIpfsUploadLogItem
@@ -249,6 +343,10 @@ export type LogItem =
     | FinalizeTaskResultUploadLogItem
     | SubscribeToPubsubChannelLogItem
     | PublishToPubsubChannelLogItem
+    | CreateFeedLogItem
+    | GetFeedInfoLogItem
+    | AppendFeedMessagesLogItem
+    | GetFeedMessagesLogItem
 
 export const isLogItem = (x: any): x is LogItem => (
     isOneOf([
@@ -260,6 +358,10 @@ export const isLogItem = (x: any): x is LogItem => (
         isInitiateTaskResultUploadLogItem,
         isFinalizeTaskResultUploadLogItem,
         isSubscribeToPubsubChannelLogItem,
-        isPublishToPubsubChannelLogItem
+        isPublishToPubsubChannelLogItem,
+        isCreateFeedLogItem,
+        isGetFeedInfoLogItem,
+        isAppendFeedMessagesLogItem,
+        isGetFeedMessagesLogItem
     ])(x)
 )

@@ -78,15 +78,15 @@ class TaskJob<ReturnType> {
     }
     handlePubsubMessage(channelName: PubsubChannelName, message: PubsubMessage) {
         if (channelName === 'provideTasks') {
-            const jobId = message.taskJobId
-            if (jobId !== this.d.taskJobId) {
-                throw Error('Unexpected mismatch in job ID')
-            }
-            if (message.taskName !== this.d.taskName) {
-                throw Error('Unexpected mismatch in task name')
-            }
             if (message.type === 'setTaskStatus') {
-                this._setTaskStatus(message.status, message.errorMessage)
+                const jobId = message.taskJobId
+                if (jobId !== this.d.taskJobId) {
+                    throw Error('Unexpected mismatch in job ID')
+                }
+                if (message.taskName !== this.d.taskName) {
+                    throw Error('Unexpected mismatch in task name')
+                }
+                this._setTaskStatus(message.status, message.errorMessage) 
             }
             else {
                 throw Error('Unexpected message type in handlePubsubMessage')

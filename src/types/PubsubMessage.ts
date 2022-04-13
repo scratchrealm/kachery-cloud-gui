@@ -1,8 +1,8 @@
-import { isEqualTo, isSha1Hash, isString, optional, Sha1Hash, _validateObject } from "../commonInterface/kacheryTypes"
+import { isEqualTo, isNumber, isSha1Hash, isString, optional, Sha1Hash, _validateObject } from "../commonInterface/kacheryTypes"
 
-export type PubsubChannelName = 'requestTasks' | 'provideTasks'
+export type PubsubChannelName = 'requestTasks' | 'provideTasks' | 'feedUpdates'
 
-export const isPubsubChannelName = (x: any): x is TaskStatus => (['requestTasks', 'provideTasks'].includes(x))
+export const isPubsubChannelName = (x: any): x is PubsubChannelName => (['requestTasks', 'provideTasks', 'feedUpdates'].includes(x))
 
 export type TaskStatus = 'started' | 'error' | 'finished'
 
@@ -24,6 +24,11 @@ export type PubsubMessage = {
     taskName: string
     taskInput: any
     taskJobId: Sha1Hash
+} | {
+    type: 'feedMessagesAppended'
+    projectId: string
+    feedId: string
+    numMessagesAppended: number
 }
 
 export const isPubsubMessage = (x: any): x is PubsubMessage => (
@@ -40,5 +45,12 @@ export const isPubsubMessage = (x: any): x is PubsubMessage => (
         taskName: isString,
         taskInput: () => (true),
         taskJobId: isSha1Hash
+    }) ||
+    _validateObject(x, {
+        type: isEqualTo('feedMessagesAppended'),
+        projectId: isString,
+        feedId: isString,
+        startMessageNumber: isNumber,
+        numMessagesAppended: isNumber
     })
 )

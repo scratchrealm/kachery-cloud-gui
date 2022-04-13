@@ -1,4 +1,4 @@
-import { isArrayOf, isBoolean, isEqualTo, isNodeId, isNumber, isOneOf, isSha1Hash, isSignature, isString, NodeId, optional, Sha1Hash, Signature, _validateObject } from "../commonInterface/kacheryTypes"
+import { isArrayOf, isBoolean, isEqualTo, isJSONObject, isNodeId, isNumber, isOneOf, isSha1Hash, isSignature, isString, JSONObject, NodeId, optional, Sha1Hash, Signature, _validateObject } from "../commonInterface/kacheryTypes"
 import { Client, isClient } from "./Client"
 import { isProject, Project } from "./Project"
 import { isProjectMembership, ProjectMembership } from "./ProjectMembership"
@@ -500,6 +500,172 @@ export const isPublishToPubsubChannelResponse = (x: any): x is PublishToPubsubCh
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// createFeed
+
+export type CreateFeedRequest = {
+    payload: {
+        type: 'createFeed'
+        timestamp: number
+        projectId?: string
+    }
+    fromClientId: NodeId
+    signature: Signature
+}
+
+export const isCreateFeedRequest = (x: any): x is CreateFeedRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('createFeed'),
+            timestamp: isNumber,
+            projectId: optional(isString)
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: isNodeId,
+        signature: isSignature
+    })
+}
+
+export type CreateFeedResponse = {
+    type: 'createFeed'
+    feedId: string
+    projectId: string
+}
+
+export const isCreateFeedResponse = (x: any): x is CreateFeedResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('createFeed'),
+        feedId: isString,
+        projectId: isString
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// getFeedInfo
+
+export type GetFeedInfoRequest = {
+    payload: {
+        type: 'getFeedInfo'
+        timestamp: number
+        feedId: string
+    }
+    fromClientId?: NodeId
+    signature?: Signature
+}
+
+export const isGetFeedInfoRequest = (x: any): x is GetFeedInfoRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('getFeedInfo'),
+            timestamp: isNumber,
+            feedId: isString
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: optional(isNodeId),
+        signature: optional(isSignature)
+    })
+}
+
+export type GetFeedInfoResponse = {
+    type: 'getFeedInfo'
+    projectId: string
+}
+
+export const isGetFeedInfoResponse = (x: any): x is GetFeedInfoResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('getFeedInfo'),
+        projectId: isString
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// appendFeedMessages
+
+export type AppendFeedMessagesRequest = {
+    payload: {
+        type: 'appendFeedMessages'
+        timestamp: number
+        feedId: string
+        messages: JSONObject[]
+    }
+    fromClientId: NodeId
+    signature: Signature
+}
+
+export const isAppendFeedMessagesRequest = (x: any): x is AppendFeedMessagesRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('appendFeedMessages'),
+            timestamp: isNumber,
+            feedId: isString,
+            messages: isArrayOf(isJSONObject)
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: isNodeId,
+        signature: isSignature
+    })
+}
+
+export type AppendFeedMessagesResponse = {
+    type: 'appendFeedMessages'
+}
+
+export const isAppendFeedMessagesResponse = (x: any): x is AppendFeedMessagesResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('appendFeedMessages')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// getFeedMessages
+
+export type GetFeedMessagesRequest = {
+    payload: {
+        type: 'getFeedMessages'
+        timestamp: number
+        feedId: string
+        startMessageNumber: number
+    }
+    fromClientId?: NodeId
+    signature?: Signature
+}
+
+export const isGetFeedMessagesRequest = (x: any): x is GetFeedMessagesRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('getFeedMessages'),
+            timestamp: isNumber,
+            feedId: isString,
+            startMessageNumber: isNumber
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: optional(isNodeId),
+        signature: optional(isSignature)
+    })
+}
+
+export type GetFeedMessagesResponse = {
+    type: 'getFeedMessages'
+    messages: JSONObject[]
+    startMessageNumber: number
+}
+
+export const isGetFeedMessagesResponse = (x: any): x is GetFeedMessagesResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('getFeedMessages'),
+        messages: isArrayOf(isJSONObject),
+        startMessageNumber: isNumber
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type KacherycloudRequest =
     GetClientInfoRequest |
@@ -512,7 +678,11 @@ export type KacherycloudRequest =
     InitiateTaskResultUploadRequest |
     FinalizeTaskResultUploadRequest |
     SubscribeToPubsubChannelRequest |
-    PublishToPubsubChannelRequest
+    PublishToPubsubChannelRequest |
+    CreateFeedRequest |
+    GetFeedInfoRequest |
+    AppendFeedMessagesRequest |
+    GetFeedMessagesRequest
 
 export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
     return isOneOf([
@@ -526,7 +696,11 @@ export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
         isInitiateTaskResultUploadRequest,
         isFinalizeTaskResultUploadRequest,
         isSubscribeToPubsubChannelRequest,
-        isPublishToPubsubChannelRequest
+        isPublishToPubsubChannelRequest,
+        isCreateFeedRequest,
+        isGetFeedInfoRequest,
+        isAppendFeedMessagesRequest,
+        isGetFeedMessagesRequest
     ])(x)
 }
 
@@ -542,7 +716,11 @@ export type KacherycloudResponse =
     InitiateTaskResultUploadResponse |
     FinalizeTaskResultUploadResponse |
     SubscribeToPubsubChannelResponse |
-    PublishToPubsubChannelResponse
+    PublishToPubsubChannelResponse |
+    CreateFeedResponse |
+    GetFeedInfoResponse |
+    AppendFeedMessagesResponse |
+    GetFeedMessagesResponse
 
 export const isKacherycloudResponse = (x: any): x is KacherycloudResponse => {
     return isOneOf([
@@ -556,6 +734,10 @@ export const isKacherycloudResponse = (x: any): x is KacherycloudResponse => {
         isInitiateTaskResultUploadResponse,
         isFinalizeTaskResultUploadResponse,
         isSubscribeToPubsubChannelResponse,
-        isPublishToPubsubChannelResponse
+        isPublishToPubsubChannelResponse,
+        isCreateFeedResponse,
+        isGetFeedInfoResponse,
+        isAppendFeedMessagesResponse,
+        isGetFeedMessagesResponse
     ])(x)
 }

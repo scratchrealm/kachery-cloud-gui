@@ -1,8 +1,12 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
+import appendFeedMessagesHandler from '../apiHelpers/kacherycloudRequestHandlers/appendFeedMessagesHandler'
+import createFeedHandler from '../apiHelpers/kacherycloudRequestHandlers/createFeedHandler'
 import finalizeIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/finalizeIpfsUploadHandler'
 import finalizeTaskResultUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/finalizeTaskResultUploadHandler'
 import findIpfsFileHandler from '../apiHelpers/kacherycloudRequestHandlers/findIpfsFileHandler'
 import getClientInfoHandler from '../apiHelpers/kacherycloudRequestHandlers/getClientInfoHandler'
+import getFeedInfoHandler from '../apiHelpers/kacherycloudRequestHandlers/getFeedInfoHandler'
+import getFeedMessagesHandler from '../apiHelpers/kacherycloudRequestHandlers/getFeedMessagesHandler'
 import getMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/getMutableHandler'
 import getProjectBucketBaseUrlHandler from '../apiHelpers/kacherycloudRequestHandlers/getProjectBucketBaseUrlHandler'
 import initiateIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateIpfsUploadHandler'
@@ -12,7 +16,7 @@ import setMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/setMuta
 import subscribeToPubsubChannelHandler from '../apiHelpers/kacherycloudRequestHandlers/subscribeToPubsubChannelHandler'
 import { hexToPublicKey, verifySignature } from '../src/commonInterface/crypto/signatures'
 import { JSONValue, NodeId, nodeIdToPublicKeyHex } from '../src/commonInterface/kacheryTypes'
-import { isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isPublishToPubsubChannelRequest, isSetMutableRequest, isSubscribeToPubsubChannelRequest } from '../src/types/KacherycloudRequest'
+import { isAppendFeedMessagesRequest, isCreateFeedRequest, isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetFeedInfoRequest, isGetFeedMessagesRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isPublishToPubsubChannelRequest, isSetMutableRequest, isSubscribeToPubsubChannelRequest } from '../src/types/KacherycloudRequest'
 
 module.exports = (req: VercelRequest, res: VercelResponse) => {    
     const {body: request} = req
@@ -86,6 +90,18 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         else if (isPublishToPubsubChannelRequest(request)) {
             return await publishToPubsubChannelHandler(request, verifiedClientId)
+        }
+        else if (isCreateFeedRequest(request)) {
+            return await createFeedHandler(request, verifiedClientId)
+        }
+        else if (isGetFeedInfoRequest(request)) {
+            return await getFeedInfoHandler(request, verifiedClientId)
+        }
+        else if (isAppendFeedMessagesRequest(request)) {
+            return await appendFeedMessagesHandler(request, verifiedClientId)
+        }
+        else if (isGetFeedMessagesRequest(request)) {
+            return await getFeedMessagesHandler(request, verifiedClientId)
         }
         else {
             throw Error(`Unexpected request type: ${payload.type}`)

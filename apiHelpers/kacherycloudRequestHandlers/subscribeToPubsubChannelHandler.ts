@@ -29,6 +29,9 @@ const subscribeToPubsubChannelHandler = async (request: SubscribeToPubsubChannel
             throw Error('Not authorized to subscribe to the requestTasks pubsub channel for this project')
         }
     }
+    else if (channelName === 'feedUpdates') {
+        // okay - anyone can subscribe to this
+    }
     else {
         throw Error(`Unexpected channel ${channelName}`)
     }
