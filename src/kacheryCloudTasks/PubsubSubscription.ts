@@ -1,7 +1,7 @@
-import kacherycloudApiRequest from "common/kacherycloudApiRequest copy";
 import PubNub from 'pubnub';
 import { SubscribeToPubsubChannelRequest } from "types/KacherycloudRequest";
 import { PubsubChannelName, PubsubMessage } from "types/PubsubMessage";
+import kacherycloudApiRequest from "./kacherycloudApiRequest";
 
 type MessageCallback = (channelName: PubsubChannelName, message: PubsubMessage) => void
 

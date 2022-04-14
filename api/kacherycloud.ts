@@ -27,6 +27,7 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         'http://localhost:3000',
         'http://localhost:3001',
         'https://figurl.org',
+        'https://v2.figurl.org',
         'https://www.figurl.org'
     ].includes(req.headers.origin)) {
         res.setHeader('Access-Control-Allow-Origin', req.headers.origin)

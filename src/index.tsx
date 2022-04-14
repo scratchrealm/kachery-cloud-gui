@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+(window as any).isKacheryCloudGui = true
+
 ReactDOM.render(
   <React.StrictMode>
     <App />

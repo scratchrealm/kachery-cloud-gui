@@ -28,6 +28,8 @@ export type Route = {
 } | {
     page: 'testTaskBackend',
     projectId: string
+} | {
+    page: 'testFeeds'
 }
 
 const useRoute = () => {
@@ -101,6 +103,11 @@ const useRoute = () => {
             }
         }
     }
+    else if (p === '/testFeeds') {
+        route = {
+            page: 'testFeeds'
+        }
+    }
 
     const setRoute = useCallback((route: Route) => {
         const query2 = {...query}
@@ -127,6 +134,9 @@ const useRoute = () => {
         }
         else if (route.page === 'testTaskBackend') {
             pathname2 = `/testTaskBackend/${route.projectId}`
+        }
+        else if (route.page === 'testFeeds') {
+            pathname2 = `/testFeeds`
         }
         const search2 = queryString(query2)
         history.push({...location, pathname: pathname2, search: search2})

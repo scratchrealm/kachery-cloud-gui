@@ -1,8 +1,8 @@
-import kacherycloudApiRequest from "common/kacherycloudApiRequest copy";
 import { GetProjectBucketBaseUrlRequest, PublishToPubsubChannelRequest } from "types/KacherycloudRequest";
 import { PubsubChannelName, PubsubMessage, TaskType } from "types/PubsubMessage";
 import { sha1OfObject, sha1OfString } from "../commonInterface/kacheryTypes";
 import { randomAlphaString } from "../components/misc/randomAlphaString";
+import kacherycloudApiRequest from "./kacherycloudApiRequest";
 import PubsubSubscription from "./PubsubSubscription";
 import TaskJob from "./TaskJob";
 

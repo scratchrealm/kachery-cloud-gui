@@ -9,6 +9,7 @@ import kacheryLogoFull from './kacheryLogoFull.png';
 import ProjectMembershipPage from './ProjectMembershipPage';
 import ProjectPage from './ProjectPage';
 import RegisterClientPage from './RegisterClientPage';
+import TestFeedsPage from './TestFeedsPage';
 import TestTaskBackendPage from './TestTaskBackendPage';
 import TimingPage from './TimingPage';
 
@@ -73,6 +74,8 @@ const MainWindow: FunctionComponent<Props> = () => {
                             <TestTaskBackendPage
                                 projectId={route.projectId}
                             />
+                        ) : route.page === 'testFeeds' ? (
+                            <TestFeedsPage />
                         ) : <span />
                     ) : (
                         <HomePage />

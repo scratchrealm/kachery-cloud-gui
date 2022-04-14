@@ -1,4 +1,4 @@
-import KacheryCloudTaskManager from 'kacheryCloudTasks/KacheryCloudTaskManager';
+import KacheryCloudTaskManager from '../KacheryCloudTaskManager';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import KacheryCloudTaskManagerContext from './KacheryCloudTaskManagerContext';
 

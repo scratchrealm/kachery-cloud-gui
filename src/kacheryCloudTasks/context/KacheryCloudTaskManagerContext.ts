@@ -1,4 +1,4 @@
-import KacheryCloudTaskManager from 'kacheryCloudTasks/KacheryCloudTaskManager'
+import KacheryCloudTaskManager from '../KacheryCloudTaskManager'
 import React, { useContext } from 'react'
 
 const KacheryCloudTaskManagerContext = React.createContext<KacheryCloudTaskManager | undefined>(undefined)
