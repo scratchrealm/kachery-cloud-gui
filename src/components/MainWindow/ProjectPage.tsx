@@ -119,7 +119,7 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
             />
             <ProjectMembershipsTable
                 projectId={project.projectId}
-                projectMemberships={projectMemberships}
+                projectMemberships={projectMembershipsForProject}
                 addProjectMembership={addProjectMembership}
                 deleteProjectMembership={deleteProjectMembership}
             />

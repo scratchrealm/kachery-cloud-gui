@@ -1,5 +1,9 @@
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import guiApiRequest from 'common/guiApiRequest';
+import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
+import useErrorMessage from 'errorMessageContext/useErrorMessage';
 import React, { FunctionComponent, useMemo, useState } from 'react';
+import { GetProjectUsageRequest, isGetProjectUsageResponse } from 'types/GuiRequest';
 import { ProjectUsage } from 'types/ProjectUsage';
 
 type Props = {
@@ -8,8 +12,17 @@ type Props = {
 
 const useProjectUsage = (projectId: string) => {
     const [usage, setUsage] = useState<ProjectUsage | undefined>(undefined)
+    const {setErrorMessage} = useErrorMessage()
+    const {userId, googleIdToken} = useSignedIn()
     ;(async () => {
-        
+        const req: GetProjectUsageRequest = {
+            type: 'getProjectUsage',
+            projectId,
+            auth: {userId, googleIdToken}
+        }
+        const resp = await guiApiRequest(req, {reCaptcha: false, setErrorMessage})
+        if (!isGetProjectUsageResponse(resp)) throw Error('Unexpected response')
+        setUsage(resp.projectUsage)
     })()
     return usage
 }

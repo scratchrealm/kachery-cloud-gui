@@ -11,3 +11,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.NiceTable2 .MuiTableCell-root {
+  padding: 1px
+}

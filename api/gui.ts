@@ -18,6 +18,7 @@ import getUserSettingsHandler from '../apiHelpers/guiRequestHandlers/getUserSett
 import setUserSettingsHandler from '../apiHelpers/guiRequestHandlers/setUserSettingsHandler'
 import setClientInfoHandler from '../apiHelpers/guiRequestHandlers/setClientInfoHandler'
 import setProjectInfoHandler from '../apiHelpers/guiRequestHandlers/setProjectInfoHandler'
+import getProjectUsageHandler from '../apiHelpers/guiRequestHandlers/getProjectUsageHandler'
 
 const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY
 
@@ -141,6 +142,9 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
                 throw Error('ReCaptcha required')
             }
             return await setProjectInfoHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'getProjectUsage') {
+            return await getProjectUsageHandler(request, verifiedUserId)
         }
         else {
             throw Error(`Unexpected request type: ${request.type}`)
