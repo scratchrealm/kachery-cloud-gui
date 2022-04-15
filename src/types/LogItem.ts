@@ -89,7 +89,7 @@ export type SetMutableLogItem = {
     projectId: string
     userId: UserId
     mutableKey: string
-    cid: string
+    value: string
     alreadyExisted: boolean
     timestamp: number
 }
@@ -101,7 +101,7 @@ export const isSetMutableLogItem = (x: any): x is SetMutableLogItem => (
         projectId: isString,
         userId: isUserId,
         mutableKey: isString,
-        cid: isString,
+        value: isString,
         alreadyExisted: isBoolean,
         timestamp: isNumber
     })
@@ -116,7 +116,7 @@ export type GetMutableLogItem = {
     projectId: string
     userId?: UserId
     mutableKey: string
-    cid?: string
+    value?: string
     timestamp: number
 }
 
@@ -128,7 +128,7 @@ export const isGetMutableLogItem = (x: any): x is GetMutableLogItem => (
         projectId: isString,
         userId: optional(isUserId),
         mutableKey: isString,
-        cid: optional(isString),
+        value: optional(isString),
         timestamp: isNumber
     })
 )
@@ -195,9 +195,9 @@ export const isFinalizeTaskResultUploadLogItem = (x: any): x is FinalizeTaskResu
 
 export type SubscribeToPubsubChannelLogItem = {
     type: 'subscribeToPubsubChannel'
-    clientId: NodeId
+    clientId?: NodeId
     projectId: string
-    userId: UserId
+    userId?: UserId
     channelName: PubsubChannelName
     timestamp: number
 }
@@ -205,9 +205,9 @@ export type SubscribeToPubsubChannelLogItem = {
 export const isSubscribeToPubsubChannelLogItem = (x: any): x is SubscribeToPubsubChannelLogItem => (
     _validateObject(x, {
         type: isEqualTo('subscribeToPubsubChannel'),
-        clientId: isNodeId,
+        clientId: optional(isNodeId),
         projectId: isString,
-        userId: isUserId,
+        userId: optional(isUserId),
         channelName: isPubsubChannelName,
         timestamp: isNumber
     })
@@ -217,9 +217,9 @@ export const isSubscribeToPubsubChannelLogItem = (x: any): x is SubscribeToPubsu
 
 export type PublishToPubsubChannelLogItem = {
     type: 'publishToPubsubChannel'
-    clientId: NodeId
+    clientId?: NodeId
     projectId: string
-    userId: UserId
+    userId?: UserId
     channelName: PubsubChannelName
     messageType: string
     timestamp: number
@@ -228,9 +228,9 @@ export type PublishToPubsubChannelLogItem = {
 export const isPublishToPubsubChannelLogItem = (x: any): x is PublishToPubsubChannelLogItem => (
     _validateObject(x, {
         type: isEqualTo('publishToPubsubChannel'),
-        clientId: isNodeId,
+        clientId: optional(isNodeId),
         projectId: isString,
-        userId: isUserId,
+        userId: optional(isUserId),
         channelName: isPubsubChannelName,
         messageType: isString,
         timestamp: isNumber

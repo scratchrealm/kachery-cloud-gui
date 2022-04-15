@@ -9,7 +9,7 @@
     "kachery-cloud-maintenance": "dist/cli.js"
   },
   "scripts": {
-    "start": "tsc && node dist/cli.js",
+    "start": "tsc && node dist/maintenanceService/src/cli.js",
     "dev": "ts-node ./src/cli.ts",
     "build": "tsc"
   },

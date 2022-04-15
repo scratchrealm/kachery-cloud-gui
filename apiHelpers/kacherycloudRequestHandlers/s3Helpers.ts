@@ -90,7 +90,7 @@ export const getSignedUploadUrl = async (key: string): Promise<string> => {
         s3.getSignedUrl('putObject', {
             Bucket: 'kachery-cloud',
             Key: key,
-            Expires: 60 * 1 // seconds
+            Expires: 60 * 30 // seconds
         }, (err, url) => {
             if (err) {
                 reject(new Error(`Error gettings signed url: ${err.message}`))

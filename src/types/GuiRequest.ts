@@ -3,6 +3,7 @@ import { Auth, isAuth } from "./Auth"
 import { Client, isClient } from "./Client"
 import { isProject, isProjectSettings, Project, ProjectSettings } from "./Project"
 import { isProjectMembership, isProjectMembershipPermissions, ProjectMembership, ProjectMembershipPermissions } from "./ProjectMembership"
+import { isProjectUsage, ProjectUsage } from "./ProjectUsage"
 import { isUserSettings, UserSettings } from "./User"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -458,6 +459,35 @@ export const isSetProjectInfoResponse = (x: any): x is SetProjectInfoResponse =>
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// getProjectUsage
+
+export type GetProjectUsageRequest = {
+    type: 'getProjectUsage'
+    projectId: string
+    auth: Auth
+}
+
+export const isGetProjectUsageRequest = (x: any): x is GetProjectUsageRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('getProjectUsage'),
+        projectId: isString,
+        auth: isAuth
+    })
+}
+
+export type GetProjectUsageResponse = {
+    type: 'getProjectUsage'
+    projectUsage: ProjectUsage
+}
+
+export const isGetProjectUsageResponse = (x: any): x is GetProjectUsageResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('getProjectUsage'),
+        projectUsage: isProjectUsage
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type GuiRequest =
     GetProjectsRequest |
@@ -474,7 +504,8 @@ export type GuiRequest =
     GetUserSettingsRequest |
     SetUserSettingsRequest |
     SetClientInfoRequest |
-    SetProjectInfoRequest
+    SetProjectInfoRequest |
+    GetProjectUsageRequest
 
 export const isGuiRequest = (x: any): x is GuiRequest => {
     return isOneOf([
@@ -492,7 +523,8 @@ export const isGuiRequest = (x: any): x is GuiRequest => {
         isGetUserSettingsRequest,
         isSetUserSettingsRequest,
         isSetClientInfoRequest,
-        isSetProjectInfoRequest
+        isSetProjectInfoRequest,
+        isGetProjectUsageRequest
     ])(x)
 }
 
@@ -511,7 +543,8 @@ export type GuiResponse =
     GetUserSettingsResponse |
     SetUserSettingsResponse |
     SetClientInfoResponse |
-    SetProjectInfoResponse
+    SetProjectInfoResponse |
+    GetProjectUsageResponse
 
 export const isGuiResponse = (x: any): x is GuiResponse => {
     return isOneOf([
@@ -529,6 +562,7 @@ export const isGuiResponse = (x: any): x is GuiResponse => {
         isGetUserSettingsResponse,
         isSetUserSettingsResponse,
         isSetClientInfoResponse,
-        isSetProjectInfoResponse
+        isSetProjectInfoResponse,
+        isGetProjectUsageResponse
     ])(x)
 }

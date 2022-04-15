@@ -9,6 +9,7 @@ import { SetProjectInfoRequest } from 'types/GuiRequest';
 import EditableTextField from './EditableTextField';
 import ProjectMembershipsTable from './ProjectMembershipsTable';
 import ProjectSettingsView from './ProjectSettingsView';
+import ProjectUsageView from './ProjectUsageView';
 import useProjectMemberships from './useProjectMemberships';
 import useProjects from './useProjects';
 
@@ -121,6 +122,9 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
                 projectMemberships={projectMemberships}
                 addProjectMembership={addProjectMembership}
                 deleteProjectMembership={deleteProjectMembership}
+            />
+            <ProjectUsageView
+                projectId={project.projectId}
             />
             <div>&nbsp;</div>
             <Hyperlink onClick={handleTestTaskBackend}>Test task backend</Hyperlink>

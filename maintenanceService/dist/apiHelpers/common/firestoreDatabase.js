@@ -20,6 +20,7 @@ const firestoreDatabase = () => {
                 private_key: googleCredentials.private_key
             }
         });
+        db.settings({ ignoreUndefinedProperties: true });
     }
     return db;
 };

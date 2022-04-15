@@ -5,24 +5,14 @@ import { isProject, Project } from "../../src/types/Project";
 import { isProjectMembership, ProjectMembership } from "../../src/types/ProjectMembership";
 import { isUserSettings } from "../../src/types/User";
 import firestoreDatabase from '../common/firestoreDatabase';
+import { getClient } from "../common/getDatabaseItems";
 import hideSecretsInProject from "../guiRequestHandlers/helpers/hideSecretsInProject";
 
 const getClientInfoHandler = async (request: GetClientInfoRequest, verifiedClientId: NodeId): Promise<GetClientInfoResponse> => {
     const { clientId } = request.payload
 
     const db = firestoreDatabase()
-    const clientsCollection = db.collection('kacherycloud.clients')
-    const clientSnapshot = await clientsCollection.doc(clientId.toString()).get()
-    if (!clientSnapshot.exists) {
-        return {
-            type: 'getClientInfo',
-            found: false
-        }
-    }
-    const client = clientSnapshot.data()
-    if (!isClient(client)) {
-        throw Error('Unexpected: invalid client in database')
-    }
+    const client = await getClient(clientId)
 
     const projectMembershipsCollection = db.collection('kacherycloud.projectMemberships')
     const projectMembershipsResults = await projectMembershipsCollection.where('memberId', '==', client.ownerId).get()

@@ -9,7 +9,7 @@ import { randomAlphaLowerString } from "../guiRequestHandlers/helpers/randomAlph
 import s3 from "./s3";
 import { getSignedUploadUrl } from "./s3Helpers";
 
-export const MAX_UPLOAD_SIZE = 50 * 1000 * 1000
+export const MAX_UPLOAD_SIZE = 5 * 1000 * 1000 * 1000
 
 const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, verifiedClientId: NodeId): Promise<InitiateIpfsUploadResponse> => {
     const { size } = request.payload
