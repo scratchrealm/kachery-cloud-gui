@@ -1,5 +1,5 @@
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
-import { isClient } from "../../src/types/Client";
+import { Client, isClient } from "../../src/types/Client";
 import { GetClientInfoRequest, GetClientInfoResponse } from "../../src/types/KacherycloudRequest";
 import { isProject, Project } from "../../src/types/Project";
 import { isProjectMembership, ProjectMembership } from "../../src/types/ProjectMembership";
@@ -12,7 +12,16 @@ const getClientInfoHandler = async (request: GetClientInfoRequest, verifiedClien
     const { clientId } = request.payload
 
     const db = firestoreDatabase()
-    const client = await getClient(clientId)
+    let client: Client
+    try {
+        client = await getClient(clientId)
+    }
+    catch {
+        return {
+            type: 'getClientInfo',
+            found: false
+        }
+    }
 
     const projectMembershipsCollection = db.collection('kacherycloud.projectMemberships')
     const projectMembershipsResults = await projectMembershipsCollection.where('memberId', '==', client.ownerId).get()
