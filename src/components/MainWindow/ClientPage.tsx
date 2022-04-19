@@ -9,7 +9,7 @@ import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { SetClientInfoRequest } from 'types/GuiRequest';
 import SelectProjectControl from './SelectProjectControl';
 import useClients from './useClients';
-import useProjects from './useProjects';
+import useProjectsForUser from './useProjectsForUser';
 
 type Props = {
     clientId: NodeId
@@ -17,7 +17,7 @@ type Props = {
 
 const ClientPage: FunctionComponent<Props> = ({clientId}) => {
     const { clients, refreshClients } = useClients()
-    const { projects } = useProjects()
+    const { projects } = useProjectsForUser()
     const { setRoute } = useRoute()
 
     const client = useMemo(() => (

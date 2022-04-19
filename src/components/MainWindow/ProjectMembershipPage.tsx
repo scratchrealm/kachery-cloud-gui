@@ -5,7 +5,7 @@ import useRoute from 'components/useRoute';
 import React, { FunctionComponent, useMemo } from 'react';
 import { ProjectMembership } from 'types/ProjectMembership';
 import ProjectMembershipPermissionsView from './ProjectMembershipPermissionsView';
-import useProjectMemberships from './useProjectMemberships';
+import useProject from './useProject';
 
 type Props = {
     projectId: string
@@ -13,12 +13,12 @@ type Props = {
 }
 
 const ProjectMembershipPage: FunctionComponent<Props> = ({projectId, memberId}) => {
-    const { projectMemberships } = useProjectMemberships()
+    const { projectMemberships } = useProject(projectId)
     const { setRoute } = useRoute()
 
     const projectMembership: ProjectMembership | undefined = useMemo(() => (
-        projectMemberships ? projectMemberships.filter(n => (n.projectId === projectId) && (n.memberId === memberId))[0] : undefined
-    ), [projectMemberships, projectId, memberId])
+        projectMemberships ? projectMemberships.filter(n => (n.memberId === memberId))[0] : undefined
+    ), [projectMemberships, memberId])
 
     const tableData = useMemo(() => {
         if (!projectMembership) return undefined

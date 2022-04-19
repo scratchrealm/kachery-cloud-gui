@@ -30,6 +30,8 @@ export type Route = {
     projectId: string
 } | {
     page: 'testFeeds'
+} | {
+    page: 'admin'
 }
 
 const useRoute = () => {
@@ -108,6 +110,11 @@ const useRoute = () => {
             page: 'testFeeds'
         }
     }
+    else if (p === '/admin') {
+        route = {
+            page: 'admin'
+        }
+    }
 
     const setRoute = useCallback((route: Route) => {
         const query2 = {...query}
@@ -137,6 +144,9 @@ const useRoute = () => {
         }
         else if (route.page === 'testFeeds') {
             pathname2 = `/testFeeds`
+        }
+        else if (route.page === 'admin') {
+            pathname2 = `/admin`
         }
         const search2 = queryString(query2)
         history.push({...location, pathname: pathname2, search: search2})

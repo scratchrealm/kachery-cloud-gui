@@ -7,31 +7,64 @@ import { isProjectUsage, ProjectUsage } from "./ProjectUsage"
 import { isUserSettings, UserSettings } from "./User"
 
 //////////////////////////////////////////////////////////////////////////////////
-// getProjects
+// getProjectsForUser
 
-export type GetProjectsRequest = {
-    type: 'getProjects'
+export type GetProjectsForUserRequest = {
+    type: 'getProjectsForUser'
     userId?: UserId
     auth: Auth
 }
 
-export const isGetProjectsRequest = (x: any): x is GetProjectsRequest => {
+export const isGetProjectsForUserRequest = (x: any): x is GetProjectsForUserRequest => {
     return _validateObject(x, {
-        type: isEqualTo('getProjects'),
+        type: isEqualTo('getProjectsForUser'),
         userId: optional(isUserId),
         auth: isAuth
     })
 }
 
-export type GetProjectsResponse = {
-    type: 'getProjects'
+export type GetProjectsForUserResponse = {
+    type: 'getProjectsForUser'
     projects: Project[]
 }
 
-export const isGetProjectsResponse = (x: any): x is GetProjectsResponse => {
+export const isGetProjectsForUserResponse = (x: any): x is GetProjectsForUserResponse => {
     return _validateObject(x, {
-        type: isEqualTo('getProjects'),
+        type: isEqualTo('getProjectsForUser'),
         projects: isArrayOf(isProject)
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// getProject
+
+export type GetProjectRequest = {
+    type: 'getProject'
+    projectId: string
+    auth: Auth
+}
+
+export const isGetProjectRequest = (x: any): x is GetProjectRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('getProject'),
+        projectId: isString,
+        auth: isAuth
+    })
+}
+
+export type GetProjectResponse = {
+    type: 'getProject'
+    project: Project
+    projectUsage: ProjectUsage
+    projectMemberships: ProjectMembership[]
+}
+
+export const isGetProjectResponse = (x: any): x is GetProjectResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('getProject'),
+        project: isProject,
+        projectUsage: isProjectUsage,
+        projectMemberships: isArrayOf(isProjectMembership)
     })
 }
 
@@ -179,30 +212,30 @@ export const isGetUserSettingsResponse = (x: any): x is GetUserSettingsResponse 
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-// getProjectMemberships
+// getProjectMembershipsForUser
 
-export type GetProjectMembershipsRequest = {
-    type: 'getProjectMemberships'
+export type GetProjectMembershipsForUserRequest = {
+    type: 'getProjectMembershipsForUser'
     userId?: UserId
     auth: Auth
 }
 
-export const isGetProjectMembershipsRequest = (x: any): x is GetProjectMembershipsRequest => {
+export const isGetProjectMembershipsForUserRequest = (x: any): x is GetProjectMembershipsForUserRequest => {
     return _validateObject(x, {
-        type: isEqualTo('getProjectMemberships'),
+        type: isEqualTo('getProjectMembershipsForUser'),
         userId: optional(isUserId),
         auth: isAuth
     })
 }
 
-export type GetProjectMembershipsResponse = {
-    type: 'getProjectMemberships'
+export type GetProjectMembershipsForUserResponse = {
+    type: 'getProjectMembershipsForUser'
     projectMemberships: ProjectMembership[]
 }
 
-export const isGetProjectMembershipsResponse = (x: any): x is GetProjectMembershipsResponse => {
+export const isGetProjectMembershipsForUserResponse = (x: any): x is GetProjectMembershipsForUserResponse => {
     return _validateObject(x, {
-        type: isEqualTo('getProjectMemberships'),
+        type: isEqualTo('getProjectMembershipsForUser'),
         projectMemberships: isArrayOf(isProjectMembership)
     })
 }
@@ -488,13 +521,41 @@ export const isGetProjectUsageResponse = (x: any): x is GetProjectUsageResponse 
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// adminGetProjects
+
+export type AdminGetProjectsRequest = {
+    type: 'adminGetProjects'
+    auth: Auth
+}
+
+export const isAdminGetProjectsRequest = (x: any): x is AdminGetProjectsRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('adminGetProjects'),
+        auth: isAuth
+    })
+}
+
+export type AdminGetProjectsResponse = {
+    type: 'adminGetProjects'
+    projects: Project[]
+}
+
+export const isAdminGetProjectsResponse = (x: any): x is AdminGetProjectsResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('adminGetProjects'),
+        projects: isArrayOf(isProject)
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type GuiRequest =
-    GetProjectsRequest |
+    GetProjectsForUserRequest |
+    GetProjectRequest |
     AddProjectRequest |
     DeleteProjectRequest |
     SetProjectSettingsRequest |
-    GetProjectMembershipsRequest |
+    GetProjectMembershipsForUserRequest |
     AddProjectMembershipRequest |
     DeleteProjectMembershipRequest |
     SetProjectMembershipPermissionsRequest |
@@ -505,15 +566,17 @@ export type GuiRequest =
     SetUserSettingsRequest |
     SetClientInfoRequest |
     SetProjectInfoRequest |
-    GetProjectUsageRequest
+    GetProjectUsageRequest |
+    AdminGetProjectsRequest
 
 export const isGuiRequest = (x: any): x is GuiRequest => {
     return isOneOf([
-        isGetProjectsRequest,
+        isGetProjectsForUserRequest,
+        isGetProjectRequest,
         isAddProjectRequest,
         isDeleteProjectRequest,
         isSetProjectSettingsRequest,
-        isGetProjectMembershipsRequest,
+        isGetProjectMembershipsForUserRequest,
         isAddProjectMembershipRequest,
         isDeleteProjectMembershipRequest,
         isSetProjectMembershipPermissionsRequest,
@@ -524,16 +587,18 @@ export const isGuiRequest = (x: any): x is GuiRequest => {
         isSetUserSettingsRequest,
         isSetClientInfoRequest,
         isSetProjectInfoRequest,
-        isGetProjectUsageRequest
+        isGetProjectUsageRequest,
+        isAdminGetProjectsRequest
     ])(x)
 }
 
 export type GuiResponse =
-    GetProjectsResponse |
+    GetProjectsForUserResponse |
+    GetProjectResponse |
     AddProjectResponse |
     DeleteProjectResponse |
     SetProjectSettingsResponse |
-    GetProjectMembershipsResponse |
+    GetProjectMembershipsForUserResponse |
     AddProjectMembershipResponse |
     DeleteProjectMembershipResponse |
     SetProjectMembershipPermissionsResponse |
@@ -544,15 +609,17 @@ export type GuiResponse =
     SetUserSettingsResponse |
     SetClientInfoResponse |
     SetProjectInfoResponse |
-    GetProjectUsageResponse
+    GetProjectUsageResponse |
+    AdminGetProjectsResponse
 
 export const isGuiResponse = (x: any): x is GuiResponse => {
     return isOneOf([
-        isGetProjectsResponse,
+        isGetProjectsForUserResponse,
+        isGetProjectResponse,
         isAddProjectResponse,
         isDeleteProjectResponse,
         isSetProjectSettingsResponse,
-        isGetProjectMembershipsResponse,
+        isGetProjectMembershipsForUserResponse,
         isAddProjectMembershipResponse,
         isDeleteProjectMembershipResponse,
         isSetProjectMembershipPermissionsResponse,
@@ -563,6 +630,7 @@ export const isGuiResponse = (x: any): x is GuiResponse => {
         isSetUserSettingsResponse,
         isSetClientInfoResponse,
         isSetProjectInfoResponse,
-        isGetProjectUsageResponse
+        isGetProjectUsageResponse,
+        isAdminGetProjectsResponse
     ])(x)
 }

@@ -6,8 +6,8 @@ import useVisible from 'commonComponents/useVisible';
 import useRoute from 'components/useRoute';
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import AddProjectControl from './AddProjectControl';
-import useProjectMemberships from './useProjectMemberships';
-import useProjects from './useProjects';
+import useProjectMembershipsForUser from './useProjectMembershipsForUser';
+import useProjects from './useProjectsForUser';
 
 type Props = {
 }
@@ -18,7 +18,7 @@ const ProjectsTable: FunctionComponent<Props> = () => {
     const {setRoute} = useRoute()
 
     const { projects, refreshProjects, addProject, deleteProject } = useProjects()
-    const { projectMemberships } = useProjectMemberships()
+    const { projectMemberships } = useProjectMembershipsForUser()
 
     const columns = useMemo(() => ([
         {
@@ -96,7 +96,7 @@ const ProjectsTable: FunctionComponent<Props> = () => {
 }
 
 // thanks https://stackoverflow.com/questions/3177836/how-to-format-time-since-xxx-e-g-4-minutes-ago-similar-to-stack-exchange-site
-function timeSince(date: number) {
+export function timeSince(date: number) {
     var seconds = Math.floor((Date.now() - date) / 1000);
 
     var interval = seconds / 31536000;

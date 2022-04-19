@@ -13,8 +13,8 @@ import ProjectMembershipPermissionsView from './ProjectMembershipPermissionsView
 type Props = {
     projectId: string
     projectMemberships: ProjectMembership[]
-    addProjectMembership: (projectId: string, memberId: UserId) => void
-    deleteProjectMembership: (projectId: string, memberId: UserId) => void
+    addProjectMembership: (memberId: UserId) => void
+    deleteProjectMembership: (memberId: UserId) => void
 }
 
 const ProjectMembershipsTable: FunctionComponent<Props> = ({projectId, projectMemberships, addProjectMembership, deleteProjectMembership}) => {
@@ -50,8 +50,8 @@ const ProjectMembershipsTable: FunctionComponent<Props> = ({projectId, projectMe
 
     const handleDeleteProjectMembership = useCallback((memberId: string) => {
         if (!isUserId(memberId)) return
-        deleteProjectMembership(projectId, memberId)
-    }, [projectId, deleteProjectMembership])
+        deleteProjectMembership(memberId)
+    }, [deleteProjectMembership])
 
     return (
         <div>

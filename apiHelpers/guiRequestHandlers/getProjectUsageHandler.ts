@@ -3,6 +3,7 @@ import { GetProjectUsageRequest, GetProjectUsageResponse } from "../../src/types
 import { isProjectUsage } from "../../src/types/ProjectUsage";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { getProjectMembership } from "../common/getDatabaseItems";
+import isAdminUser from "./helpers/isAdminUser";
 
 const getProjectUsageHandler = async (request: GetProjectUsageRequest, verifiedUserId: UserId): Promise<GetProjectUsageResponse> => {
     const { projectId } = request
@@ -10,8 +11,10 @@ const getProjectUsageHandler = async (request: GetProjectUsageRequest, verifiedU
     const userId = verifiedUserId
 
     const pm = await getProjectMembership(projectId, userId)
-    if (!pm.permissions.read) {
-        throw Error('This user does not have permission to read this project')
+    if ((!pm) || (!pm.permissions.read)) {
+        if (!isAdminUser(verifiedUserId)) {
+            throw Error('This user does not have permission to read this project')
+        }
     }
 
     const db = firestoreDatabase()

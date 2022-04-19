@@ -3,6 +3,7 @@ import useErrorMessage from 'errorMessageContext/useErrorMessage';
 import React, { FunctionComponent, useCallback } from 'react';
 import ApplicationBar from '../ApplicationBar/ApplicationBar';
 import useRoute from '../useRoute';
+import AdminPage from './AdminPage';
 import ClientPage from './ClientPage';
 import HomePage from './HomePage';
 import kacheryLogoFull from './kacheryLogoFull.png';
@@ -76,6 +77,8 @@ const MainWindow: FunctionComponent<Props> = () => {
                             />
                         ) : route.page === 'testFeeds' ? (
                             <TestFeedsPage />
+                        ) : route.page === 'admin' ? (
+                            <AdminPage />
                         ) : <span />
                     ) : (
                         <HomePage />

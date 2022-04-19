@@ -1,11 +1,11 @@
 import { UserId } from "../../src/commonInterface/kacheryTypes";
-import { Project, isProject } from "../../src/types/Project";
-import { GetProjectsRequest, GetProjectsResponse } from "../../src/types/GuiRequest";
+import { GetProjectsForUserRequest, GetProjectsForUserResponse } from "../../src/types/GuiRequest";
+import { isProject, Project } from "../../src/types/Project";
 import firestoreDatabase from '../common/firestoreDatabase';
+import hideSecretsInProject from './helpers/hideSecretsInProject';
 import isAdminUser from "./helpers/isAdminUser";
-import hideSecretsInProject from './helpers/hideSecretsInProject'
 
-const getProjectsHandler = async (request: GetProjectsRequest, verifiedUserId: UserId): Promise<GetProjectsResponse> => {
+const getProjectsForUserHandler = async (request: GetProjectsForUserRequest, verifiedUserId: UserId): Promise<GetProjectsForUserResponse> => {
     const { userId } = request
     if (!userId) {
         if (!isAdminUser(verifiedUserId)) {
@@ -37,9 +37,9 @@ const getProjectsHandler = async (request: GetProjectsRequest, verifiedUserId: U
         hideSecretsInProject(project)
     }
     return {
-        type: 'getProjects',
+        type: 'getProjectsForUser',
         projects
     }
 }
 
-export default getProjectsHandler
+export default getProjectsForUserHandler

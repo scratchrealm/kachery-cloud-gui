@@ -2,10 +2,10 @@ import guiApiRequest from "common/guiApiRequest"
 import { useSignedIn } from "components/googleSignIn/GoogleSignIn"
 import useErrorMessage from "errorMessageContext/useErrorMessage"
 import { useCallback, useEffect, useState } from "react"
-import { Project, ProjectSettings } from "types/Project"
-import { AddProjectRequest, DeleteProjectRequest, GetProjectsRequest, isAddProjectResponse, isDeleteProjectResponse, isGetProjectsResponse, isSetProjectSettingsResponse, SetProjectSettingsRequest } from "types/GuiRequest"
+import { AddProjectRequest, DeleteProjectRequest, GetProjectsForUserRequest, isAddProjectResponse, isDeleteProjectResponse, isGetProjectsForUserResponse } from "types/GuiRequest"
+import { Project } from "types/Project"
 
-const useProjects = () => {
+const useProjectsForUser = () => {
     const [projects, setProjects] = useState<Project[] | undefined>(undefined)
     const { userId, googleIdToken } = useSignedIn()
     const [refreshCode, setRefreshCode] = useState<number>(0)
@@ -20,14 +20,14 @@ const useProjects = () => {
             setProjects(undefined)
             if (!userId) return
             let canceled = false
-            const req: GetProjectsRequest = {
-                type: 'getProjects',
+            const req: GetProjectsForUserRequest = {
+                type: 'getProjectsForUser',
                 userId,
                 auth: { userId, googleIdToken }
             }
             const resp = await guiApiRequest(req, { reCaptcha: false, setErrorMessage })
             if (!resp) return
-            if (!isGetProjectsResponse(resp)) {
+            if (!isGetProjectsForUserResponse(resp)) {
                 console.warn(resp)
                 throw Error('Unexpected response')
             }
@@ -73,26 +73,7 @@ const useProjects = () => {
             })()
     }, [userId, googleIdToken, refreshProjects, setErrorMessage])
 
-    const setProjectSettings = useCallback((o: {projectId: string, projectSettings: ProjectSettings}) => {
-        const {projectId, projectSettings} = o
-        if (!userId) return
-            ; (async () => {
-                const req: SetProjectSettingsRequest = {
-                    type: 'setProjectSettings',
-                    projectId,
-                    projectSettings,
-                    auth: { userId, googleIdToken }
-                }
-                const resp = await guiApiRequest(req, { reCaptcha: true, setErrorMessage })
-                if (!resp) return
-                if (!isSetProjectSettingsResponse(resp)) {
-                    throw Error('Unexpected response')
-                }
-                refreshProjects()
-            })()
-    }, [userId, googleIdToken, refreshProjects, setErrorMessage])
-
-    return { projects, refreshProjects, addProject, deleteProject, setProjectSettings }
+    return { projects, refreshProjects, addProject, deleteProject }
 }
 
-export default useProjects
+export default useProjectsForUser

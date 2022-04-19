@@ -1,11 +1,11 @@
 import { UserId } from "../../src/commonInterface/kacheryTypes";
-import { Project, isProject } from "../../src/types/Project";
-import { ProjectMembership, isProjectMembership } from "../../src/types/ProjectMembership";
-import { GetProjectMembershipsRequest, GetProjectMembershipsResponse } from "../../src/types/GuiRequest";
+import { GetProjectMembershipsForUserRequest, GetProjectMembershipsForUserResponse } from "../../src/types/GuiRequest";
+import { isProject, Project } from "../../src/types/Project";
+import { isProjectMembership, ProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
 import isAdminUser from "./helpers/isAdminUser";
 
-const getProjectMembershipsHandler = async (request: GetProjectMembershipsRequest, verifiedUserId: UserId): Promise<GetProjectMembershipsResponse> => {
+const getProjectMembershipsForUserHandler = async (request: GetProjectMembershipsForUserRequest, verifiedUserId: UserId): Promise<GetProjectMembershipsForUserResponse> => {
     const { userId } = request
     if (!userId) {
         if (!isAdminUser(verifiedUserId)) {
@@ -54,9 +54,9 @@ const getProjectMembershipsHandler = async (request: GetProjectMembershipsReques
         }
     }
     return {
-        type: 'getProjectMemberships',
+        type: 'getProjectMembershipsForUser',
         projectMemberships
     }
 }
 
-export default getProjectMembershipsHandler
+export default getProjectMembershipsForUserHandler

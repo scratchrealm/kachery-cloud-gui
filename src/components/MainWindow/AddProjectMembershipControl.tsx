@@ -5,7 +5,7 @@ import React, { FunctionComponent, useCallback, useMemo, useState } from 'react'
 type Props = {
     projectId: string
     onClose?: () => void
-    onAdd: (projectId: string, memberId: UserId) => void
+    onAdd: (memberId: UserId) => void
 }
 
 const AddProjectMembershipControl: FunctionComponent<Props> = ({projectId, onClose, onAdd}) => {
@@ -13,9 +13,9 @@ const AddProjectMembershipControl: FunctionComponent<Props> = ({projectId, onClo
     
     const handleAdd = useCallback(() => {
         if (!isUserId(editMemberId)) return
-        onAdd(projectId, editMemberId)
+        onAdd(editMemberId)
         onClose && onClose()
-    }, [onClose, projectId, editMemberId, onAdd])
+    }, [onClose, editMemberId, onAdd])
     const okayToAdd = useMemo(() => {
         return isUserId(editMemberId)
     }, [editMemberId])

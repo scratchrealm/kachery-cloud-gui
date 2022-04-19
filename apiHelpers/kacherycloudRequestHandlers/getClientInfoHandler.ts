@@ -23,6 +23,11 @@ const getClientInfoHandler = async (request: GetClientInfoRequest, verifiedClien
         }
     }
 
+    // not sure if we want to restrict
+    // if (client.clientId !== verifiedClientId) {
+    //     throw Error('Not authorized to access this client info')
+    // }
+
     const projectMembershipsCollection = db.collection('kacherycloud.projectMemberships')
     const projectMembershipsResults = await projectMembershipsCollection.where('memberId', '==', client.ownerId).get()
     const projectMemberships: ProjectMembership[] = []

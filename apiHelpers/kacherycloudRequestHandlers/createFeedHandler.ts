@@ -14,7 +14,7 @@ const createFeedHandler = async (request: CreateFeedRequest, verifiedClientId: N
     const projectId = request.payload.projectId || client.defaultProjectId
     if (!projectId) throw Error('No project ID')
     const projectMembership = await getProjectMembership(projectId, client.ownerId)
-    if (!projectMembership.permissions.write) {
+    if ((!projectMembership) || (!projectMembership.permissions.write)) {
         throw Error('Not authorized to create a feed for this project')
     }
 

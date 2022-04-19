@@ -6,19 +6,21 @@ import addProjectMembershipHandler from '../apiHelpers/guiRequestHandlers/addPro
 import deleteProjectHandler from '../apiHelpers/guiRequestHandlers/deleteProjectHandler'
 import deleteProjectMembershipHandler from '../apiHelpers/guiRequestHandlers/deleteProjectMembershipHandler'
 import deleteClientHandler from '../apiHelpers/guiRequestHandlers/deleteClientHandler'
-import getProjectsHandler from '../apiHelpers/guiRequestHandlers/getProjectsHandler'
+import getProjectsForUserHandler from '../apiHelpers/guiRequestHandlers/getProjectsForUserHandler'
 import getClientsHandler from '../apiHelpers/guiRequestHandlers/getClientsHandler'
 import addClientHandler from '../apiHelpers/guiRequestHandlers/addClientHandler'
 import setProjectSettingsHandler from '../apiHelpers/guiRequestHandlers/setProjectSettingsHandler'
 import { UserId } from '../src/commonInterface/kacheryTypes'
 import { isGuiRequest } from '../src/types/GuiRequest'
-import getProjectMembershipsHandler from '../apiHelpers/guiRequestHandlers/getProjectMembershipsHandler'
+import getProjectMembershipsForUserHandler from '../apiHelpers/guiRequestHandlers/getProjectMembershipsForUserHandler'
 import setProjectMembershipPermissionsHandler from '../apiHelpers/guiRequestHandlers/setProjectMembershipPermissionsHandler'
 import getUserSettingsHandler from '../apiHelpers/guiRequestHandlers/getUserSettingsHandler'
 import setUserSettingsHandler from '../apiHelpers/guiRequestHandlers/setUserSettingsHandler'
 import setClientInfoHandler from '../apiHelpers/guiRequestHandlers/setClientInfoHandler'
 import setProjectInfoHandler from '../apiHelpers/guiRequestHandlers/setProjectInfoHandler'
 import getProjectUsageHandler from '../apiHelpers/guiRequestHandlers/getProjectUsageHandler'
+import adminGetProjectsHandler from '../apiHelpers/guiRequestHandlers/adminGetProjectsHandler'
+import getProjectHandler from '../apiHelpers/guiRequestHandlers/getProjectHandler'
 
 const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY
 
@@ -67,9 +69,9 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
             }
             return await addProjectHandler(request, verifiedUserId)
         }
-        else if (request.type === 'getProjectMemberships') {
+        else if (request.type === 'getProjectMembershipsForUser') {
             // no recaptcha required
-            return await getProjectMembershipsHandler(request, verifiedUserId)
+            return await getProjectMembershipsForUserHandler(request, verifiedUserId)
         }
         else if (request.type === 'addProjectMembership') {
             if (!verifiedReCaptchaInfo) {
@@ -89,9 +91,13 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
             }
             return await deleteProjectMembershipHandler(request, verifiedUserId)
         }
-        else if (request.type === 'getProjects') {
+        else if (request.type === 'getProjectsForUser') {
             // no recaptcha required
-            return await getProjectsHandler(request, verifiedUserId)
+            return await getProjectsForUserHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'getProject') {
+            // no recaptcha required
+            return await getProjectHandler(request, verifiedUserId)
         }
         else if (request.type === 'setProjectSettings') {
             if (!verifiedReCaptchaInfo) {
@@ -145,6 +151,9 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         else if (request.type === 'getProjectUsage') {
             return await getProjectUsageHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'adminGetProjects') {
+            return await adminGetProjectsHandler(request, verifiedUserId)
         }
         else {
             throw Error(`Unexpected request type: ${request.type}`)

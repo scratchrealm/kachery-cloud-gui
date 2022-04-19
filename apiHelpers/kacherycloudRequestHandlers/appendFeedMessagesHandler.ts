@@ -64,7 +64,7 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
     // const project = await getProject(projectId)
 
     const pm = await getProjectMembership(projectId, userId)
-    if (!pm.permissions.write) {
+    if ((!pm) || (!pm.permissions.write)) {
         throw Error(`User ${userId} does not have write access on project ${projectId}`)
     }
 

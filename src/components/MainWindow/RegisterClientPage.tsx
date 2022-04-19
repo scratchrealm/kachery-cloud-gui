@@ -8,7 +8,7 @@ import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } f
 import { AddClientRequest } from 'types/GuiRequest';
 import EditableTextField from './EditableTextField';
 import SelectProjectControl from './SelectProjectControl';
-import useProjects from './useProjects';
+import useProjectsForUser from './useProjectsForUser';
 
 type Props = {
     clientId: NodeId
@@ -23,7 +23,7 @@ const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, labe
     const [status, setStatus] = useState<Status>('waiting')
     const { errorMessage, setErrorMessage } = useErrorMessage()
     const { setRoute } = useRoute()
-    const { projects, addProject } = useProjects()
+    const { projects, addProject } = useProjectsForUser()
     const [defaultProjectId, setDefaultProjectId] = useState<string>('')
 
     const heading = <h3>Register a client</h3>

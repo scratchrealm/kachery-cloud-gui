@@ -6,7 +6,7 @@ import { isNodeId } from 'commonInterface/kacheryTypes';
 import useRoute from 'components/useRoute';
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import useClients from './useClients';
-import useProjects from './useProjects';
+import useProjectsForUser from './useProjectsForUser';
 
 type Props = {
 }
@@ -17,7 +17,7 @@ const ClientsTable: FunctionComponent<Props> = () => {
     const {setRoute} = useRoute()
 
     const { clients, refreshClients, deleteClient } = useClients()
-    const { projects } = useProjects()
+    const { projects } = useProjectsForUser()
 
     const columns = useMemo(() => ([
         {

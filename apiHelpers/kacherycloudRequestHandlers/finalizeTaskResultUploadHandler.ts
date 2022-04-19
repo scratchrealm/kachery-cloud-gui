@@ -23,7 +23,7 @@ const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUpload
     const userId = client.ownerId
     
     const pm = await getProjectMembership(projectId, userId)
-    if (!pm.permissions.write) {
+    if ((!pm) || (!pm.permissions.write)) {
         throw Error(`User ${userId} does not have write access on project ${projectId}`)
     }
 

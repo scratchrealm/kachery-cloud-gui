@@ -10,27 +10,15 @@ import EditableTextField from './EditableTextField';
 import ProjectMembershipsTable from './ProjectMembershipsTable';
 import ProjectSettingsView from './ProjectSettingsView';
 import ProjectUsageView from './ProjectUsageView';
-import useProjectMemberships from './useProjectMemberships';
-import useProjects from './useProjects';
+import useProject from './useProject';
 
 type Props = {
     projectId: string
 }
 
 const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
-    const { projects, setProjectSettings, refreshProjects } = useProjects()
-    const { projectMemberships, addProjectMembership, deleteProjectMembership } = useProjectMemberships()
+    const { project, projectMemberships, addProjectMembership, deleteProjectMembership, setProjectSettings, refreshProject } = useProject(projectId)
     const { setRoute } = useRoute()
-
-    const project = useMemo(() => (
-        (projects || []).filter(project => (project.projectId === projectId))[0]
-    ), [projects, projectId])
-
-    const projectMembershipsForProject = useMemo(() => (
-        project ? (
-            (projectMemberships || []).filter(cn => (cn.projectId === project.projectId))
-        ) : undefined
-    ), [projectMemberships, project])
 
     const { setErrorMessage } = useErrorMessage()
 
@@ -47,9 +35,9 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
                 auth: {userId, googleIdToken}
             }
             await guiApiRequest(req, {reCaptcha: true, setErrorMessage})
-            refreshProjects()
+            refreshProject()
         })()
-    }, [userId, googleIdToken, projectId, refreshProjects, setErrorMessage])
+    }, [userId, googleIdToken, projectId, refreshProject, setErrorMessage])
 
     const tableData = useMemo(() => {
         if (!project) return undefined
@@ -79,22 +67,13 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
         setRoute({page: 'testTaskBackend', projectId})
     }, [setRoute, projectId])
 
-    if (!projects) {
+    if (!project) {
         return <span>Loading...</span>
     }
 
     if (!projectMemberships) {
         return <span>Loading...</span>
     }
-
-    if (!project) {
-        return <span>Project not found: {projectId}</span>
-    }
-
-    if (!projectMembershipsForProject) {
-        return <span>Unexpected, no projectMembershipsForProject</span>
-    }
-
 
     if (!tableData) return <div />
     return (
@@ -119,7 +98,7 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
             />
             <ProjectMembershipsTable
                 projectId={project.projectId}
-                projectMemberships={projectMembershipsForProject}
+                projectMemberships={projectMemberships}
                 addProjectMembership={addProjectMembership}
                 deleteProjectMembership={deleteProjectMembership}
             />

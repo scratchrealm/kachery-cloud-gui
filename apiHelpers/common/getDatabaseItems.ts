@@ -66,7 +66,7 @@ export const getProjectMembership = async (projectId: string, userId: UserId) =>
     const pmKey = projectId.toString() + ':' + userId.toString()
     const projectMembershipSnapshot = await projectMembershipsCollection.doc(pmKey).get()
     if (!projectMembershipSnapshot.exists) {
-        throw Error(`User ${userId} is not a member of project ${projectId}`)
+        return undefined
     }
     const pm = projectMembershipSnapshot.data()
     if (!isProjectMembership(pm)) throw Error('Invalid project membership in database')
