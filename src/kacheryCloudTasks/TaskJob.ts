@@ -4,6 +4,7 @@ import { PubsubChannelName, PubsubMessage, TaskStatus, TaskType } from "types/Pu
 import deserializeReturnValue from "./deserializeReturnValue";
 
 export type TaskJobStatus = 'waiting' | 'started' | 'finished' | 'error'
+export const isTaskJobStatus = (x: any): x is TaskJobStatus => (['waiting', 'started', 'finished', 'error'].includes(x || ''))
 
 class TaskJob<ReturnType> {
     #status: TaskJobStatus = 'waiting'
@@ -12,6 +13,7 @@ class TaskJob<ReturnType> {
     #onFinishedCallbacks: (() => void)[] = []
     #onErrorCallbacks: (() => void)[] = []
     #onStartedCallbacks: (() => void)[] = []
+    #timestampCreated = Date.now()
     constructor(private d: {
         taskType: TaskType,
         taskName: string,
@@ -42,6 +44,9 @@ class TaskJob<ReturnType> {
     }
     get errorMessage() {
         return this.#errorMessage
+    }
+    get timestampCreated() {
+        return this.#timestampCreated
     }
     onFinished(callback: () => void) {
         if (this.#status === 'finished') {
@@ -97,11 +102,11 @@ class TaskJob<ReturnType> {
         if (status === this.#status) return
         if (status === 'finished') {
             if (this.d.taskType === 'calculation') {
-                this._downloadResult(() => {
+                this._downloadResult().then(() => {
                     this.#status = status
                     this.#onFinishedCallbacks.forEach(cb => {cb()})    
-                }, (errorMessage) => {
-                    this._setTaskStatus('error', errorMessage)
+                }).catch(err => {
+                    this._setTaskStatus('error', 'Error downloading result')
                 })
             }
             else {
@@ -119,23 +124,37 @@ class TaskJob<ReturnType> {
             this.#onStartedCallbacks.forEach(cb => {cb()})
         }
     }
-    _downloadResult(callback: () => void, onError: (errorMessage: string) => void) {
-        const s = this.d.taskJobId
-        this.d.getProjectBucketBaseUrl().then(projectBucketBaseUrl => {
-            const url = `${projectBucketBaseUrl}/taskResults/${this.d.taskName}/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`
-            axios.get(url).then((response) => {
-                const resultData = response.data
-                deserializeReturnValue(resultData).then(dr => {
-                    this.#result = dr as ReturnType
-                    callback()
+    async _downloadResult() {
+        return new Promise<void>((resolve, reject) => {
+            const s = this.d.taskJobId
+            this.d.getProjectBucketBaseUrl().then(projectBucketBaseUrl => {
+                const url = `${projectBucketBaseUrl}/taskResults/${this.d.taskName}/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`
+                axios.get(url).then((response) => {
+                    const resultData = response.data
+                    deserializeReturnValue(resultData).then(dr => {
+                        this.#result = dr as ReturnType
+                        resolve()
+                    })
+                }).catch((err) => {
+                    reject(err)
                 })
-            }).catch((err) => {
-                console.warn(err)
-                onError('Error download result of calculation')
             })
         })
     }
-    _start() {
+    async _start() {
+        if (this.taskType === 'calculation') {
+            // first try to download the cached version
+            try {
+                await this._downloadResult()
+                // we got the cached version!
+                this.#status = 'finished'
+                this.#onFinishedCallbacks.forEach(cb => {cb()})
+                return
+            }
+            catch(err) {
+                // not cached
+            }
+        }
         const message: PubsubMessage = {
             type: 'requestTask',
             taskType: this.d.taskType,

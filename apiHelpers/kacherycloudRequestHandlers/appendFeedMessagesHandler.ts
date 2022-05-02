@@ -28,17 +28,17 @@ export const isFeedMessageDocument = (x: any): x is FeedMessageDocument => {
 }
 
 const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, verifiedClientId: NodeId): Promise<AppendFeedMessagesResponse> => {
-    const { feedId, messages } = request.payload
+    const { feedId, messagesJson } = request.payload
 
-    if (messages.length > MAX_NUM_FEED_MESSAGES_TO_APPEND) {
-        throw Error(`Too many feed messages to append: ${messages.length} > ${MAX_NUM_FEED_MESSAGES_TO_APPEND}`)
+    if (messagesJson.length > MAX_NUM_FEED_MESSAGES_TO_APPEND) {
+        throw Error(`Too many feed messages to append: ${messagesJson.length} > ${MAX_NUM_FEED_MESSAGES_TO_APPEND}`)
     }
-    if (messages.length === 0) {
+    if (messagesJson.length === 0) {
         throw Error('Length of messages has to be greater than zero.')
     }
-    for (let message of messages) {
-        if (JSON.stringify(message).length > MAX_FEED_MESSAGE_SIZE) {
-            throw Error(`Message is too large: ${JSON.stringify(message).length} > ${MAX_FEED_MESSAGE_SIZE}`)
+    for (let messageJson of messagesJson) {
+        if (messageJson.length > MAX_FEED_MESSAGE_SIZE) {
+            throw Error(`Message is too large: ${JSON.stringify(messageJson).length} > ${MAX_FEED_MESSAGE_SIZE}`)
         }
     }
 
@@ -82,7 +82,7 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
     }
 
     let lastMessageNumber = await getLastMessageNumber()
-    for (let msg of messages) {
+    for (let msgJson of messagesJson) {
         let numFails = 0
         while (true) {
             const messageDoc: FeedMessageDocument = {
@@ -90,7 +90,7 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
                 messageNumber: lastMessageNumber + 1,
                 userId,
                 timestamp: Date.now(),
-                message: msg
+                message: JSON.parse(msgJson)
             }
             const key = `${feedId}.${lastMessageNumber + 1}`
             try {
@@ -113,7 +113,7 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
         type: 'feedMessagesAppended',
         projectId,
         feedId,
-        numMessagesAppended: messages.length
+        numMessagesAppended: messagesJson.length
     }
     await publishPubsubMessage(pubsubChannelName, pubsubMessage)
 
@@ -124,8 +124,8 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
         projectId,
         userId,
         feedId,
-        numMessages: messages.length,
-        size: sum(messages.map(message => (JSON.stringify(message).length))),
+        numMessages: messagesJson.length,
+        size: sum(messagesJson.map(messageJson => (messagesJson.length))),
         timestamp: Date.now()
     }
     await usageLogCollection.add(logItem)

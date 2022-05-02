@@ -589,7 +589,7 @@ export type AppendFeedMessagesRequest = {
         type: 'appendFeedMessages'
         timestamp: number
         feedId: string
-        messages: JSONObject[]
+        messagesJson: string[] // we send the JSON contents to avoid ambiguity with the signature
     }
     fromClientId: NodeId
     signature: Signature
@@ -601,7 +601,7 @@ export const isAppendFeedMessagesRequest = (x: any): x is AppendFeedMessagesRequ
             type: isEqualTo('appendFeedMessages'),
             timestamp: isNumber,
             feedId: isString,
-            messages: isArrayOf(isJSONObject)
+            messagesJson: isArrayOf(isString)
         })
     }
     return _validateObject(x, {

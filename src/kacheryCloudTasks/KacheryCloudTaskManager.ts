@@ -9,17 +9,20 @@ import TaskJob from "./TaskJob";
 class KacheryCloudTaskManager {
     #taskJobs: {[key: string]: TaskJob<any>} = {}
     #projectBucketBaseUrl?: string
-    #pubsubSubscription: PubsubSubscription
+    #pubsubSubscription: PubsubSubscription | undefined
+    #updateCallbacks: (() => void)[] = []
     constructor(private d: {
         projectId: string
     }) {
-        this.#pubsubSubscription = new PubsubSubscription({
-            projectId: d.projectId,
-            channelName: 'provideTasks'
-        })
-        this.#pubsubSubscription.onMessage((channelName, message) => {
-            this._handlePubsubMessage(channelName, message)
-        })
+        if (d.projectId) {
+            this.#pubsubSubscription = new PubsubSubscription({
+                projectId: d.projectId,
+                channelName: 'provideTasks'
+            })
+            this.#pubsubSubscription.onMessage((channelName, message) => {
+                this._handlePubsubMessage(channelName, message)
+            })
+        }
     }
     runTask <ReturnType>(o: {taskType: TaskType, taskName: string, taskInput: any}): TaskJob<ReturnType> {
         const taskJobId = o.taskType === 'calculation' ? (
@@ -39,7 +42,14 @@ class KacheryCloudTaskManager {
                 publishToPubsubChannel: (channelName: PubsubChannelName, message: PubsubMessage) => {return this._publishToPubsubChannel(channelName, message)},
                 getProjectBucketBaseUrl: () => {return this._getProjectBucketBaseUrl()}
             })
+            const triggerUpdate = () => {
+                this.#updateCallbacks.forEach(cb => {cb()})
+            }
             this.#taskJobs[taskJobId.toString()] = tj
+            tj.onStarted(triggerUpdate)
+            tj.onError(triggerUpdate)
+            tj.onFinished(triggerUpdate)
+            triggerUpdate()
             return tj
         }
     }
@@ -57,7 +67,15 @@ class KacheryCloudTaskManager {
         })
     }
     unsubscribe() {
-        this.#pubsubSubscription.unsubscribe()
+        if (this.#pubsubSubscription) {
+            this.#pubsubSubscription.unsubscribe()
+        }
+    }
+    getAllTaskJobs() {
+        return Object.values(this.#taskJobs).sort((a, b) => (a.timestampCreated - b.timestampCreated))
+    }
+    onUpdate(callback: () => void) {
+        this.#updateCallbacks.push(callback)
     }
     _handlePubsubMessage(channelName: PubsubChannelName, message: PubsubMessage) {
         if (channelName === 'provideTasks') {
