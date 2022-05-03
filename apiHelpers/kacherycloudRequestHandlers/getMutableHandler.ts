@@ -43,7 +43,7 @@ const getMutableHandler = async (request: GetMutableRequest, verifiedClientId?: 
     const logItem: GetMutableLogItem = {
         type: 'getMutable',
         found,
-        clientId: client.clientId,
+        clientId: client ? client.clientId : undefined,
         projectId,
         userId: client ? client.ownerId : undefined,
         mutableKey,
