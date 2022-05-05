@@ -22,7 +22,7 @@ const ClientsTable: FunctionComponent<Props> = () => {
     const columns = useMemo(() => ([
         {
             key: 'clientId',
-            label: 'Client ID'
+            label: 'Client'
         },
         {
             key: 'label',

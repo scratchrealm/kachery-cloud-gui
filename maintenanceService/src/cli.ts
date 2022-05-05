@@ -18,17 +18,17 @@ const main = async () => {
     const projectUsagesCollection = db.collection('kacherycloud.projectUsages')
     
     while (true) {
-        const a = await projectUsagesCollection.get()
-        for (let doc of a.docs) {
-            const pu = doc.data()
-            if (!isProjectUsage(pu)) {
-                console.warn(pu)
-                throw Error('Invalid project usage in database')
-            }
-            console.log('=============================')
-            console.info(pu.projectId)
-            console.info(pu)
-        }
+        // const a = await projectUsagesCollection.get()
+        // for (let doc of a.docs) {
+        //     const pu = doc.data()
+        //     if (!isProjectUsage(pu)) {
+        //         console.warn(pu)
+        //         throw Error('Invalid project usage in database')
+        //     }
+        //     console.log('=============================')
+        //     console.info(pu.projectId)
+        //     console.info(pu)
+        // }
 
         const result = await usageLogColletion.orderBy('timestamp').limit(50).get()
         if (result.docs.length > 0) {
@@ -36,7 +36,7 @@ const main = async () => {
             const usageByProject: {[key: string]: ProjectUsage} = {}
 
             const processLogItem = async (logItem: LogItem) => {
-                console.info(logItem.type)
+                console.info(`${logItem.type} ${logItem.projectId} ${logItem.userId}`)
                 const projectId = logItem.projectId
                 if ((projectId) && (!usageByProject[projectId])) {
                     const snapshot = await projectUsagesCollection.doc(projectId).get()

@@ -26,6 +26,10 @@ const ProjectsTable: FunctionComponent<Props> = () => {
             label: 'Project'
         },
         {
+            key: 'label',
+            label: 'Label'
+        },
+        {
             key: 'ownerId',
             label: 'Owner'
         },
@@ -48,10 +52,18 @@ const ProjectsTable: FunctionComponent<Props> = () => {
             key: project.projectId.toString(),
             columnValues: {
                 project: {
+                    text: project.projectId,
+                    element: (
+                        <Hyperlink onClick={() => {setRoute({page: 'project', projectId: project.projectId})}}>
+                            {project.projectId}
+                        </Hyperlink>
+                    )
+                },
+                label: {
                     text: project.label,
                     element: (
                         <Hyperlink onClick={() => {setRoute({page: 'project', projectId: project.projectId})}}>
-                            {project.label} ({project.projectId})
+                            {project.label}
                         </Hyperlink>
                     )
                 },
