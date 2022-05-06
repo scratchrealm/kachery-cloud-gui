@@ -38,7 +38,7 @@ const subscribeToPubsubChannelHandler = async (request: SubscribeToPubsubChannel
 
     const pubsubChannelName = `${projectId}.${channelName}`
 
-    const uuid = clientId ? clientId.toString() : 'kachery-cloud-' + randomAlphaLowerString(10)
+    const uuid = clientId ? clientId.toString() : 'kachery-cloud-anonymous'
     const token = await grantSubscribeToken({uuid, pubsubChannelName})
 
     const db = firestoreDatabase()
@@ -65,7 +65,7 @@ const subscribeToPubsubChannelHandler = async (request: SubscribeToPubsubChannel
 const grantSubscribeToken = async (o: {uuid: string, pubsubChannelName: string}) => {
     return new Promise<string>((resolve, reject) => {
         pubnub.grantToken({
-            ttl: 3,
+            ttl: 10, // token is good for 10 minutes
             authorized_uuid: o.uuid,
             resources: {
                 channels: {
@@ -82,18 +82,6 @@ const grantSubscribeToken = async (o: {uuid: string, pubsubChannelName: string})
             resolve(token)
         })
     })
-}
-
-const randomAlphaLowerString = (num_chars: number) => {
-    if (!num_chars) {
-        /* istanbul ignore next */
-        throw Error('randomAlphaString: num_chars needs to be a positive integer.')
-    }
-    var text = "";
-    var possible = "abcdefghijklmnopqrstuvwxyz";
-    for (var i = 0; i < num_chars; i++)
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    return text;
 }
 
 export default subscribeToPubsubChannelHandler
