@@ -21,6 +21,7 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
 
     const clientId = verifiedClientId
 
+    const db = firestoreDatabase()
     const client = await getClient(clientId)
 
     const projectId = request.payload.projectId || client.defaultProjectId
