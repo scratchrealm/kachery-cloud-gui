@@ -12,7 +12,7 @@ const setClientInfoHandler = async (request: SetClientInfoRequest, verifiedUserI
     let docSnapshot = await collection.doc(clientId.toString()).get()
 
     if (!docSnapshot.exists) {
-        throw Error('Client does not exist')
+        throw Error('Client does not exist in setClientInfoHandler')
     }
 
     const client = docSnapshot.data()

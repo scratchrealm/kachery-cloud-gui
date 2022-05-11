@@ -5,6 +5,7 @@ import { InitiateIpfsUploadLogItem } from "../../src/types/LogItem";
 import { isProject } from "../../src/types/Project";
 import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
+import { getClient } from "../common/getDatabaseItems";
 import { randomAlphaLowerString } from "../guiRequestHandlers/helpers/randomAlphaString";
 import s3 from "./s3";
 import { getSignedUploadUrl } from "./s3Helpers";
@@ -20,12 +21,7 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
 
     const clientId = verifiedClientId
 
-    const db = firestoreDatabase()
-    const clientsCollection = db.collection('kacherycloud.clients')
-    const clientSnapshot = await clientsCollection.doc(clientId.toString()).get()
-    if (!clientSnapshot.exists) throw Error('Client does not exist')
-    const client = clientSnapshot.data()
-    if (!isClient(client)) throw Error('Invalid client in database')
+    const client = await getClient(clientId)
 
     const projectId = request.payload.projectId || client.defaultProjectId
     if (!projectId) throw Error('No project ID')

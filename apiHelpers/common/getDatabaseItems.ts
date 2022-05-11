@@ -37,7 +37,7 @@ export const getClient = async (clientId: NodeId) => {
     const db = firestoreDatabase()
     const clientsCollection = db.collection('kacherycloud.clients')
     const clientSnapshot = await clientsCollection.doc(clientId.toString()).get()
-    if (!clientSnapshot.exists) throw Error('Client does not exist')
+    if (!clientSnapshot.exists) throw Error('Client not registered. Use kachery-cloud-init to register this kachery-cloud client.')
     const client = clientSnapshot.data()
     if (!isClient(client)) throw Error('Invalid client in database')
     clientObjectCache.set(clientId.toString(), client)
