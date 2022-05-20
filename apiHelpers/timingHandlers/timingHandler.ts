@@ -55,13 +55,13 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
     let response3: any
     try {
         timer = Date.now()
-        const resp3= await axios.get(`https://ipfs.filebase.io/ipfs/${cid3}`, {timeout: 4000})
+        const resp3= await axios.get(`https://ipfs.filebase.io/ipfs/${cid3}`, {timeout: 12000})
         response3 = resp3.data
         downloadFromIPFSGateway = Date.now() - timer
         if (!response3) throw Error('Unexpected response3 is undefined')
     }
     catch(err) {
-        downloadFromIPFSGateway = -1
+        downloadFromIPFSGateway = err.message
     }
     if (response3) {
         if (response3.toString('ascii') !== content3) {
@@ -75,13 +75,13 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
     let response4: any
     try {
         timer = Date.now()
-        const resp4= await axios.get(`https://ipfs.filebase.io/ipfs/${cid4}`, {timeout: 4000})
+        const resp4= await axios.get(`https://ipfs.filebase.io/ipfs/${cid4}`, {timeout: 12000})
         response4 = resp4.data
         downloadFromIPFSGatewayAfterDelay = Date.now() - timer
         if (!response4) throw Error('Unexpected response4 is undefined')
     }
     catch(err) {
-        downloadFromIPFSGatewayAfterDelay = -1
+        downloadFromIPFSGatewayAfterDelay = err.message
     }
     if (response4) {
         if (response4.toString('ascii') !== content4) {
