@@ -58,12 +58,15 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
         const resp3= await axios.get(`https://ipfs.filebase.io/ipfs/${cid3}`, {timeout: 4000})
         response3 = resp3.data
         downloadFromIPFSGateway = Date.now() - timer
+        if (!response3) throw Error('Unexpected response3 is undefined')
     }
     catch(err) {
         downloadFromIPFSGateway = -1
     }
-    if (response3.toString('ascii') !== content3) {
-        throw Error('Unexpected content mismatch')
+    if (response3) {
+        if (response3.toString('ascii') !== content3) {
+            throw Error('Unexpected content mismatch')
+        }
     }
 
     const {cid: cid4} = await putObject({Bucket, Key: Key4, Body: content4})
@@ -75,12 +78,15 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
         const resp4= await axios.get(`https://ipfs.filebase.io/ipfs/${cid4}`, {timeout: 4000})
         response4 = resp4.data
         downloadFromIPFSGatewayAfterDelay = Date.now() - timer
+        if (!response4) throw Error('Unexpected response4 is undefined')
     }
     catch(err) {
         downloadFromIPFSGatewayAfterDelay = -1
     }
-    if (response4.toString('ascii') !== content4) {
-        throw Error('Unexpected content mismatch')
+    if (response4) {
+        if (response4.toString('ascii') !== content4) {
+            throw Error('Unexpected content mismatch')
+        }
     }
 
     await deleteObject(Key3)
