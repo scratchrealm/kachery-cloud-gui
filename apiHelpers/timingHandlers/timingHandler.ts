@@ -51,7 +51,7 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
     await deleteObject(Key2)
 
     const {cid: cid3} = await putObject({Bucket, Key: Key3, Body: content3})
-    let downloadFromIPFSGateway = 0
+    let downloadFromIPFSGateway: string | number = 0
     let response3: any
     try {
         timer = Date.now()
@@ -61,7 +61,7 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
         if (!response3) throw Error('Unexpected response3 is undefined')
     }
     catch(err) {
-        downloadFromIPFSGateway = err.message
+        downloadFromIPFSGateway = err.message + ` (https://ipfs.filebase.io/ipfs/${cid3})`
     }
     if (response3) {
         if (response3.toString('ascii') !== content3) {
@@ -71,7 +71,7 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
 
     const {cid: cid4} = await putObject({Bucket, Key: Key4, Body: content4})
     await sleepMsec(3000)
-    let downloadFromIPFSGatewayAfterDelay = 0
+    let downloadFromIPFSGatewayAfterDelay: string | number = 0
     let response4: any
     try {
         timer = Date.now()
@@ -81,7 +81,7 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
         if (!response4) throw Error('Unexpected response4 is undefined')
     }
     catch(err) {
-        downloadFromIPFSGatewayAfterDelay = err.message
+        downloadFromIPFSGatewayAfterDelay = err.message + ` (https://ipfs.filebase.io/ipfs/${cid4})`
     }
     if (response4) {
         if (response4.toString('ascii') !== content4) {
