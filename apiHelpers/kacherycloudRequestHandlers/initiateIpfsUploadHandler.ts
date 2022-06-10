@@ -1,5 +1,4 @@
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
-import { isClient } from "../../src/types/Client";
 import { InitiateIpfsUploadRequest, InitiateIpfsUploadResponse } from "../../src/types/KacherycloudRequest";
 import { InitiateIpfsUploadLogItem } from "../../src/types/LogItem";
 import { isProject } from "../../src/types/Project";
@@ -7,19 +6,21 @@ import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { getClient } from "../common/getDatabaseItems";
 import { randomAlphaLowerString } from "../guiRequestHandlers/helpers/randomAlphaString";
-import s3 from "./s3";
 import { getSignedUploadUrl } from "./s3Helpers";
 
 export const MAX_UPLOAD_SIZE = 5 * 1000 * 1000 * 1000
 
-const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, verifiedClientId: NodeId): Promise<InitiateIpfsUploadResponse> => {
+const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, verifiedClientId?: NodeId): Promise<InitiateIpfsUploadResponse> => {
     const { size } = request.payload
+
+    const clientId = verifiedClientId
+    if (!clientId) {
+        throw Error('No verified client ID')
+    }
 
     if (size > MAX_UPLOAD_SIZE) {
         throw Error(`File too large: ${size} > ${MAX_UPLOAD_SIZE}`)
     }
-
-    const clientId = verifiedClientId
 
     const db = firestoreDatabase()
     const client = await getClient(clientId)

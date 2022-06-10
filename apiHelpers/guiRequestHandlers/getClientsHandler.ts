@@ -4,7 +4,7 @@ import { isClient, Client } from "../../src/types/Client";
 import firestoreDatabase from '../common/firestoreDatabase';
 import isAdminUser from "./helpers/isAdminUser";
 
-const getClientsHandler = async (request: GetClientsRequest, verifiedUserId: UserId): Promise<GetClientsResponse> => {
+const getClientsHandler = async (request: GetClientsRequest, verifiedUserId?: UserId): Promise<GetClientsResponse> => {
     const { userId } = request
     if (!userId) {
         if (!isAdminUser(verifiedUserId)) {

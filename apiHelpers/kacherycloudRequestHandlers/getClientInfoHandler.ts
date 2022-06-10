@@ -1,5 +1,5 @@
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
-import { Client, isClient } from "../../src/types/Client";
+import { Client } from "../../src/types/Client";
 import { GetClientInfoRequest, GetClientInfoResponse } from "../../src/types/KacherycloudRequest";
 import { isProject, Project } from "../../src/types/Project";
 import { isProjectMembership, ProjectMembership } from "../../src/types/ProjectMembership";
@@ -8,7 +8,7 @@ import firestoreDatabase from '../common/firestoreDatabase';
 import { getClient } from "../common/getDatabaseItems";
 import hideSecretsInProject from "../guiRequestHandlers/helpers/hideSecretsInProject";
 
-const getClientInfoHandler = async (request: GetClientInfoRequest, verifiedClientId: NodeId): Promise<GetClientInfoResponse> => {
+const getClientInfoHandler = async (request: GetClientInfoRequest, verifiedClientId?: NodeId): Promise<GetClientInfoResponse> => {
     const { clientId } = request.payload
 
     const db = firestoreDatabase()

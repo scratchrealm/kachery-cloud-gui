@@ -29,8 +29,8 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         'https://figurl.org',
         'https://v2.figurl.org',
         'https://www.figurl.org'
-    ].includes(req.headers.origin)) {
-        res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
+    ].includes(req.headers.origin || '')) {
+        res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '')
     }
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
     res.setHeader(
@@ -54,8 +54,13 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         if ((elapsed > 30000) || (elapsed < -500)) {
             throw Error(`Invalid timestamp. ${timestamp} ${Date.now()} ${elapsed}`)
         }
-        if ((fromClientId) && (!await verifySignature(payload as any as JSONValue, hexToPublicKey(nodeIdToPublicKeyHex(fromClientId)), signature))) {
-            throw Error('Invalid signature')
+        if (fromClientId) {
+            if (!signature) {
+                throw Error('Missing signature')
+            }
+            if (!(await verifySignature(payload as any as JSONValue, hexToPublicKey(nodeIdToPublicKeyHex(fromClientId)), signature))) {
+                throw Error('Invalid signature')
+            }
         }
         const verifiedClientId: NodeId | undefined = fromClientId
 

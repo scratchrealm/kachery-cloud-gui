@@ -8,7 +8,7 @@ import setProjectMembershipPermissionsHandler from "./setProjectMembershipPermis
 
 const MAX_NUM_PROJECTS_PER_USER = 12
 
-const addProjectHandler = async (request: AddProjectRequest, verifiedUserId: UserId): Promise<AddProjectResponse> => {
+const addProjectHandler = async (request: AddProjectRequest, verifiedUserId?: UserId): Promise<AddProjectResponse> => {
     const { label, ownerId } = request
     if (verifiedUserId !== ownerId) {
         throw Error('Not authorized')

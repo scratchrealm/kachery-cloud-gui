@@ -1,20 +1,20 @@
-import { HeadObjectOutput, PutObjectRequest } from "aws-sdk/clients/s3";
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
-import { isClient } from "../../src/types/Client";
 import { IpfsFile } from "../../src/types/IpfsFile";
 import { FinalizeIpfsUploadRequest, FinalizeIpfsUploadResponse } from "../../src/types/KacherycloudRequest";
 import { FinalizeIpfsUploadLogItem } from "../../src/types/LogItem";
-import { isProject } from "../../src/types/Project";
-import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { getClient, getProject, getProjectMembership } from "../common/getDatabaseItems";
+import { getClient, getProjectMembership } from "../common/getDatabaseItems";
 import { MAX_UPLOAD_SIZE } from "./initiateIpfsUploadHandler";
 import { deleteObject, headObject } from "./s3Helpers";
 
-const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, verifiedClientId: NodeId): Promise<FinalizeIpfsUploadResponse> => {
+const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, verifiedClientId?: NodeId): Promise<FinalizeIpfsUploadResponse> => {
     const { objectKey } = request.payload
 
     const clientId = verifiedClientId
+
+    if (!clientId) {
+        throw Error('No verified client ID')
+    }
 
     const db = firestoreDatabase()
 
@@ -33,11 +33,14 @@ const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, ver
 
     const x = await headObject(objectKey)
     const size = x.ContentLength
+    if (size === undefined) {
+        throw Error('Not ContentLength in object')
+    }
     if (size > MAX_UPLOAD_SIZE) {
         await deleteObject(objectKey)
         throw Error(`File too large *: ${size} > ${MAX_UPLOAD_SIZE}`)
     }
-    const cid = x.Metadata.cid
+    const cid = (x.Metadata || {}).cid
     if (!cid) {
         throw Error(`No cid field in metaData of object: ${objectKey}`)
     }
@@ -48,7 +51,10 @@ const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, ver
     const alreadyExisted = ipfsFileSnapshot.exists
     let url: string
     if (alreadyExisted) {
-        url = ipfsFileSnapshot.data()['url']
+        url = (ipfsFileSnapshot.data() || {})['url']
+        if (!url) {
+            throw Error('Unexpected: IPFS file exists but no url found')
+        }
         await deleteObject(objectKey)
     }
     else {

@@ -5,7 +5,7 @@ import { isProjectMembership, ProjectMembership } from "../../src/types/ProjectM
 import firestoreDatabase from '../common/firestoreDatabase';
 import isAdminUser from "./helpers/isAdminUser";
 
-const getProjectMembershipsForUserHandler = async (request: GetProjectMembershipsForUserRequest, verifiedUserId: UserId): Promise<GetProjectMembershipsForUserResponse> => {
+const getProjectMembershipsForUserHandler = async (request: GetProjectMembershipsForUserRequest, verifiedUserId?: UserId): Promise<GetProjectMembershipsForUserResponse> => {
     const { userId } = request
     if (!userId) {
         if (!isAdminUser(verifiedUserId)) {

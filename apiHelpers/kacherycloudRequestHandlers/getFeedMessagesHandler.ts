@@ -6,7 +6,7 @@ import firestoreDatabase from "../common/firestoreDatabase";
 import { getClient } from "../common/getDatabaseItems";
 import { FeedMessageDocument, isFeedMessageDocument } from "./appendFeedMessagesHandler";
 
-const getFeedMessagesHandler = async (request: GetFeedMessagesRequest, verifiedClientId: NodeId): Promise<GetFeedMessagesResponse> => {
+const getFeedMessagesHandler = async (request: GetFeedMessagesRequest, verifiedClientId?: NodeId): Promise<GetFeedMessagesResponse> => {
     let { feedId, startMessageNumber } = request.payload
 
     const clientId = verifiedClientId

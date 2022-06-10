@@ -4,7 +4,7 @@ import { isProject } from "../../src/types/Project";
 import { ProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
 
-const addProjectMembershipHandler = async (request: AddProjectMembershipRequest, verifiedUserId: UserId): Promise<AddProjectMembershipResponse> => {
+const addProjectMembershipHandler = async (request: AddProjectMembershipRequest, verifiedUserId?: UserId): Promise<AddProjectMembershipResponse> => {
     const { projectId, memberId } = request
 
     const db = firestoreDatabase()

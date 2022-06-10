@@ -5,10 +5,13 @@ import firestoreDatabase from '../common/firestoreDatabase';
 import { getProjectMembership } from "../common/getDatabaseItems";
 import isAdminUser from "./helpers/isAdminUser";
 
-const getProjectUsageHandler = async (request: GetProjectUsageRequest, verifiedUserId: UserId): Promise<GetProjectUsageResponse> => {
+const getProjectUsageHandler = async (request: GetProjectUsageRequest, verifiedUserId?: UserId): Promise<GetProjectUsageResponse> => {
     const { projectId } = request
 
     const userId = verifiedUserId
+    if (!userId) {
+        throw Error('No verified user')
+    }
 
     const pm = await getProjectMembership(projectId, userId)
     if ((!pm) || (!pm.permissions.read)) {

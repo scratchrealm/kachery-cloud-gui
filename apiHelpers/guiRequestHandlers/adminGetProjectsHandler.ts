@@ -1,12 +1,10 @@
 import { UserId } from "../../src/commonInterface/kacheryTypes";
-import { AdminGetProjectsRequest, AdminGetProjectsResponse, GetProjectUsageRequest, GetProjectUsageResponse } from "../../src/types/GuiRequest";
+import { AdminGetProjectsRequest, AdminGetProjectsResponse } from "../../src/types/GuiRequest";
 import { isProject, Project } from "../../src/types/Project";
-import { isProjectUsage } from "../../src/types/ProjectUsage";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { getProjectMembership } from "../common/getDatabaseItems";
 import isAdminUser from "./helpers/isAdminUser";
 
-const adminGetProjectsHandler = async (request: AdminGetProjectsRequest, verifiedUserId: UserId): Promise<AdminGetProjectsResponse> => {
+const adminGetProjectsHandler = async (request: AdminGetProjectsRequest, verifiedUserId?: UserId): Promise<AdminGetProjectsResponse> => {
     if (!isAdminUser(verifiedUserId)) {
         throw Error('Not an admin user')
     }

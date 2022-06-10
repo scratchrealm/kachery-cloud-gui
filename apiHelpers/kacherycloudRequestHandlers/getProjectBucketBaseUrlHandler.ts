@@ -3,7 +3,7 @@ import { GetProjectBucketBaseUrlRequest, GetProjectBucketBaseUrlResponse } from 
 import { isProject } from "../../src/types/Project";
 import firestoreDatabase from '../common/firestoreDatabase';
 
-const getProjectBucketBaseUrlHandler = async (request: GetProjectBucketBaseUrlRequest, verifiedClientId: NodeId): Promise<GetProjectBucketBaseUrlResponse> => {
+const getProjectBucketBaseUrlHandler = async (request: GetProjectBucketBaseUrlRequest, verifiedClientId?: NodeId): Promise<GetProjectBucketBaseUrlResponse> => {
     const { projectId } = request.payload
 
     const db = firestoreDatabase()

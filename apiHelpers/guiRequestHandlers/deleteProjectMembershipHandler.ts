@@ -3,7 +3,7 @@ import { DeleteProjectMembershipRequest, DeleteProjectMembershipResponse } from 
 import { isProject } from "../../src/types/Project";
 import firestoreDatabase from '../common/firestoreDatabase';
 
-const deleteProjectMembershipHandler = async (request: DeleteProjectMembershipRequest, verifiedUserId: UserId): Promise<DeleteProjectMembershipResponse> => {
+const deleteProjectMembershipHandler = async (request: DeleteProjectMembershipRequest, verifiedUserId?: UserId): Promise<DeleteProjectMembershipResponse> => {
     const { projectId, memberId } = request
 
     const db = firestoreDatabase()

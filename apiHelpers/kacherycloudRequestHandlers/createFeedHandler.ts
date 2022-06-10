@@ -6,8 +6,11 @@ import firestoreDatabase from '../common/firestoreDatabase';
 import { getClient, getProjectMembership } from "../common/getDatabaseItems";
 import { randomAlphaLowerString } from "../guiRequestHandlers/helpers/randomAlphaString";
 
-const createFeedHandler = async (request: CreateFeedRequest, verifiedClientId: NodeId): Promise<CreateFeedResponse> => {
+const createFeedHandler = async (request: CreateFeedRequest, verifiedClientId?: NodeId): Promise<CreateFeedResponse> => {
     const clientId = verifiedClientId
+    if (!clientId) {
+        throw Error('No verified client ID')
+    }
 
     const client = await getClient(clientId)
 

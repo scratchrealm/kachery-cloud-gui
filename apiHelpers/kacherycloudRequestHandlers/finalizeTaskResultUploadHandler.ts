@@ -1,18 +1,18 @@
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
-import { isClient } from "../../src/types/Client";
 import { FinalizeTaskResultUploadRequest, FinalizeTaskResultUploadResponse } from "../../src/types/KacherycloudRequest";
 import { FinalizeTaskResultUploadLogItem } from "../../src/types/LogItem";
-import { isProject } from "../../src/types/Project";
-import { isProjectMembership } from "../../src/types/ProjectMembership";
 import { TaskResult } from "../../src/types/TaskResult";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { getClient, getProjectMembership } from "../common/getDatabaseItems";
 import { deleteObject, headObject } from "./s3Helpers";
 
-const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUploadRequest, verifiedClientId: NodeId): Promise<FinalizeTaskResultUploadResponse> => {
+const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUploadRequest, verifiedClientId?: NodeId): Promise<FinalizeTaskResultUploadResponse> => {
     const { taskName, taskJobId, size } = request.payload
 
     const clientId = verifiedClientId
+    if (!clientId) {
+        throw Error('No verified client ID')
+    }
 
     const db = firestoreDatabase()
 

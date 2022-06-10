@@ -1,10 +1,9 @@
 import { UserId } from "../../src/commonInterface/kacheryTypes";
 import { isClient } from "../../src/types/Client";
-import { SetClientInfoRequest, SetClientInfoResponse, SetUserSettingsRequest, SetUserSettingsResponse } from "../../src/types/GuiRequest";
-import { isUser, User } from "../../src/types/User";
+import { SetClientInfoRequest, SetClientInfoResponse } from "../../src/types/GuiRequest";
 import firestoreDatabase from '../common/firestoreDatabase';
 
-const setClientInfoHandler = async (request: SetClientInfoRequest, verifiedUserId: UserId): Promise<SetClientInfoResponse> => {
+const setClientInfoHandler = async (request: SetClientInfoRequest, verifiedUserId?: UserId): Promise<SetClientInfoResponse> => {
     const { clientId, label, defaultProjectId } = request
 
     const db = firestoreDatabase()

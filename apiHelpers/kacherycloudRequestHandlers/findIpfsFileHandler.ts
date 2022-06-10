@@ -1,9 +1,8 @@
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
-import { Client, isClient } from "../../src/types/Client";
+import { Client } from "../../src/types/Client";
 import { IpfsFile, isIpfsFile } from "../../src/types/IpfsFile";
 import { FindIpfsFileRequest, FindIpfsFileResponse } from "../../src/types/KacherycloudRequest";
 import { FindIpfsFileLogItem } from "../../src/types/LogItem";
-import { isProject, Project } from '../../src/types/Project';
 import firestoreDatabase from '../common/firestoreDatabase';
 import { getClient } from "../common/getDatabaseItems";
 

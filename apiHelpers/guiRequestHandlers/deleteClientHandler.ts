@@ -2,7 +2,7 @@ import { UserId } from "../../src/commonInterface/kacheryTypes";
 import { DeleteClientRequest, DeleteClientResponse } from "../../src/types/GuiRequest";
 import firestoreDatabase from '../common/firestoreDatabase';
 
-const deleteClientHandler = async (request: DeleteClientRequest, verifiedUserId: UserId): Promise<DeleteClientResponse> => {
+const deleteClientHandler = async (request: DeleteClientRequest, verifiedUserId?: UserId): Promise<DeleteClientResponse> => {
     const { clientId, ownerId } = request
 
     if (ownerId !== verifiedUserId) {

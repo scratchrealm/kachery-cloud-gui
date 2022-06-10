@@ -27,8 +27,13 @@ export const isFeedMessageDocument = (x: any): x is FeedMessageDocument => {
     })
 }
 
-const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, verifiedClientId: NodeId): Promise<AppendFeedMessagesResponse> => {
+const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, verifiedClientId?: NodeId): Promise<AppendFeedMessagesResponse> => {
     const { feedId, messagesJson } = request.payload
+
+    const clientId = verifiedClientId
+    if (!clientId) {
+        throw Error('No verified client ID')
+    }
 
     if (messagesJson.length > MAX_NUM_FEED_MESSAGES_TO_APPEND) {
         throw Error(`Too many feed messages to append: ${messagesJson.length} > ${MAX_NUM_FEED_MESSAGES_TO_APPEND}`)
@@ -41,8 +46,6 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
             throw Error(`Message is too large: ${JSON.stringify(messageJson).length} > ${MAX_FEED_MESSAGE_SIZE}`)
         }
     }
-
-    const clientId = verifiedClientId
 
     const client = await getClient(clientId)
 

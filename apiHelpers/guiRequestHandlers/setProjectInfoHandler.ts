@@ -3,7 +3,7 @@ import { SetProjectInfoRequest, SetProjectInfoResponse } from "../../src/types/G
 import { isProject } from "../../src/types/Project";
 import firestoreDatabase from '../common/firestoreDatabase';
 
-const setProjectInfoHandler = async (request: SetProjectInfoRequest, verifiedUserId: UserId): Promise<SetProjectInfoResponse> => {
+const setProjectInfoHandler = async (request: SetProjectInfoRequest, verifiedUserId?: UserId): Promise<SetProjectInfoResponse> => {
     const { projectId, label } = request
 
     const db = firestoreDatabase()

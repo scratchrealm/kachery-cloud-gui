@@ -1,18 +1,11 @@
-import { HeadObjectOutput, PutObjectRequest } from "aws-sdk/clients/s3";
-import { NodeId, userId } from "../../src/commonInterface/kacheryTypes";
-import { isClient } from "../../src/types/Client";
-import { IpfsFile } from "../../src/types/IpfsFile";
-import { FinalizeIpfsUploadRequest, FinalizeIpfsUploadResponse, SetMutableRequest, SetMutableResponse } from "../../src/types/KacherycloudRequest";
-import { FinalizeIpfsUploadLogItem, SetMutableLogItem } from "../../src/types/LogItem";
+import { NodeId } from "../../src/commonInterface/kacheryTypes";
+import { SetMutableRequest, SetMutableResponse } from "../../src/types/KacherycloudRequest";
+import { SetMutableLogItem } from "../../src/types/LogItem";
 import { MutableRecord } from "../../src/types/MutableRecord";
-import { isProject } from "../../src/types/Project";
-import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { MAX_UPLOAD_SIZE } from "./initiateIpfsUploadHandler";
-import { deleteObject, headObject } from "./s3Helpers";
-import { getClient, getProject, getProjectMembership } from '../common/getDatabaseItems'
+import { getClient, getProjectMembership } from '../common/getDatabaseItems';
 
-const setMutableHandler = async (request: SetMutableRequest, verifiedClientId: NodeId): Promise<SetMutableResponse> => {
+const setMutableHandler = async (request: SetMutableRequest, verifiedClientId?: NodeId): Promise<SetMutableResponse> => {
     const { mutableKey, value } = request.payload
 
     if (value.length > 1000) {
@@ -20,6 +13,9 @@ const setMutableHandler = async (request: SetMutableRequest, verifiedClientId: N
     }
 
     const clientId = verifiedClientId
+    if (!clientId) {
+        throw Error('No verified client ID')
+    }
 
     const db = firestoreDatabase()
     const client = await getClient(clientId)

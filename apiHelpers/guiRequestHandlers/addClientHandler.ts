@@ -6,7 +6,7 @@ import firestoreDatabase from '../common/firestoreDatabase';
 
 const MAX_NUM_CLIENTS_PER_USER = 25
 
-const addClientHandler = async (request: AddClientRequest, verifiedUserId: UserId): Promise<AddClientResponse> => {
+const addClientHandler = async (request: AddClientRequest, verifiedUserId?: UserId): Promise<AddClientResponse> => {
     const { clientId, ownerId, label, defaultProjectId } = request
 
     if (ownerId !== verifiedUserId) {

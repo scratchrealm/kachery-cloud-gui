@@ -1,16 +1,13 @@
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
-import { isClient } from "../../src/types/Client";
 import { InitiateTaskResultUploadRequest, InitiateTaskResultUploadResponse } from "../../src/types/KacherycloudRequest";
 import { InitiateTaskResultUploadLogItem } from "../../src/types/LogItem";
-import { isProject } from "../../src/types/Project";
-import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { getClient, getProjectMembership } from "../common/getDatabaseItems";
 import { getSignedUploadUrl } from "./s3Helpers";
 
 export const MAX_TASK_RESULT_UPLOAD_SIZE = 50 * 1000 * 1000
 
-const initiateTaskResultUploadHandler = async (request: InitiateTaskResultUploadRequest, verifiedClientId: NodeId): Promise<InitiateTaskResultUploadResponse> => {
+const initiateTaskResultUploadHandler = async (request: InitiateTaskResultUploadRequest, verifiedClientId?: NodeId): Promise<InitiateTaskResultUploadResponse> => {
     const { taskName, taskJobId, size } = request.payload
 
     if (size > MAX_TASK_RESULT_UPLOAD_SIZE) {
@@ -18,6 +15,9 @@ const initiateTaskResultUploadHandler = async (request: InitiateTaskResultUpload
     }
 
     const clientId = verifiedClientId
+    if (!clientId) {
+        throw Error('No verified client ID')
+    }
 
     const db = firestoreDatabase()
 

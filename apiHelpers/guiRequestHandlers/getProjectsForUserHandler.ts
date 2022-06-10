@@ -5,7 +5,7 @@ import firestoreDatabase from '../common/firestoreDatabase';
 import hideSecretsInProject from './helpers/hideSecretsInProject';
 import isAdminUser from "./helpers/isAdminUser";
 
-const getProjectsForUserHandler = async (request: GetProjectsForUserRequest, verifiedUserId: UserId): Promise<GetProjectsForUserResponse> => {
+const getProjectsForUserHandler = async (request: GetProjectsForUserRequest, verifiedUserId?: UserId): Promise<GetProjectsForUserResponse> => {
     const { userId } = request
     if (!userId) {
         if (!isAdminUser(verifiedUserId)) {

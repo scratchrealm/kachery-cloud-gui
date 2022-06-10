@@ -3,7 +3,7 @@ import { ProjectSettings, isProject } from "../../src/types/Project";
 import { SetProjectSettingsRequest, SetProjectSettingsResponse } from "../../src/types/GuiRequest";
 import firestoreDatabase from '../common/firestoreDatabase';
 
-const setProjectSettingsHandler = async (request: SetProjectSettingsRequest, verifiedUserId: UserId): Promise<SetProjectSettingsResponse> => {
+const setProjectSettingsHandler = async (request: SetProjectSettingsRequest, verifiedUserId?: UserId): Promise<SetProjectSettingsResponse> => {
     const { projectId, projectSettings } = request
 
     const db = firestoreDatabase()

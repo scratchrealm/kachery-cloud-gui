@@ -5,7 +5,7 @@ import { GetFeedInfoLogItem } from "../../src/types/LogItem";
 import firestoreDatabase from "../common/firestoreDatabase";
 import { getClient } from "../common/getDatabaseItems";
 
-const getFeedInfoHandler = async (request: GetFeedInfoRequest, verifiedClientId: NodeId): Promise<GetFeedInfoResponse> => {
+const getFeedInfoHandler = async (request: GetFeedInfoRequest, verifiedClientId?: NodeId): Promise<GetFeedInfoResponse> => {
     let { feedId } = request.payload
 
     const clientId = verifiedClientId

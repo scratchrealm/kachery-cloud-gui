@@ -4,7 +4,7 @@ import { isProject } from "../../src/types/Project";
 import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
 
-const setProjectMembershipPermissionsHandler = async (request: SetProjectMembershipPermissionsRequest, verifiedUserId: UserId): Promise<SetProjectMembershipPermissionsResponse> => {
+const setProjectMembershipPermissionsHandler = async (request: SetProjectMembershipPermissionsRequest, verifiedUserId?: UserId): Promise<SetProjectMembershipPermissionsResponse> => {
     const { projectId, memberId, projectMembershipPermissions } = request
 
     const db = firestoreDatabase()

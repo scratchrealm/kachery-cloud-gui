@@ -1,6 +1,5 @@
 import { UserId } from "../../src/commonInterface/kacheryTypes";
-import { GetProjectRequest, GetProjectResponse, GetProjectsForUserRequest, GetProjectsForUserResponse } from "../../src/types/GuiRequest";
-import { isProject, Project } from "../../src/types/Project";
+import { GetProjectRequest, GetProjectResponse } from "../../src/types/GuiRequest";
 import { isProjectMembership, ProjectMembership } from "../../src/types/ProjectMembership";
 import { isProjectUsage, ProjectUsage } from "../../src/types/ProjectUsage";
 import firestoreDatabase from '../common/firestoreDatabase';
@@ -8,7 +7,7 @@ import { getProject } from "../common/getDatabaseItems";
 import hideSecretsInProject from './helpers/hideSecretsInProject';
 import isAdminUser from "./helpers/isAdminUser";
 
-const getProjectHandler = async (request: GetProjectRequest, verifiedUserId: UserId): Promise<GetProjectResponse> => {
+const getProjectHandler = async (request: GetProjectRequest, verifiedUserId?: UserId): Promise<GetProjectResponse> => {
     const { projectId } = request
 
     const project = await getProject(projectId)

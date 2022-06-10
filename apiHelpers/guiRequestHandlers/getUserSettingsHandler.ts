@@ -3,7 +3,7 @@ import { GetUserSettingsRequest, GetUserSettingsResponse } from "../../src/types
 import { isUserSettings } from "../../src/types/User";
 import firestoreDatabase from '../common/firestoreDatabase';
 
-const getUserSettingsHandler = async (request: GetUserSettingsRequest, verifiedUserId: UserId): Promise<GetUserSettingsResponse> => {
+const getUserSettingsHandler = async (request: GetUserSettingsRequest, verifiedUserId?: UserId): Promise<GetUserSettingsResponse> => {
     const { userId } = request
 
     if (userId !== verifiedUserId) {
