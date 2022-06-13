@@ -1,10 +1,11 @@
 import { NodeId, UserId } from "../../src/commonInterface/kacheryTypes"
 import { Client, isClient } from "../../src/types/Client"
 import { isProject, Project } from "../../src/types/Project"
+import { isBucket, Bucket } from "../../src/types/Bucket"
 import { isProjectMembership, ProjectMembership } from "../../src/types/ProjectMembership"
 import firestoreDatabase from "./firestoreDatabase"
 
-class ObjectCache<ObjectType> {
+export class ObjectCache<ObjectType> {
     #cache: {[key: string]: {object: ObjectType, timestamp: number}} = {}
     constructor(private expirationMsec: number) {
     }
@@ -29,6 +30,7 @@ class ObjectCache<ObjectType> {
 const expirationMSec = 20000
 const clientObjectCache = new ObjectCache<Client>(expirationMSec)
 const projectObjectCache = new ObjectCache<Project>(expirationMSec)
+const bucketObjectCache = new ObjectCache<Bucket>(expirationMSec)
 const projectMembershipObjectCache = new ObjectCache<ProjectMembership>(expirationMSec)
 
 export const getClient = async (clientId: NodeId) => {
@@ -55,6 +57,19 @@ export const getProject = async (projectId: string) => {
     if (!isProject(project)) throw Error('Invalid project in database')
     projectObjectCache.set(projectId.toString(), project)
     return project
+}
+
+export const getBucket = async (bucketId: string) => {
+    const x = bucketObjectCache.get(bucketId.toString())
+    if (x) return x
+    const db = firestoreDatabase()
+    const bucketsCollection = db.collection('kacherycloud.buckets')
+    const bucketSnapshot = await bucketsCollection.doc(bucketId).get()
+    if (!bucketSnapshot.exists) throw Error(`Bucket does not exist: ${bucketId}`)
+    const bucket = bucketSnapshot.data()
+    if (!isBucket(bucket)) throw Error('Invalid bucket in database')
+    bucketObjectCache.set(bucketId.toString(), bucket)
+    return bucket
 }
 
 export const getProjectMembership = async (projectId: string, userId: UserId) => {

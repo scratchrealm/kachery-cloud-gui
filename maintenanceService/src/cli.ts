@@ -65,6 +65,22 @@ const main = async () => {
                     }
                     handled = true
                 }
+                else if (logItem.type === 'initiateFileUpload') {
+                    projectUsage.numInitiatedFileUploads = (projectUsage.numInitiatedFileUploads || 0) + 1
+                    handled = true
+                }
+                else if (logItem.type === 'finalizeFileUpload') {
+                    projectUsage.numFinalizedFileUploads = (projectUsage.numFinalizedFileUploads || 0) + 1
+                    projectUsage.numFileBytesUploaded = (projectUsage.numFileBytesUploaded || 0) + logItem.size
+                    handled = true
+                }
+                else if (logItem.type === 'findFile') {
+                    projectUsage.numFileFinds = (projectUsage.numFileFinds || 0) + 1
+                    if (logItem.found) {
+                        projectUsage.numFileFindBytes = (projectUsage.numFileFindBytes || 0) + (logItem.size || 0)
+                    }
+                    handled = true
+                }
                 else if (logItem.type === 'subscribeToPubsubChannel') {
                     if (logItem.channelName === 'feedUpdates') {
                         projectUsage.numSubscribeToFeedUpdates = (projectUsage.numSubscribeToFeedUpdates || 0) + 1

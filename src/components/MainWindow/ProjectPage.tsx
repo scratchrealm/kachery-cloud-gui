@@ -39,6 +39,21 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
         })()
     }, [userId, googleIdToken, projectId, refreshProject, setErrorMessage])
 
+    const handleChangeBucket = useCallback((newBucketId: string) => {
+        if (!userId) return
+        if (!googleIdToken) return
+        ;(async () => {
+            const req: SetProjectInfoRequest = {
+                type: 'setProjectInfo',
+                projectId,
+                bucketId: newBucketId,
+                auth: {userId, googleIdToken}
+            }
+            await guiApiRequest(req, {reCaptcha: true, setErrorMessage})
+            refreshProject()
+        })()
+    }, [userId, googleIdToken, projectId, refreshProject, setErrorMessage])
+
     const tableData = useMemo(() => {
         if (!project) return undefined
         return [
@@ -54,10 +69,21 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
             },
             { key: 'projectId', label: 'Project ID', value: project.projectId.toString() },
             { key: 'ownerId', label: 'Owner', value: project.ownerId.toString() },
+            {
+                key: 'bucketId',
+                label: 'Bucket',
+                value: (
+                    <EditableTextField
+                        value={project.bucketId || ''}
+                        onChange={handleChangeBucket}
+                        onClick={project.bucketId ? () => {setRoute({page: 'bucket', bucketId: project.bucketId || ''})} : undefined}
+                    />
+                )
+            },
             { key: 'timestampCreated', label: 'Created', value: `${new Date(project.timestampCreated)}` },
             { key: 'timestampLastModified', label: 'Modified', value: `${new Date(project.timestampLastModified)}` }
         ]
-    }, [project, handleChangeLabel])
+    }, [project, handleChangeLabel, handleChangeBucket, setRoute])
 
     const handleBack = useCallback(() => {
         setRoute({page: 'home'})

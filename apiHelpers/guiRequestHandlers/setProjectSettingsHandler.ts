@@ -2,20 +2,14 @@ import { UserId } from "../../src/commonInterface/kacheryTypes";
 import { ProjectSettings, isProject } from "../../src/types/Project";
 import { SetProjectSettingsRequest, SetProjectSettingsResponse } from "../../src/types/GuiRequest";
 import firestoreDatabase from '../common/firestoreDatabase';
+import { getProject } from "../common/getDatabaseItems";
 
 const setProjectSettingsHandler = async (request: SetProjectSettingsRequest, verifiedUserId?: UserId): Promise<SetProjectSettingsResponse> => {
     const { projectId, projectSettings } = request
 
     const db = firestoreDatabase()
     const collection = db.collection('kacherycloud.projects')
-    const docSnapshot = await collection.doc(projectId.toString()).get()
-    if (!docSnapshot.exists) {
-        throw Error('Project does not exist in setProjectSettingsHandler.')
-    }
-    const project = docSnapshot.data()
-    if (!isProject(project)) {
-        throw Error('Invalid project')
-    }
+    const project = await getProject(projectId)
     if (project.ownerId !== verifiedUserId) {
         throw Error('Not authorized to set project settings for this project.')
     }

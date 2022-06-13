@@ -2,6 +2,7 @@ import { UserId } from "../../src/commonInterface/kacheryTypes";
 import { DeleteProjectRequest, DeleteProjectResponse } from "../../src/types/GuiRequest";
 import { isProject } from "../../src/types/Project";
 import firestoreDatabase from '../common/firestoreDatabase';
+import { getProject } from "../common/getDatabaseItems";
 
 const deleteProjectHandler = async (request: DeleteProjectRequest, verifiedUserId?: UserId): Promise<DeleteProjectResponse> => {
     const { projectId } = request
@@ -17,14 +18,7 @@ const deleteProjectHandler = async (request: DeleteProjectRequest, verifiedUserI
     })
 
     const collection = db.collection('kacherycloud.projects')
-    const docSnapshot = await collection.doc(projectId.toString()).get()
-    if (!docSnapshot.exists) {
-        throw Error(`Project does not exist in deleteProjectHandler: ${projectId}`)
-    }
-    const project = docSnapshot.data()
-    if (!isProject(project)) {
-        throw Error('Invalid project')
-    }
+    const project = await getProject(projectId)
     if (project.ownerId !== verifiedUserId) {
         throw Error('Not authorized')
     }
@@ -33,6 +27,12 @@ const deleteProjectHandler = async (request: DeleteProjectRequest, verifiedUserI
     const ipfsFilesCollection = db.collection('kacherycloud.ipfsFiles')
     const ipfsFilesResult = await ipfsFilesCollection.where('projectId', '==', projectId).get()
     ipfsFilesResult.forEach(doc => {
+        batch.delete(doc.ref)
+    })
+
+    const filesCollection = db.collection('kacherycloud.files')
+    const filesResult = await filesCollection.where('projectId', '==', projectId).get()
+    filesResult.forEach(doc => {
         batch.delete(doc.ref)
     })
     

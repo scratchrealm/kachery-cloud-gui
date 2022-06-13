@@ -9,6 +9,9 @@ export type Route = {
     page: 'project',
     projectId: string
 } | {
+    page: 'bucket',
+    bucketId: string
+} | {
     page: 'projectMembership',
     projectId: string,
     memberId: UserId
@@ -54,6 +57,15 @@ const useRoute = () => {
                 page: 'projectMembership',
                 projectId: x[2],
                 memberId: x[4] as any as UserId
+            }
+        }
+    }
+    else if (p.startsWith('/bucket')) {
+        const x = p.split('/')
+        if (x.length === 3) {
+            route = {
+                page: 'bucket',
+                bucketId: x[2]
             }
         }
     }
@@ -121,6 +133,9 @@ const useRoute = () => {
         let pathname2 = '/home'
         if (route.page === 'project') {
             pathname2 = `/project/${route.projectId}`
+        }
+        else if (route.page === 'bucket') {
+            pathname2 = `/bucket/${route.bucketId}`
         }
         else if (route.page === 'projectMembership') {
             pathname2 = `/project/${route.projectId}/member/${route.memberId}`

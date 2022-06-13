@@ -1,14 +1,17 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
 import appendFeedMessagesHandler from '../apiHelpers/kacherycloudRequestHandlers/appendFeedMessagesHandler'
 import createFeedHandler from '../apiHelpers/kacherycloudRequestHandlers/createFeedHandler'
+import finalizeFileUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/finalizeFileUploadHandler'
 import finalizeIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/finalizeIpfsUploadHandler'
 import finalizeTaskResultUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/finalizeTaskResultUploadHandler'
+import findFileHandler from '../apiHelpers/kacherycloudRequestHandlers/findFileHandler'
 import findIpfsFileHandler from '../apiHelpers/kacherycloudRequestHandlers/findIpfsFileHandler'
 import getClientInfoHandler from '../apiHelpers/kacherycloudRequestHandlers/getClientInfoHandler'
 import getFeedInfoHandler from '../apiHelpers/kacherycloudRequestHandlers/getFeedInfoHandler'
 import getFeedMessagesHandler from '../apiHelpers/kacherycloudRequestHandlers/getFeedMessagesHandler'
 import getMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/getMutableHandler'
 import getProjectBucketBaseUrlHandler from '../apiHelpers/kacherycloudRequestHandlers/getProjectBucketBaseUrlHandler'
+import initiateFileUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateFileUploadHandler'
 import initiateIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateIpfsUploadHandler'
 import initiateTaskResultUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateTaskResultUploadHandler'
 import publishToPubsubChannelHandler from '../apiHelpers/kacherycloudRequestHandlers/publishToPubsubChannelHandler'
@@ -16,7 +19,7 @@ import setMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/setMuta
 import subscribeToPubsubChannelHandler from '../apiHelpers/kacherycloudRequestHandlers/subscribeToPubsubChannelHandler'
 import { hexToPublicKey, verifySignature } from '../src/commonInterface/crypto/signatures'
 import { JSONValue, NodeId, nodeIdToPublicKeyHex } from '../src/commonInterface/kacheryTypes'
-import { isAppendFeedMessagesRequest, isCreateFeedRequest, isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetFeedInfoRequest, isGetFeedMessagesRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isPublishToPubsubChannelRequest, isSetMutableRequest, isSubscribeToPubsubChannelRequest } from '../src/types/KacherycloudRequest'
+import { isAppendFeedMessagesRequest, isCreateFeedRequest, isFinalizeFileUploadRequest, isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindFileRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetFeedInfoRequest, isGetFeedMessagesRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateFileUploadRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isPublishToPubsubChannelRequest, isSetMutableRequest, isSubscribeToPubsubChannelRequest } from '../src/types/KacherycloudRequest'
 
 module.exports = (req: VercelRequest, res: VercelResponse) => {    
     const {body: request} = req
@@ -78,6 +81,15 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         else if (isFindIpfsFileRequest(request)) {
             return await findIpfsFileHandler(request, verifiedClientId)
+        }
+        else if (isInitiateFileUploadRequest(request)) {
+            return await initiateFileUploadHandler(request, verifiedClientId)
+        }
+        else if (isFinalizeFileUploadRequest(request)) {
+            return await finalizeFileUploadHandler(request, verifiedClientId)
+        }
+        else if (isFindFileRequest(request)) {
+            return await findFileHandler(request, verifiedClientId)
         }
         else if (isSetMutableRequest(request)) {
             return await setMutableHandler(request, verifiedClientId)

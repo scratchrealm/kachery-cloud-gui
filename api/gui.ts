@@ -1,26 +1,32 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
 import axios from 'axios'
 import googleVerifyIdToken from '../apiHelpers/common/googleVerifyIdToken'
+import addBucketHandler from '../apiHelpers/guiRequestHandlers/addBucketHandler'
+import addClientHandler from '../apiHelpers/guiRequestHandlers/addClientHandler'
 import addProjectHandler from '../apiHelpers/guiRequestHandlers/addProjectHandler'
 import addProjectMembershipHandler from '../apiHelpers/guiRequestHandlers/addProjectMembershipHandler'
+import adminGetProjectsHandler from '../apiHelpers/guiRequestHandlers/adminGetProjectsHandler'
+import deleteBucketHandler from '../apiHelpers/guiRequestHandlers/deleteBucketHandler'
+import deleteClientHandler from '../apiHelpers/guiRequestHandlers/deleteClientHandler'
 import deleteProjectHandler from '../apiHelpers/guiRequestHandlers/deleteProjectHandler'
 import deleteProjectMembershipHandler from '../apiHelpers/guiRequestHandlers/deleteProjectMembershipHandler'
-import deleteClientHandler from '../apiHelpers/guiRequestHandlers/deleteClientHandler'
-import getProjectsForUserHandler from '../apiHelpers/guiRequestHandlers/getProjectsForUserHandler'
+import getBucketHandler from '../apiHelpers/guiRequestHandlers/getBucketHandler'
+import getBucketsForUserHandler from '../apiHelpers/guiRequestHandlers/getBucketsForUserHandler'
 import getClientsHandler from '../apiHelpers/guiRequestHandlers/getClientsHandler'
-import addClientHandler from '../apiHelpers/guiRequestHandlers/addClientHandler'
-import setProjectSettingsHandler from '../apiHelpers/guiRequestHandlers/setProjectSettingsHandler'
-import { UserId } from '../src/commonInterface/kacheryTypes'
-import { isGuiRequest } from '../src/types/GuiRequest'
+import getProjectHandler from '../apiHelpers/guiRequestHandlers/getProjectHandler'
 import getProjectMembershipsForUserHandler from '../apiHelpers/guiRequestHandlers/getProjectMembershipsForUserHandler'
-import setProjectMembershipPermissionsHandler from '../apiHelpers/guiRequestHandlers/setProjectMembershipPermissionsHandler'
+import getProjectsForUserHandler from '../apiHelpers/guiRequestHandlers/getProjectsForUserHandler'
+import getProjectUsageHandler from '../apiHelpers/guiRequestHandlers/getProjectUsageHandler'
 import getUserSettingsHandler from '../apiHelpers/guiRequestHandlers/getUserSettingsHandler'
-import setUserSettingsHandler from '../apiHelpers/guiRequestHandlers/setUserSettingsHandler'
+import setBucketCredentialsHandler from '../apiHelpers/guiRequestHandlers/setBucketCredentialsHandler'
+import setBucketLabelHandler from '../apiHelpers/guiRequestHandlers/setBucketLabelHandler'
 import setClientInfoHandler from '../apiHelpers/guiRequestHandlers/setClientInfoHandler'
 import setProjectInfoHandler from '../apiHelpers/guiRequestHandlers/setProjectInfoHandler'
-import getProjectUsageHandler from '../apiHelpers/guiRequestHandlers/getProjectUsageHandler'
-import adminGetProjectsHandler from '../apiHelpers/guiRequestHandlers/adminGetProjectsHandler'
-import getProjectHandler from '../apiHelpers/guiRequestHandlers/getProjectHandler'
+import setProjectMembershipPermissionsHandler from '../apiHelpers/guiRequestHandlers/setProjectMembershipPermissionsHandler'
+import setProjectSettingsHandler from '../apiHelpers/guiRequestHandlers/setProjectSettingsHandler'
+import setUserSettingsHandler from '../apiHelpers/guiRequestHandlers/setUserSettingsHandler'
+import { UserId } from '../src/commonInterface/kacheryTypes'
+import { isGuiRequest } from '../src/types/GuiRequest'
 
 const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY
 
@@ -105,6 +111,32 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
             }
             return await setProjectSettingsHandler(request, verifiedUserId)
         }
+        else if (request.type === 'addBucket') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await addBucketHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'deleteBucket') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await deleteBucketHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'getBucketsForUser') {
+            // no recaptcha required
+            return await getBucketsForUserHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'getBucket') {
+            // no recaptcha required
+            return await getBucketHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'setBucketCredentials') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await setBucketCredentialsHandler(request, verifiedUserId)
+        }
         else if (request.type === 'addClient') {
             if (!verifiedReCaptchaInfo) {
                 throw Error('ReCaptcha required')
@@ -148,6 +180,12 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
                 throw Error('ReCaptcha required')
             }
             return await setProjectInfoHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'setBucketLabel') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await setBucketLabelHandler(request, verifiedUserId)
         }
         else if (request.type === 'getProjectUsage') {
             return await getProjectUsageHandler(request, verifiedUserId)

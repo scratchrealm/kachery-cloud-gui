@@ -6,10 +6,11 @@ type Props = {
     value: string
     clearOnEdit?: boolean
     onChange: (x: string) => void
+    onClick?: () => void
     tooltip?: string
 }
 
-const EditableTextField: FunctionComponent<Props> = ({value, clearOnEdit, onChange, tooltip}) => {
+const EditableTextField: FunctionComponent<Props> = ({value, clearOnEdit, onChange, onClick, tooltip}) => {
     const [editing, setEditing] = useState<boolean>(false)
     if (editing) {
         return (
@@ -26,7 +27,9 @@ const EditableTextField: FunctionComponent<Props> = ({value, clearOnEdit, onChan
     else {
         return (
             <span>
-                {value}
+                {
+                    onClick ? <Hyperlink onClick={onClick}>{value}</Hyperlink> : value
+                }
                 &nbsp;&nbsp;&nbsp;
                 <Hyperlink onClick={() => setEditing(true)}>edit</Hyperlink>
             </span>

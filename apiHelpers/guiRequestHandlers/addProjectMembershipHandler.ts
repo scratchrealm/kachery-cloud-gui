@@ -1,23 +1,15 @@
 import { UserId } from "../../src/commonInterface/kacheryTypes";
 import { AddProjectMembershipRequest, AddProjectMembershipResponse } from "../../src/types/GuiRequest";
-import { isProject } from "../../src/types/Project";
 import { ProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
+import { getProject } from "../common/getDatabaseItems";
 
 const addProjectMembershipHandler = async (request: AddProjectMembershipRequest, verifiedUserId?: UserId): Promise<AddProjectMembershipResponse> => {
     const { projectId, memberId } = request
 
     const db = firestoreDatabase()
 
-    const projectsCollection = db.collection('kacherycloud.projects')
-    const projectDocSnapshot = await projectsCollection.doc(projectId.toString()).get()
-    if (!projectDocSnapshot.exists) {
-        throw Error('Project does not exist in addProjectMembershipHandler.')
-    }
-    const project = projectDocSnapshot.data()
-    if (!isProject(project)) {
-        throw Error('Invalid project')
-    }
+    const project = await getProject(projectId)
     if (project.ownerId !== verifiedUserId) {
         throw Error('Not authorized')
     }

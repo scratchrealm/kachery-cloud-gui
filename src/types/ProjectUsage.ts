@@ -8,6 +8,11 @@ export type ProjectUsage = {
     numIpfsBytesUploaded?: number
     numIpfsFileFinds?: number
     numIpfsFileFindBytes?: number
+    numInitiatedFileUploads?: number
+    numFinalizedFileUploads?: number
+    numFileBytesUploaded?: number
+    numFileFinds?: number
+    numFileFindBytes?: number
     numSubscribeToFeedUpdates?: number
     numSubscribeToProvideTasks?: number
     numSubscribeToRequestTasks?: number
@@ -35,6 +40,11 @@ export const isProjectUsage = (x: any): x is ProjectUsage => (
         numIpfsBytesUploaded: optional(isNumber),
         numIpfsFileFinds: optional(isNumber),
         numIpfsFileFindBytes: optional(isNumber),
+        numInitiatedFileUploads: optional(isNumber),
+        numFinalizedFileUploads: optional(isNumber),
+        numFileBytesUploaded: optional(isNumber),
+        numFileFinds: optional(isNumber),
+        numFileFindBytes: optional(isNumber),
         numSubscribeToFeedUpdates: optional(isNumber),
         numSubscribeToProvideTasks: optional(isNumber),
         numSubscribeToRequestTasks: optional(isNumber),

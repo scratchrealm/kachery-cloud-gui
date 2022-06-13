@@ -44,6 +44,10 @@ const ProjectsTable: FunctionComponent<Props> = () => {
         {
             key: 'numNodes',
             label: 'Num. nodes'
+        },
+        {
+            key: 'bucketId',
+            label: 'Bucket'
         }
     ]), [])
 
@@ -70,7 +74,15 @@ const ProjectsTable: FunctionComponent<Props> = () => {
                 ownerId: project.ownerId.toString(),
                 timestampCreated: timeSince(project.timestampCreated),
                 timestampLastModified: timeSince(project.timestampLastModified),
-                numNodes: `${(projectMemberships || []).filter(cn => (cn.projectId === project.projectId)).length}`
+                numNodes: `${(projectMemberships || []).filter(cn => (cn.projectId === project.projectId)).length}`,
+                bucketId: {
+                    text: project.bucketId || '',
+                    element: project.bucketId ? (
+                        <Hyperlink onClick={() => {setRoute({page: 'bucket', bucketId: project.bucketId || ''})}}>
+                            {project.bucketId}
+                        </Hyperlink>
+                    ) : undefined
+                },
             }
         }))
     ), [projects, projectMemberships, setRoute])

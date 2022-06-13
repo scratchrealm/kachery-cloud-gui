@@ -1,9 +1,10 @@
 import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useErrorMessage from 'errorMessageContext/useErrorMessage';
-import React, { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import ApplicationBar from '../ApplicationBar/ApplicationBar';
 import useRoute from '../useRoute';
 import AdminPage from './AdminPage';
+import BucketPage from './BucketPage';
 import ClientPage from './ClientPage';
 import HomePage from './HomePage';
 import kacheryLogoFull from './kacheryLogoFull.png';
@@ -55,6 +56,10 @@ const MainWindow: FunctionComponent<Props> = () => {
                         ) : route.page === 'project' ? (
                             <ProjectPage
                                 projectId={route.projectId}
+                            />
+                        ) : route.page === 'bucket' ? (
+                            <BucketPage
+                                bucketId={route.bucketId}
                             />
                         ) : route.page === 'projectMembership' ? (
                             <ProjectMembershipPage

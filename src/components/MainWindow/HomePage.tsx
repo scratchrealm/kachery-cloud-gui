@@ -1,9 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import ProjectsTable from './ProjectsTable';
-import ClientsTable from './ClientsTable';
-import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
+import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useRoute from 'components/useRoute';
+import { FunctionComponent } from 'react';
+import BucketsTable from './BucketsTable';
+import ClientsTable from './ClientsTable';
+import ProjectsTable from './ProjectsTable';
 
 const adminUsersJson = process.env.REACT_APP_ADMIN_USERS || "[]"
 const adminUsers = JSON.parse(adminUsersJson) as any as string[]
@@ -27,6 +28,7 @@ const HomePage: FunctionComponent<Props> = () => {
                     <div>
                         <ProjectsTable />
                         <ClientsTable />
+                        <BucketsTable />
                     </div>
                 ) : (
                     <p>Sign in above</p>

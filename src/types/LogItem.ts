@@ -55,6 +55,66 @@ export const isFinalizeIpfsUploadLogItem = (x: any): x is FinalizeIpfsUploadLogI
 
 ///////////////////////////////////////////////////////////////////////////
 
+export type InitiateFileUploadLogItem = {
+    type: 'initiateFileUpload'
+    clientId: NodeId
+    projectId: string
+    userId: UserId
+    size: number
+    objectKey: string
+    hashAlg: string
+    hash: string
+    timestamp: number
+}
+
+export const isInitiateFileUploadLogItem = (x: any): x is InitiateFileUploadLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('initiateFileUpload'),
+        clientId: isNodeId,
+        projectId: isString,
+        userId: isUserId,
+        size: isNumber,
+        objectKey: isString,
+        hashAlg: isString,
+        hash: isString,
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
+export type FinalizeFileUploadLogItem = {
+    type: 'finalizeFileUpload'
+    clientId: NodeId
+    projectId: string
+    userId: UserId
+    size: number
+    objectKey: string
+    hashAlg: string
+    hash: string
+    url: string
+    alreadyExisted: boolean
+    timestamp: number
+}
+
+export const isFinalizeFileUploadLogItem = (x: any): x is FinalizeFileUploadLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('finalizeFileUpload'),
+        clientId: isNodeId,
+        projectId: isString,
+        userId: isUserId,
+        size: isNumber,
+        objectKey: isString,
+        hashAlg: isString,
+        hash: isString,
+        url: isString,
+        alreadyExisted: isBoolean,
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
 export type FindIpfsFileLogItem = {
     type: 'findIpfsFile'
     found: boolean,
@@ -72,6 +132,36 @@ export const isfindIpfsFileLogItem = (x: any): x is FindIpfsFileLogItem => (
         type: isEqualTo('findIpfsFile'),
         found: isBoolean,
         cid: isString,
+        clientId: optional(isNodeId),
+        projectId: optional(isString),
+        userId: optional(isUserId),
+        size: optional(isNumber),
+        url: optional(isString),
+        timestamp: isNumber
+    })
+)
+
+///////////////////////////////////////////////////////////////////////////
+
+export type FindFileLogItem = {
+    type: 'findFile'
+    found: boolean,
+    hashAlg: string,
+    hash: string,
+    clientId?: NodeId
+    projectId?: string
+    userId?: UserId
+    size?: number
+    url?: string
+    timestamp: number
+}
+
+export const isfindFileLogItem = (x: any): x is FindFileLogItem => (
+    _validateObject(x, {
+        type: isEqualTo('findFile'),
+        found: isBoolean,
+        hashAlg: isString,
+        hash: isString,
         clientId: optional(isNodeId),
         projectId: optional(isString),
         userId: optional(isUserId),
@@ -337,6 +427,9 @@ export type LogItem =
     InitiateIpfsUploadLogItem
     | FinalizeIpfsUploadLogItem
     | FindIpfsFileLogItem
+    | InitiateFileUploadLogItem
+    | FinalizeFileUploadLogItem
+    | FindFileLogItem
     | SetMutableLogItem
     | GetMutableLogItem
     | InitiateTaskResultUploadLogItem
@@ -353,6 +446,9 @@ export const isLogItem = (x: any): x is LogItem => (
         isInitiateIpfsUploadLogItem,
         isFinalizeIpfsUploadLogItem,
         isfindIpfsFileLogItem,
+        isInitiateFileUploadLogItem,
+        isFinalizeFileUploadLogItem,
+        isfindFileLogItem,
         isSetMutableLogItem,
         isGetMutableLogItem,
         isInitiateTaskResultUploadLogItem,

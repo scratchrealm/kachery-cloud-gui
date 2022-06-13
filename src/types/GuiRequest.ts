@@ -1,5 +1,6 @@
 import { isArrayOf, isEqualTo, isNodeId, isOneOf, isSignature, isString, isUserId, NodeId, optional, Signature, UserId, _validateObject } from "../commonInterface/kacheryTypes"
 import { Auth, isAuth } from "./Auth"
+import { Bucket, isBucket } from "./Bucket"
 import { Client, isClient } from "./Client"
 import { isProject, isProjectSettings, Project, ProjectSettings } from "./Project"
 import { isProjectMembership, isProjectMembershipPermissions, ProjectMembership, ProjectMembershipPermissions } from "./ProjectMembership"
@@ -150,6 +151,153 @@ export type SetProjectSettingsResponse = {
 export const isSetProjectSettingsResponse = (x: any): x is SetProjectSettingsResponse => {
     return _validateObject(x, {
         type: isEqualTo('setProjectSettings')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// addBucket
+
+export type AddBucketRequest = {
+    type: 'addBucket'
+    label: string
+    service: 'google' | 'filebase'
+    uri: string
+    ownerId: UserId
+    auth: Auth
+}
+
+export const isAddBucketRequest = (x: any): x is AddBucketRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('addBucket'),
+        label: isString,
+        service: isOneOf(['google', 'filebase'].map(s => (isEqualTo(s)))),
+        uri: isString,
+        ownerId: isUserId,
+        auth: isAuth
+    })
+}
+
+export type AddBucketResponse = {
+    type: 'addBucket'
+}
+
+export const isAddBucketResponse = (x: any): x is AddBucketResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('addBucket')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// deleteBucket
+
+export type DeleteBucketRequest = {
+    type: 'deleteBucket'
+    bucketId: string
+    auth: Auth
+}
+
+export const isDeleteBucketRequest = (x: any): x is DeleteBucketRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('deleteBucket'),
+        bucketId: isString,
+        auth: isAuth
+    })
+}
+
+export type DeleteBucketResponse = {
+    type: 'deleteBucket'
+}
+
+export const isDeleteBucketResponse = (x: any): x is DeleteBucketResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('deleteBucket')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// setBucketCredentials
+
+export type SetBucketCredentialsRequest = {
+    type: 'setBucketCredentials'
+    bucketId: string
+    bucketCredentials: string
+    auth: Auth
+}
+
+export const isSetBucketCredentialsRequest = (x: any): x is SetBucketCredentialsRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('setBucketCredentials'),
+        bucketId: isString,
+        bucketCredentials: isString,
+        auth: isAuth
+    })
+}
+
+export type SetBucketCredentialsResponse = {
+    type: 'setBucketCredentials'
+}
+
+export const isSetBucketCredentialsResponse = (x: any): x is SetBucketCredentialsResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('setBucketCredentials')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// getBucketsForUser
+
+export type GetBucketsForUserRequest = {
+    type: 'getBucketsForUser'
+    userId?: UserId
+    auth: Auth
+}
+
+export const isGetBucketsForUserRequest = (x: any): x is GetBucketsForUserRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('getBucketsForUser'),
+        userId: optional(isUserId),
+        auth: isAuth
+    })
+}
+
+export type GetBucketsForUserResponse = {
+    type: 'getBucketsForUser'
+    buckets: Bucket[]
+}
+
+export const isGetBucketsForUserResponse = (x: any): x is GetBucketsForUserResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('getBucketsForUser'),
+        buckets: isArrayOf(isBucket)
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// getBucket
+
+export type GetBucketRequest = {
+    type: 'getBucket'
+    bucketId: string
+    auth: Auth
+}
+
+export const isGetBucketRequest = (x: any): x is GetBucketRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('getBucket'),
+        bucketId: isString,
+        auth: isAuth
+    })
+}
+
+export type GetBucketResponse = {
+    type: 'getBucket'
+    bucket: Bucket
+}
+
+export const isGetBucketResponse = (x: any): x is GetBucketResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('getBucket'),
+        bucket: isBucket
     })
 }
 
@@ -468,6 +616,7 @@ export type SetProjectInfoRequest = {
     type: 'setProjectInfo'
     projectId: string
     label?: string
+    bucketId?: string
     auth: Auth
 }
 
@@ -476,6 +625,7 @@ export const isSetProjectInfoRequest = (x: any): x is SetProjectInfoRequest => {
         type: isEqualTo('setProjectInfo'),
         projectId: isString,
         label: optional(isString),
+        bucketId: optional(isString),
         defaultProjectId: optional(isString),
         auth: isAuth
     })
@@ -548,6 +698,35 @@ export const isAdminGetProjectsResponse = (x: any): x is AdminGetProjectsRespons
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// setBucketLabel
+
+export type SetBucketLabelRequest = {
+    type: 'setBucketLabel'
+    bucketId: string
+    label: string
+    auth: Auth
+}
+
+export const isSetBucketLabelRequest = (x: any): x is SetBucketLabelRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('setBucketLabel'),
+        bucketId: isString,
+        label: isString,
+        auth: isAuth
+    })
+}
+
+export type SetBucketLabelResponse = {
+    type: 'setBucketLabel'
+}
+
+export const isSetBucketLabelResponse = (x: any): x is SetBucketLabelResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('setBucketLabel')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type GuiRequest =
     GetProjectsForUserRequest |
@@ -559,6 +738,11 @@ export type GuiRequest =
     AddProjectMembershipRequest |
     DeleteProjectMembershipRequest |
     SetProjectMembershipPermissionsRequest |
+    AddBucketRequest |
+    DeleteBucketRequest |
+    SetBucketCredentialsRequest |
+    GetBucketsForUserRequest |
+    GetBucketRequest |
     AddClientRequest |
     DeleteClientRequest |
     GetClientsRequest |
@@ -566,6 +750,7 @@ export type GuiRequest =
     SetUserSettingsRequest |
     SetClientInfoRequest |
     SetProjectInfoRequest |
+    SetBucketLabelRequest |
     GetProjectUsageRequest |
     AdminGetProjectsRequest
 
@@ -580,6 +765,11 @@ export const isGuiRequest = (x: any): x is GuiRequest => {
         isAddProjectMembershipRequest,
         isDeleteProjectMembershipRequest,
         isSetProjectMembershipPermissionsRequest,
+        isAddBucketRequest,
+        isDeleteBucketRequest,
+        isSetBucketCredentialsRequest,
+        isGetBucketsForUserRequest,
+        isGetBucketRequest,
         isAddClientRequest,
         isDeleteClientRequest,
         isGetClientsRequest,
@@ -587,6 +777,7 @@ export const isGuiRequest = (x: any): x is GuiRequest => {
         isSetUserSettingsRequest,
         isSetClientInfoRequest,
         isSetProjectInfoRequest,
+        isSetBucketLabelRequest,
         isGetProjectUsageRequest,
         isAdminGetProjectsRequest
     ])(x)
@@ -602,6 +793,11 @@ export type GuiResponse =
     AddProjectMembershipResponse |
     DeleteProjectMembershipResponse |
     SetProjectMembershipPermissionsResponse |
+    AddBucketResponse |
+    DeleteBucketResponse |
+    SetBucketCredentialsResponse |
+    GetBucketsForUserResponse |
+    GetBucketResponse |
     AddClientResponse |
     DeleteClientResponse |
     GetClientsResponse |
@@ -609,6 +805,7 @@ export type GuiResponse =
     SetUserSettingsResponse |
     SetClientInfoResponse |
     SetProjectInfoResponse |
+    SetBucketLabelResponse |
     GetProjectUsageResponse |
     AdminGetProjectsResponse
 
@@ -623,6 +820,11 @@ export const isGuiResponse = (x: any): x is GuiResponse => {
         isAddProjectMembershipResponse,
         isDeleteProjectMembershipResponse,
         isSetProjectMembershipPermissionsResponse,
+        isAddBucketResponse,
+        isDeleteBucketResponse,
+        isSetBucketCredentialsResponse,
+        isGetBucketsForUserResponse,
+        isGetBucketResponse,
         isAddClientResponse,
         isDeleteClientResponse,
         isGetClientsResponse,
@@ -630,6 +832,7 @@ export const isGuiResponse = (x: any): x is GuiResponse => {
         isSetUserSettingsResponse,
         isSetClientInfoResponse,
         isSetProjectInfoResponse,
+        isSetBucketLabelResponse,
         isGetProjectUsageResponse,
         isAdminGetProjectsResponse
     ])(x)
