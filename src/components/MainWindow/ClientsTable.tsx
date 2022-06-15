@@ -74,11 +74,11 @@ const ClientsTable: FunctionComponent<Props> = () => {
 
     return (
         <div>
-            <h3>Clients</h3>
             <p>
                 Clients are used to access kachery cloud resources on your behalf.
-                If you are accessing these resources from you computer,
-                you can register a client by running <span style={{fontFamily: 'courier'}}>kachery-cloud-init</span>.
+                Each client is associated with a user and a default project.
+                If you are accessing these resources from your computer,
+                you can register a client by installing the kachery-cloud Python package and running <span style={{fontFamily: 'courier'}}>kachery-cloud-init</span>.
             </p>
             <IconButton onClick={refreshClients} title="Refresh clients"><Refresh /></IconButton>
             {/* <IconButton onClick={addVisible.show} title="Add client"><AddCircle /></IconButton> */}

@@ -40,7 +40,7 @@ const MainWindow: FunctionComponent<Props> = () => {
                     logo={kacheryLogoFull}
                 />
             </div>
-            <div style={{margin: 20, maxWidth: 1000}}>
+            <div style={{margin: 20}}>
                 {
                     errorMessage ? (
                         <span style={{color: 'red'}}>{errorMessage}</span>
@@ -49,8 +49,13 @@ const MainWindow: FunctionComponent<Props> = () => {
                 {
                     route.page === 'timing' ? (
                         <TimingPage />
-                    )
-                    : signedIn ? (
+                    ) : route.page === 'registerClient' ? (
+                        <RegisterClientPage
+                            clientId={route.clientId}
+                            signature={route.signature}
+                            label={route.label}
+                        />
+                    ) : signedIn ? (
                         route.page === 'home' ? (
                             <HomePage />
                         ) : route.page === 'project' ? (
@@ -69,12 +74,6 @@ const MainWindow: FunctionComponent<Props> = () => {
                         ) : route.page === 'client' ? (
                             <ClientPage
                                 clientId={route.clientId}
-                            />
-                        ) : route.page === 'registerClient' ? (
-                            <RegisterClientPage
-                                clientId={route.clientId}
-                                signature={route.signature}
-                                label={route.label}
                             />
                         ) : route.page === 'testTaskBackend' ? (
                             <TestTaskBackendPage

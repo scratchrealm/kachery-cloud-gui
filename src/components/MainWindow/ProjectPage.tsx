@@ -4,12 +4,14 @@ import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
 import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useRoute from 'components/useRoute';
 import useErrorMessage from 'errorMessageContext/useErrorMessage';
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import { SetProjectInfoRequest } from 'types/GuiRequest';
+import EditableBucketSelect from './EditableBucketSelect';
 import EditableTextField from './EditableTextField';
 import ProjectMembershipsTable from './ProjectMembershipsTable';
 import ProjectSettingsView from './ProjectSettingsView';
 import ProjectUsageView from './ProjectUsageView';
+import useBucket from './useBucket';
 import useProject from './useProject';
 
 type Props = {
@@ -18,6 +20,7 @@ type Props = {
 
 const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
     const { project, projectMemberships, addProjectMembership, deleteProjectMembership, setProjectSettings, refreshProject } = useProject(projectId)
+    const { bucket } = useBucket(project?.bucketId)
     const { setRoute } = useRoute()
 
     const { setErrorMessage } = useErrorMessage()
@@ -73,17 +76,17 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
                 key: 'bucketId',
                 label: 'Bucket',
                 value: (
-                    <EditableTextField
-                        value={project.bucketId || ''}
+                    <EditableBucketSelect
+                        bucket={bucket}
                         onChange={handleChangeBucket}
-                        onClick={project.bucketId ? () => {setRoute({page: 'bucket', bucketId: project.bucketId || ''})} : undefined}
+                        onClick={bucket ? () => {setRoute({page: 'bucket', bucketId: bucket.bucketId || ''})} : undefined}
                     />
                 )
             },
             { key: 'timestampCreated', label: 'Created', value: `${new Date(project.timestampCreated)}` },
             { key: 'timestampLastModified', label: 'Modified', value: `${new Date(project.timestampLastModified)}` }
         ]
-    }, [project, handleChangeLabel, handleChangeBucket, setRoute])
+    }, [project, handleChangeLabel, handleChangeBucket, setRoute, bucket])
 
     const handleBack = useCallback(() => {
         setRoute({page: 'home'})

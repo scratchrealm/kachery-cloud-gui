@@ -55,7 +55,8 @@ const addProjectHandler = async (request: AddProjectRequest, verifiedUserId?: Us
     await setProjectMembershipPermissionsHandler(req3, verifiedUserId)
 
     return {
-        type: 'addProject'
+        type: 'addProject',
+        projectId
     }
 }
 

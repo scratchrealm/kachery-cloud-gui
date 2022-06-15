@@ -2,7 +2,7 @@ import guiApiRequest from "common/guiApiRequest"
 import { useSignedIn } from "components/googleSignIn/GoogleSignIn"
 import useErrorMessage from "errorMessageContext/useErrorMessage"
 import { useCallback, useEffect, useState } from "react"
-import { AddProjectRequest, DeleteProjectRequest, GetProjectsForUserRequest, isAddProjectResponse, isDeleteProjectResponse, isGetProjectsForUserResponse } from "types/GuiRequest"
+import { AddProjectRequest, DeleteProjectRequest, GetProjectsForUserRequest, isAddProjectResponse, isDeleteProjectResponse, isGetProjectsForUserResponse, isSetProjectInfoResponse, SetProjectInfoRequest } from "types/GuiRequest"
 import { Project } from "types/Project"
 
 const useProjectsForUser = () => {
@@ -38,7 +38,7 @@ const useProjectsForUser = () => {
         })()
     }, [userId, googleIdToken, refreshCode, setErrorMessage])
 
-    const addProject = useCallback((label: string) => {
+    const addProject = useCallback((label: string, bucketId: string) => {
         if (!userId) return
             ; (async () => {
                 const req: AddProjectRequest = {
@@ -51,6 +51,18 @@ const useProjectsForUser = () => {
                 if (!resp) return
                 if (!isAddProjectResponse(resp)) {
                     throw Error('Unexpected response')
+                }
+                if (bucketId) {
+                    const req2: SetProjectInfoRequest = {
+                        type: 'setProjectInfo',
+                        projectId: resp.projectId || '',
+                        bucketId,
+                        auth: { userId, googleIdToken }
+                    }
+                    const resp2 = await guiApiRequest(req2, {reCaptcha: true, setErrorMessage})
+                    if (!isSetProjectInfoResponse(resp2)) {
+                        throw Error('Unexpected response')
+                    }
                 }
                 refreshProjects()
             })()

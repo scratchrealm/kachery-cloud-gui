@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react"
 import { Bucket } from "types/Bucket"
 import { GetBucketRequest, isGetBucketResponse, isSetBucketCredentialsResponse, SetBucketCredentialsRequest } from "types/GuiRequest"
 
-const useBucket = (bucketId: string) => {
+const useBucket = (bucketId: string | undefined) => {
     const [bucket, setBucket] = useState<Bucket | undefined>(undefined)
     const { userId, googleIdToken } = useSignedIn()
     const {setErrorMessage} = useErrorMessage()
@@ -19,6 +19,7 @@ const useBucket = (bucketId: string) => {
         ; (async () => {
             setErrorMessage('')
             setBucket(undefined)
+            if (!bucketId) return
             if (!userId) return
             let canceled = false
             const req: GetBucketRequest = {
@@ -40,6 +41,7 @@ const useBucket = (bucketId: string) => {
     }, [userId, googleIdToken, bucketId, setErrorMessage, refreshCode])
 
     const setBucketCredentials = useCallback((o: {bucketCredentials: string}) => {
+        if (!bucketId) return
         const {bucketCredentials} = o
         if (!userId) return
             ; (async () => {

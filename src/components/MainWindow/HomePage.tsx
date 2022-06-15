@@ -2,9 +2,7 @@ import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
 import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useRoute from 'components/useRoute';
 import { FunctionComponent } from 'react';
-import BucketsTable from './BucketsTable';
-import ClientsTable from './ClientsTable';
-import ProjectsTable from './ProjectsTable';
+import TabWindow from './TabWindow';
 
 const adminUsersJson = process.env.REACT_APP_ADMIN_USERS || "[]"
 const adminUsers = JSON.parse(adminUsersJson) as any as string[]
@@ -17,19 +15,13 @@ const HomePage: FunctionComponent<Props> = () => {
     const {setRoute} = useRoute()
     return (
         <div>
-            <h3>Welcome to kachery cloud (under construction)</h3>
+            <h3>Welcome to kachery cloud</h3>
             <p>
-                Get started by installing the
-                &nbsp;<a href="https://github.com/scratchrealm/kachery-cloud" target="_blank" rel="noreferrer">kachery-cloud</a>&nbsp;
-                Python package.
+            <a href="https://github.com/scratchrealm/kachery-cloud" target="_blank" rel="noreferrer">Get started</a>
             </p>
             {
                 signedIn ? (
-                    <div>
-                        <ProjectsTable />
-                        <ClientsTable />
-                        <BucketsTable />
-                    </div>
+                    <TabWindow />
                 ) : (
                     <p>Sign in above</p>
                 )

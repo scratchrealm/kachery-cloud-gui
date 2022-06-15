@@ -19,11 +19,18 @@ const EditBucketCredentials: FunctionComponent<Props> = ({service, bucketCredent
         const c = JSON.parse(editCredentials || '{}')
         const x = JSON.parse(bucketCredentials || '{}')
         if (['filebase', 'aws', 'wasabi', 'google'].includes(service)) {
-            return [
+            let rows = [
                 {key: 'region', label: 'region', value: x.region || ''},
                 {key: 'accessKeyId', label: 'Access Key ID', value: x.accessKeyId || ''},
                 {key: 'secretAccessKey', label: 'Secret Access Key', value: x.secretAccessKey || ''}
-            ].map(({key, label, value}) => (
+            ]
+            
+            // no region for google
+            if (service === 'google') {
+                rows = rows.filter(r => (r.key !== 'region'))
+            }
+
+            return rows.map(({key, label, value}) => (
                 {
                     key,
                     label,

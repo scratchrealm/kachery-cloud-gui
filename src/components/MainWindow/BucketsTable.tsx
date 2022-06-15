@@ -84,7 +84,7 @@ const BucketsTable: FunctionComponent<Props> = () => {
 
     return (
         <div>
-            <h3>Buckets</h3>
+            <p>You can use your own storage buckets (Google, AWS, Wasabi, or Filebase). More than one project can use the same bucket.</p>
             <IconButton onClick={refreshBuckets} title="Refresh buckets"><Refresh /></IconButton>
             <IconButton onClick={addVisible.show} title="Add bucket"><AddCircle /></IconButton>
             {

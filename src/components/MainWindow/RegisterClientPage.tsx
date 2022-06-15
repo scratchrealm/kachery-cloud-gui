@@ -1,10 +1,11 @@
 import { Button, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import guiApiRequest from 'common/guiApiRequest';
+import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
 import { NodeId, Signature } from 'commonInterface/kacheryTypes';
 import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useRoute from 'components/useRoute';
 import useErrorMessage from 'errorMessageContext/useErrorMessage';
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { AddClientRequest } from 'types/GuiRequest';
 import EditableTextField from './EditableTextField';
 import SelectProjectControl from './SelectProjectControl';
@@ -24,11 +25,9 @@ const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, labe
     const { errorMessage, setErrorMessage } = useErrorMessage()
     const { setRoute } = useRoute()
     const { projects, addProject } = useProjectsForUser()
-    const [defaultProjectId, setDefaultProjectId] = useState<string>('')
+    const [defaultProjectId, setDefaultProjectId] = useState<string | undefined>()
 
-    const heading = <h3>Register a client</h3>
-
-    const handleYes = useCallback(() => {
+    const handleRegister = useCallback(() => {
         setStatus('starting')
     }, [])
 
@@ -72,32 +71,45 @@ const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, labe
         })()
     }, [status, userId, clientId, setErrorMessage, signature, googleIdToken, setRoute, editLabel, defaultProjectId])
 
-    const okayToProceed = useMemo(() => {
+    // add a default project if none exists
+    useEffect(() => {
+        if ((projects) && (projects.length === 0)) {
+            addProject('default', '')
+        }
+    }, [projects, addProject])
+
+    useEffect(() => {
+        setDefaultProjectId(undefined)
+        if (!projects) return
+        if (projects.length === 0) return
+        const d = projects.filter(p => (p.label === 'default'))
+        if (d.length > 0) {
+            setDefaultProjectId(d[0].projectId)
+        }
+        setDefaultProjectId(projects[0].projectId)
+    }, [projects])
+
+    const submitOkay = useMemo(() => {
         if (!userId) return false
         if (!label) return false
         if (!defaultProjectId) return false
         return true
     }, [label, userId, defaultProjectId])
 
-    // add a default project if none exists
-    useEffect(() => {
-        if ((projects) && (projects.length === 0)) {
-            addProject('default')
-        }
-    }, [projects, addProject])
-
     if (!signedIn) {
         return (
             <div>
-                {heading}
-                <p>To associate this client with your user, you must first log in.</p>
+                <h2>Register a client</h2>
+                <p>To associate this client with your user, you must first log in above.</p>
             </div>
         )
     }
 
     return (
         <div>
-            {heading}
+            <h2>Register a client</h2>
+            <p>You are associating this client with your logged in user and a kachery-cloud project.</p>
+            <p>Complete this form and then click the REGISTER CLIENT button below.</p>
             <Table>
                 <TableBody>
                     <TableRow>
@@ -118,37 +130,39 @@ const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, labe
                             {
                                 projects ? (
                                     projects.length > 0 ? (
-                                        <SelectProjectControl
-                                            projects={projects || []}
-                                            selectedProjectId={defaultProjectId}
-                                            setSelectedProjectId={setDefaultProjectId}
-                                        />
+                                        <div>
+                                            <SelectProjectControl
+                                                projects={projects || []}
+                                                selectedProjectId={defaultProjectId || ''}
+                                                setSelectedProjectId={setDefaultProjectId}
+                                            />
+                                            <p>
+                                                You can select from this list or&nbsp;
+                                                <Hyperlink href={`${window.location.protocol}://${window.location.host}`} target='_blank'>add a new project</Hyperlink>.&nbsp;
+                                                Refresh this page to update the project list.
+                                            </p>
+                                        </div>
                                     ) : (
                                         <span>Adding default project, please wait...</span>
                                     )
                                 ) : (
-                                    <span>Loading projects...</span>
+                                    <span style={{color: 'orange'}}>Loading projects...</span>
                                 )
-                            }                            
+                            }
                         </TableCell>
                     </TableRow>
                 </TableBody>
             </Table>
             {
-                !defaultProjectId && (
+                (projects) && (!defaultProjectId) && (
                     <p style={{color: 'red'}}>You must select a default project above.</p>
                 )
             }
-            {
-                (okayToProceed && (status === 'waiting')) && (
-                    <div>
-                        <p>Would you like to associate this client with this logged in user?</p>
-                        <Button onClick={handleYes}>
-                            Yes, proceed
-                        </Button>
-                    </div>
-                )
-            }
+            <div>
+                <Button disabled={(!submitOkay) || (status !== 'waiting')} onClick={handleRegister}>
+                    Register client
+                </Button>
+            </div>
             {
                 (status === 'running') && (
                     <p>Please wait...</p>

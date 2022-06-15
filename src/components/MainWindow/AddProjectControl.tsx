@@ -1,18 +1,20 @@
 import { Button, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import React, { FunctionComponent, useCallback, useMemo, useState } from 'react'
+import BucketSelect from './BucketSelect'
 
 type Props = {
     onClose?: () => void
-    onAdd: (projectId: string) => void
+    onAdd: (projectLabel: string, bucketId: string) => void
 }
 
 const AddProjectControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
     const [editLabel, setEditLabel] = useState<string>('')
+    const [editBucketId, setEditBucketId] = useState<string>('')
     
     const handleAdd = useCallback(() => {
-        onAdd(editLabel)
+        onAdd(editLabel, editBucketId)
         onClose && onClose()
-    }, [onClose, editLabel, onAdd])
+    }, [onClose, editLabel, editBucketId, onAdd])
     const okayToAdd = useMemo(() => {
         return isValidLabel(editLabel)
     }, [editLabel])
@@ -27,6 +29,15 @@ const AddProjectControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
                         <TableCell>Project name</TableCell>
                         <TableCell>
                             <input type="text" value={editLabel} onChange={handleChange} />
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Bucket</TableCell>
+                        <TableCell>
+                            <BucketSelect
+                                bucketId={editBucketId}
+                                setBucketId={setEditBucketId}
+                            />
                         </TableCell>
                     </TableRow>
                 </TableBody>

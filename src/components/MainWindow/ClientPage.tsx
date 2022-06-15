@@ -7,6 +7,7 @@ import useRoute from 'components/useRoute';
 import useErrorMessage from 'errorMessageContext/useErrorMessage';
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { SetClientInfoRequest } from 'types/GuiRequest';
+import EditableTextField from './EditableTextField';
 import SelectProjectControl from './SelectProjectControl';
 import useClients from './useClients';
 import useProjectsForUser from './useProjectsForUser';
@@ -45,12 +46,38 @@ const ClientPage: FunctionComponent<Props> = ({clientId}) => {
         })()
     }, [clientId, userId, googleIdToken, refreshClients, setErrorMessage])
 
+    const handleLabelChange = useCallback((label: string) => {
+        if (!userId) return
+        if (!googleIdToken) return
+        ;(async () => {
+            const req: SetClientInfoRequest = {
+                type: 'setClientInfo',
+                clientId,
+                label,
+                auth: {
+                    userId, googleIdToken
+                }
+            }
+            await guiApiRequest(req, {reCaptcha: true, setErrorMessage})
+            refreshClients()
+        })()
+    }, [clientId, userId, googleIdToken, refreshClients, setErrorMessage])
+
     const tableData = useMemo(() => {
         if (!client) return undefined
         if (!projects) return undefined
         return [
             { key: 'clientId', label: 'Client ID', value: client.clientId.toString() },
-            { key: 'label', label: 'Label', value: client.label },
+            {
+                key: 'label',
+                label: 'Label',
+                value: (
+                    <EditableTextField
+                        value={client.label}
+                        onChange={handleLabelChange}
+                    />
+                )
+            },
             { key: 'ownerId', label: 'Owner', value: client.ownerId.toString() },
             { key: 'timestampCreated', label: 'Created', value: `${new Date(client.timestampCreated)}` },
             {
@@ -65,7 +92,7 @@ const ClientPage: FunctionComponent<Props> = ({clientId}) => {
                 )
             }
         ]
-    }, [client, projects, handleSetSelectedProject])
+    }, [client, projects, handleSetSelectedProject, handleLabelChange])
 
     const handleBack = useCallback(() => {
         setRoute({page: 'home'})
@@ -76,7 +103,7 @@ const ClientPage: FunctionComponent<Props> = ({clientId}) => {
     }
 
     if (!client) {
-        return <span>client not found: {clientId}</span>
+        return <span style={{color: 'red'}}>Client not found for user {userId}: {clientId}</span>
     }
 
 
@@ -84,7 +111,7 @@ const ClientPage: FunctionComponent<Props> = ({clientId}) => {
     return (
         <div>
             <Hyperlink onClick={handleBack}>Back</Hyperlink>
-            <Table className="NiceTable2">
+            <Table>
                 <TableBody>
                     {
                         tableData.map(x => (

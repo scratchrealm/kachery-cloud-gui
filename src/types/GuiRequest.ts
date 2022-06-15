@@ -89,12 +89,14 @@ export const isAddProjectRequest = (x: any): x is AddProjectRequest => {
 }
 
 export type AddProjectResponse = {
-    type: 'addProject'
+    type: 'addProject',
+    projectId?: string // optional only for backward-compatibility
 }
 
 export const isAddProjectResponse = (x: any): x is AddProjectResponse => {
     return _validateObject(x, {
-        type: isEqualTo('addProject')
+        type: isEqualTo('addProject'),
+        projectId: optional(isString)
     })
 }
 
