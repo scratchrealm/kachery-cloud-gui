@@ -19,11 +19,11 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
     const Key4 = `timingTests/${randomAlphaLowerString(10)}.4.txt`
 
     timer = Date.now()
-    await putObject({Bucket, Key: Key1, Body: content1})
+    await putObject(undefined, {Bucket, Key: Key1, Body: content1})
     const putFilebaseObject = Date.now() - timer
 
     timer = Date.now()
-    const signedUploadUrl = await getSignedUploadUrl(Key2)
+    const signedUploadUrl = await getSignedUploadUrl(undefined, Key2)
     const getFilebaseSignedUploadUrl = Date.now() - timer
 
     timer = Date.now()
@@ -31,7 +31,7 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
     const putFilebaseObjectUsingUploadUrl = Date.now() - timer
 
     timer = Date.now()
-    const objectContent2 = await getObjectContent(Key2)
+    const objectContent2 = await getObjectContent(undefined, Key2)
     if (objectContent2.toString('ascii') !== content2) {
         throw Error('Unexpected content mismatch content2')
     }
@@ -45,12 +45,12 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
     const getFilebaseObjectViaHttp = Date.now() - timer
 
     timer = Date.now()
-    await deleteObject(Key1)
+    await deleteObject(undefined, Key1)
     const deleteFilebaseObject = Date.now() - timer
 
-    await deleteObject(Key2)
+    await deleteObject(undefined, Key2)
 
-    const {cid: cid3} = await putObject({Bucket, Key: Key3, Body: content3})
+    const {cid: cid3} = await putObject(undefined, {Bucket, Key: Key3, Body: content3})
     let downloadFromIPFSGateway: string | number = 0
     let response3: any
     try {
@@ -69,7 +69,7 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
         }
     }
 
-    const {cid: cid4} = await putObject({Bucket, Key: Key4, Body: content4})
+    const {cid: cid4} = await putObject(undefined, {Bucket, Key: Key4, Body: content4})
     await sleepMsec(3000)
     let downloadFromIPFSGatewayAfterDelay: string | number = 0
     let response4: any
@@ -89,8 +89,8 @@ const timingHandler = async (request: TimingRequest): Promise<TimingResponse> =>
         }
     }
 
-    await deleteObject(Key3)
-    await deleteObject(Key4)
+    await deleteObject(undefined, Key3)
+    await deleteObject(undefined, Key4)
 
     return {
         type: 'timing',

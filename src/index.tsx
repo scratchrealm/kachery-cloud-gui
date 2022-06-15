@@ -7,9 +7,9 @@ import reportWebVitals from './reportWebVitals';
 (window as any).isKacheryCloudGui = true
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  // <React.StrictMode>
+    <App />,
+  // </React.StrictMode>,
   document.getElementById('root')
 );
 

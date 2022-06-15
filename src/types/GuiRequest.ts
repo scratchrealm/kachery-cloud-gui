@@ -1,6 +1,6 @@
 import { isArrayOf, isEqualTo, isNodeId, isOneOf, isSignature, isString, isUserId, NodeId, optional, Signature, UserId, _validateObject } from "../commonInterface/kacheryTypes"
 import { Auth, isAuth } from "./Auth"
-import { Bucket, isBucket } from "./Bucket"
+import { Bucket, BucketService, isBucket, isBucketService } from "./Bucket"
 import { Client, isClient } from "./Client"
 import { isProject, isProjectSettings, Project, ProjectSettings } from "./Project"
 import { isProjectMembership, isProjectMembershipPermissions, ProjectMembership, ProjectMembershipPermissions } from "./ProjectMembership"
@@ -160,7 +160,7 @@ export const isSetProjectSettingsResponse = (x: any): x is SetProjectSettingsRes
 export type AddBucketRequest = {
     type: 'addBucket'
     label: string
-    service: 'google' | 'filebase'
+    service: BucketService
     uri: string
     ownerId: UserId
     auth: Auth
@@ -170,7 +170,7 @@ export const isAddBucketRequest = (x: any): x is AddBucketRequest => {
     return _validateObject(x, {
         type: isEqualTo('addBucket'),
         label: isString,
-        service: isOneOf(['google', 'filebase'].map(s => (isEqualTo(s)))),
+        service: isBucketService,
         uri: isString,
         ownerId: isUserId,
         auth: isAuth

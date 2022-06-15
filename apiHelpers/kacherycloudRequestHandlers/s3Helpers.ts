@@ -1,9 +1,10 @@
 import { PutObjectRequest } from "aws-sdk/clients/s3";
+import { Bucket } from "../../src/types/Bucket";
 import getS3Client, { HeadObjectOutputX } from "./getS3Client";
 
-export const putObject = async (params: PutObjectRequest): Promise<{cid: string}> => {
+export const putObject = async (bucket: Bucket | undefined, params: PutObjectRequest): Promise<{cid: string}> => {
     return new Promise<{cid: string}>((resolve, reject) => {
-        const s3 = getS3Client(undefined)
+        const s3 = getS3Client(bucket)
         const request = s3.putObject(params)
         request.on('error', (err: Error) => {
             reject(new Error(`Error uploading to bucket: ${err.message}`)) 
@@ -21,9 +22,9 @@ export const putObject = async (params: PutObjectRequest): Promise<{cid: string}
     })
 }
 
-export const headObject = async (key: string): Promise<HeadObjectOutputX> => {
+export const headObject = async (bucket: Bucket | undefined, key: string): Promise<HeadObjectOutputX> => {
     return new Promise<any>((resolve, reject) => {
-        const s3 = getS3Client(undefined)
+        const s3 = getS3Client(bucket)
         s3.headObject({
             Bucket: 'kachery-cloud',
             Key: key
@@ -37,9 +38,9 @@ export const headObject = async (key: string): Promise<HeadObjectOutputX> => {
     })
 }
 
-export const getObjectContent = async (key: string): Promise<any> => {
+export const getObjectContent = async (bucket: Bucket | undefined, key: string): Promise<any> => {
     return new Promise((resolve, reject) => {
-        const s3 = getS3Client(undefined)
+        const s3 = getS3Client(bucket)
         s3.getObject({
             Bucket: 'kachery-cloud',
             Key: key
@@ -53,9 +54,9 @@ export const getObjectContent = async (key: string): Promise<any> => {
     })
 }
 
-export const deleteObject = async (key: string): Promise<void> => {
+export const deleteObject = async (bucket: Bucket | undefined, key: string): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
-        const s3 = getS3Client()
+        const s3 = getS3Client(bucket)
         s3.deleteObject({
             Bucket: 'kachery-cloud',
             Key: key
@@ -70,9 +71,9 @@ export const deleteObject = async (key: string): Promise<void> => {
     })
 }
 
-export const objectExists = async (key: string): Promise<boolean> => {
+export const objectExists = async (bucket: Bucket | undefined, key: string): Promise<boolean> => {
     return new Promise<boolean>((resolve, reject) => {
-        const s3 = getS3Client()
+        const s3 = getS3Client(bucket)
         s3.headObject({
             Bucket: 'kachery-cloud',
             Key: key
@@ -92,9 +93,9 @@ export const objectExists = async (key: string): Promise<boolean> => {
     })
 }
 
-export const getSignedUploadUrl = async (key: string): Promise<string> => {
+export const getSignedUploadUrl = async (bucket: Bucket | undefined, key: string): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
-        const s3 = getS3Client()
+        const s3 = getS3Client(bucket)
         s3.getSignedUrl('putObject', {
             Bucket: 'kachery-cloud',
             Key: key,

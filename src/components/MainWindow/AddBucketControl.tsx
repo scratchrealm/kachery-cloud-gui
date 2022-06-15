@@ -1,20 +1,21 @@
-import { Button, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
+import { Button, MenuItem, Select, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import useErrorMessage from 'errorMessageContext/useErrorMessage'
-import { FunctionComponent, useCallback, useMemo, useState } from 'react'
+import React, { FunctionComponent, useCallback, useMemo, useState } from 'react'
+import { BucketService, isBucketService } from 'types/Bucket'
 
 type Props = {
     onClose?: () => void
-    onAdd: (bucketId: string, o: {service: 'google' | 'filebase', uri: string}) => void
+    onAdd: (bucketId: string, o: {service: BucketService, uri: string}) => void
 }
 
 const AddBucketControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
     const [editLabel, setEditLabel] = useState<string>('')
-    const [editService, setEditService] = useState<'google' | 'filebase'>('google')
+    const [editService, setEditService] = useState<BucketService>('google')
     const [editBucketName, setEditBucketName] = useState<string>('')
     const {setErrorMessage} = useErrorMessage()
     
     const handleAdd = useCallback(() => {
-        if (!['google', 'filebase'].includes(editService)) {
+        if (!isBucketService(editService)) {
             setErrorMessage(`Invalid service: ${editService}`)
             return
         }
@@ -28,8 +29,8 @@ const AddBucketControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
     const handleChangeLabel = useCallback((event: any) => {
         setEditLabel(event.target.value)
     }, [])
-    const handleChangeService = useCallback((event: any) => {
-        setEditService(event.target.value)
+    const handleChangeService = useCallback((s: BucketService) => {
+        setEditService(s)
     }, [])
     const handleChangeName = useCallback((event: any) => {
         setEditBucketName(event.target.value)
@@ -47,7 +48,7 @@ const AddBucketControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
                     <TableRow>
                         <TableCell>Bucket service (google or filebase)</TableCell>
                         <TableCell>
-                            <input type="text" value={editService} onChange={handleChangeService} />
+                            <ServiceSelect service={editService} onChange={handleChangeService} />
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -64,12 +65,15 @@ const AddBucketControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
     )
 }
 
-const uriForBucketName = (service: 'google' | 'filebase', name: string) => {
+const uriForBucketName = (service: BucketService, name: string) => {
     if (service === 'google') {
         return `gs://${name}`
     }
     else if (service === 'filebase') {
         return `filebase://${name}`
+    }
+    else if (service === 'aws') {
+        return `s3://${name}`
     }
     else {
         return `?${service}?://${name}`
@@ -78,6 +82,33 @@ const uriForBucketName = (service: 'google' | 'filebase', name: string) => {
 
 const isValidLabel = (x: string) => {
     return x.length >= 3
+}
+
+type ServiceSelectProps = {
+    service: BucketService
+    onChange: (s: BucketService) => void
+}
+
+const ServiceSelect: FunctionComponent<ServiceSelectProps> = ({service, onChange}) => {
+    const handleChange = useCallback((e: React.ChangeEvent<{name?: string | undefined, value: unknown}>) => {
+        const newService = e.target.value
+        if (!isBucketService(newService)) throw Error('Unexpected bucket service')
+        onChange(newService)
+    }, [onChange])
+    return (
+        <div>
+            <Select
+                value={service}
+                onChange={handleChange}
+            >
+                {
+                    ['google', 'filebase', 'aws'].map(s => (
+                        <MenuItem key={s} value={s}>{s}</MenuItem>
+                    ))
+                }
+            </Select>
+        </div>
+    )
 }
 
 export default AddBucketControl

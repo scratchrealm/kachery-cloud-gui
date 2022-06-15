@@ -2,7 +2,7 @@ import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { FinalizeFileUploadRequest, FinalizeFileUploadResponse } from "../../src/types/KacherycloudRequest";
 import { FinalizeFileUploadLogItem } from "../../src/types/LogItem";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { getClient, getProjectMembership } from "../common/getDatabaseItems";
+import { getBucket, getClient, getProject, getProjectMembership } from "../common/getDatabaseItems";
 import { MAX_UPLOAD_SIZE } from "./initiateFileUploadHandler";
 import { deleteObject, headObject } from "./s3Helpers";
 import { FileRecord } from '../../src/types/FileRecord'
@@ -24,25 +24,35 @@ const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, ver
     if (!projectId) throw Error('No default project ID')
     const userId = client.ownerId
 
-    // const project = await getProject(projectId)
+    const project = await getProject(projectId)
+    const bucket = project.bucketId ? await getBucket(project.bucketId) : undefined
+    const service = bucket?.service || 'filebase'
+    const bucketUri = bucket?.uri || 'filebase://kachery-cloud'
+    const bucketName = bucketUri.split('?')[0].split('/')[2]
+    let bucketBaseUrl: string
+    if (service === 'filebase') {
+        bucketBaseUrl = `https://${bucketName}.s3.filebase.com`
+    }
+    else if (service === 'aws') {
+        bucketBaseUrl = `https://${bucketName}.s3.amazonaws.com`
+    }
+    else {
+        throw Error(`Unsupported service: ${service}`)
+    }
 
     const pm = await getProjectMembership(projectId, userId)
     if ((!pm) || (!pm.permissions.write)) {
         throw Error(`User ${userId} does not have write access on project ${projectId}`)
     }
 
-    const x = await headObject(objectKey)
+    const x = await headObject(bucket, objectKey)
     const size = x.ContentLength
     if (size === undefined) {
         throw Error('Not ContentLength in object')
     }
     if (size > MAX_UPLOAD_SIZE) {
-        await deleteObject(objectKey)
+        await deleteObject(bucket, objectKey)
         throw Error(`File too large *: ${size} > ${MAX_UPLOAD_SIZE}`)
-    }
-    const cid = (x.Metadata || {}).cid
-    if (!cid) {
-        throw Error(`No cid field in metaData of object: ${objectKey}`)
     }
 
     const filesCollection = db.collection('kacherycloud.files')
@@ -55,10 +65,10 @@ const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, ver
         if (!url) {
             throw Error('Unexpected: file exists but no url found')
         }
-        await deleteObject(objectKey)
+        await deleteObject(bucket, objectKey)
     }
     else {
-        url = `https://kachery-cloud.s3.filebase.com/${objectKey}`
+        url = `${bucketBaseUrl}/${objectKey}`
         const uri = `${hashAlg}://${hash}`
         const fileRecord: FileRecord = {
             projectId,

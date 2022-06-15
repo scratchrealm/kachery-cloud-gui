@@ -4,7 +4,7 @@ import { InitiateIpfsUploadLogItem } from "../../src/types/LogItem";
 import { isProject } from "../../src/types/Project";
 import { isProjectMembership } from "../../src/types/ProjectMembership";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { getClient } from "../common/getDatabaseItems";
+import { getBucket, getClient, getProject, getProjectMembership } from "../common/getDatabaseItems";
 import { randomAlphaLowerString } from "../guiRequestHandlers/helpers/randomAlphaString";
 import { getSignedUploadUrl } from "./s3Helpers";
 
@@ -28,20 +28,13 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
     const projectId = request.payload.projectId || client.defaultProjectId
     if (!projectId) throw Error('No project ID')
     const userId = client.ownerId
-    const projectsCollection = db.collection('kacherycloud.projects')
-    const projectSnapshot = await projectsCollection.doc(projectId).get()
-    if (!projectSnapshot.exists) throw Error(`Project does not exist: ${projectId}`)
-    const project = projectSnapshot.data()
-    if (!isProject(project)) throw Error('Invalid project in database')
+    const project = await getProject(projectId)
+    const bucket = project.bucketId ? await getBucket(project.bucketId) : undefined
 
-    const projectMembershipsCollection = db.collection('kacherycloud.projectMemberships')
-    const pmKey = projectId.toString() + ':' + userId.toString()
-    const projectMembershipSnapshot = await projectMembershipsCollection.doc(pmKey).get()
-    if (!projectMembershipSnapshot.exists) {
+    const pm = await getProjectMembership(projectId, userId)
+    if (!pm) {
         throw Error(`User ${userId} is not a member of project ${projectId}`)
     }
-    const pm = projectMembershipSnapshot.data()
-    if (!isProjectMembership(pm)) throw Error('Invalid project membership in database')
     if (!pm.permissions.write) {
         throw Error(`User ${userId} does not have write access on project ${projectId}`)
     }
@@ -50,7 +43,7 @@ const initiateIpfsUploadHandler = async (request: InitiateIpfsUploadRequest, ver
     const u = uploadId
     const objectKey = `projects/${projectId}/uploads/${u[0]}${u[1]}/${u[2]}${u[3]}/${u[4]}${u[5]}/${uploadId}`
 
-    const signedUploadUrl = await getSignedUploadUrl(objectKey)
+    const signedUploadUrl = await getSignedUploadUrl(bucket, objectKey)
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
     const logItem: InitiateIpfsUploadLogItem = {

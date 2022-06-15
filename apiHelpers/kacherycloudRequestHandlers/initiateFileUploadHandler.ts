@@ -2,7 +2,7 @@ import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { InitiateFileUploadRequest, InitiateFileUploadResponse } from "../../src/types/KacherycloudRequest";
 import { InitiateFileUploadLogItem } from "../../src/types/LogItem";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { getClient, getProject, getProjectMembership } from "../common/getDatabaseItems";
+import { getBucket, getClient, getProject, getProjectMembership } from "../common/getDatabaseItems";
 import { getSignedUploadUrl } from "./s3Helpers";
 
 export const MAX_UPLOAD_SIZE = 5 * 1000 * 1000 * 1000
@@ -26,10 +26,7 @@ const initiateFileUploadHandler = async (request: InitiateFileUploadRequest, ver
     if (!projectId) throw Error('No project ID')
     const userId = client.ownerId
     const project = await getProject(projectId)
-    // check that the project exists
-    if (project.projectId !== projectId) {
-        throw Error('Unexpected projectId')
-    }
+    const bucket = project.bucketId ? await getBucket(project.bucketId) : undefined
 
     const pm = await getProjectMembership(projectId, userId)
     if (!pm) {
@@ -52,7 +49,7 @@ const initiateFileUploadHandler = async (request: InitiateFileUploadRequest, ver
     const h = hash
     const objectKey = `projects/${projectId}/${hashAlg}/${h[0]}${h[1]}/${h[2]}${h[3]}/${h[4]}${h[5]}/${hash}`
 
-    const signedUploadUrl = await getSignedUploadUrl(objectKey)
+    const signedUploadUrl = await getSignedUploadUrl(bucket, objectKey)
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
     const logItem: InitiateFileUploadLogItem = {

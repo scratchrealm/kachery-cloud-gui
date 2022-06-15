@@ -85,6 +85,7 @@ const BucketPage: FunctionComponent<Props> = ({bucketId}) => {
             </Table>
             <BucketCredentialsView
                 bucketId={bucket.bucketId}
+                service={bucket.service}
                 bucketCredentials={bucket.credentials}
                 setBucketCredentials={setBucketCredentials}
             />

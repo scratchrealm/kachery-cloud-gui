@@ -1,5 +1,8 @@
-import AWS from 'aws-sdk';
+import { google } from '@google-cloud/firestore/types/protos/firestore_v1beta1_proto_api';
+import AWS, { S3 } from 'aws-sdk';
+import { sha1OfString } from '../../src/commonInterface/kacheryTypes';
 import { Bucket } from '../../src/types/Bucket';
+import { ObjectCache } from '../common/getDatabaseItems';
 
 interface PutObjectRequestParamsX {
     Bucket: any
@@ -55,11 +58,48 @@ const defaultS3Client = new AWS.S3({
     signatureVersion: 'v4'
 })
 
+const expirationMSec = 1000 * 60 * 10
+const s3ClientObjectCache = new ObjectCache<S3Client>(expirationMSec)
+
 const getS3Client = (bucket?: Bucket): S3Client => {
     if (!bucket) {
         return defaultS3Client
     }
-    throw Error('Not yet implemented')
+    const k = `${bucket.bucketId}:${bucket.uri}:${sha1OfString(bucket.credentials)}`
+    const x = s3ClientObjectCache.get(k)
+    if (x) return x
+    let ret: S3Client
+    if ((bucket.service === 'filebase') || (bucket.service === 'aws')) {
+        const cred = JSON.parse(bucket.credentials || '{}')
+        for (let k of ['region', 'accessKeyId', 'secretAccessKey']) {
+            if (!cred[k]) {
+                throw Error(`Missing in credentals: ${k}`)
+            }
+        }
+        const region = cred.region
+        const accessKeyId = cred.accessKeyId
+        const secretAccessKey = cred.secretAccessKey
+        const o: any = {
+            apiVersion: "2006-03-01",
+            accessKeyId,
+            secretAccessKey,
+            region,
+            s3ForcePathStyle: true,
+            signatureVersion: 'v4'
+        }
+        if (bucket.service === 'filebase') {
+            o.endpoint = "https://s3.filebase.com"
+        }
+        ret = new AWS.S3(o)
+    }
+    else if (bucket.service === 'google') {
+        throw Error('Google bucket not supported yet')
+    }
+    else {
+        throw Error(`Unsupported bucket service: ${bucket.service}`)
+    }
+    s3ClientObjectCache.set(k, ret)
+    return ret
 }
 
 export default getS3Client

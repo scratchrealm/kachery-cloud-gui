@@ -3,7 +3,7 @@ import { FinalizeTaskResultUploadRequest, FinalizeTaskResultUploadResponse } fro
 import { FinalizeTaskResultUploadLogItem } from "../../src/types/LogItem";
 import { TaskResult } from "../../src/types/TaskResult";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { getClient, getProjectMembership } from "../common/getDatabaseItems";
+import { getBucket, getClient, getProject, getProjectMembership } from "../common/getDatabaseItems";
 import { deleteObject, headObject } from "./s3Helpers";
 
 const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUploadRequest, verifiedClientId?: NodeId): Promise<FinalizeTaskResultUploadResponse> => {
@@ -21,6 +21,9 @@ const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUpload
     const projectId = request.payload.projectId || client.defaultProjectId
     if (!projectId) throw Error('No default project ID')
     const userId = client.ownerId
+
+    const project = await getProject(projectId)
+    const bucket = project.bucketId ? await getBucket(project.bucketId) : undefined
     
     const pm = await getProjectMembership(projectId, userId)
     if ((!pm) || (!pm.permissions.write)) {
@@ -30,10 +33,10 @@ const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUpload
     const s = taskJobId
     const objectKey = `projects/${projectId}/taskResults/${taskName}/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`
 
-    const x = await headObject(objectKey)
+    const x = await headObject(bucket, objectKey)
     const size2 = x.ContentLength
     if (size2 !== size) {
-        await deleteObject(objectKey)
+        await deleteObject(bucket, objectKey)
         throw Error(`Unexpected size in uploaded task result *: ${size2} <> ${size}`)
     }
 

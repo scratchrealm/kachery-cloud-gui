@@ -1,4 +1,8 @@
-import { isEqualTo, isNumber, isOneOf, isString, isUserId, UserId, _validateObject } from "../commonInterface/kacheryTypes"
+import { isNumber, isString, isUserId, UserId, _validateObject } from "../commonInterface/kacheryTypes"
+
+export type BucketService = 'google' | 'filebase' | 'aws'
+
+export const isBucketService = (s: any): s is BucketService => (['google', 'filebase', 'aws'].includes(s))
 
 export type Bucket = {
     bucketId: string
@@ -6,7 +10,7 @@ export type Bucket = {
     label: string
     timestampCreated: number
     timestampLastModified: number
-    service: 'google' | 'filebase'
+    service: BucketService
     uri: string
     credentials: string
 }
@@ -18,7 +22,7 @@ export const isBucket = (x: any): x is Bucket => {
         label: isString,
         timestampCreated: isNumber,
         timestampLastModified: isNumber,
-        service: isOneOf(['google', 'filebase'].map(s => (isEqualTo(s)))),
+        service: isBucketService,
         uri: isString,
         credentials: isString
     })

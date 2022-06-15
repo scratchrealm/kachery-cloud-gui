@@ -1,8 +1,6 @@
 import { UserId } from "../../src/commonInterface/kacheryTypes";
 import { GetBucketRequest, GetBucketResponse } from "../../src/types/GuiRequest";
-import firestoreDatabase from '../common/firestoreDatabase';
 import { getBucket } from "../common/getDatabaseItems";
-import hideSecretsInBucket from './helpers/hideSecretsInBucket';
 import isAdminUser from "./helpers/isAdminUser";
 
 const getBucketHandler = async (request: GetBucketRequest, verifiedUserId?: UserId): Promise<GetBucketResponse> => {
@@ -16,7 +14,7 @@ const getBucketHandler = async (request: GetBucketRequest, verifiedUserId?: User
         }
     }
 
-    hideSecretsInBucket(bucket)
+    // hideSecretsInBucket(bucket)
 
     return {
         type: 'getBucket',

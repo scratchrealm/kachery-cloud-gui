@@ -3,7 +3,7 @@ import { useSignedIn } from "components/googleSignIn/GoogleSignIn"
 import useErrorMessage from "errorMessageContext/useErrorMessage"
 import { useCallback, useEffect, useState } from "react"
 import { AddBucketRequest, DeleteBucketRequest, GetBucketsForUserRequest, isAddBucketResponse, isDeleteBucketResponse, isGetBucketsForUserResponse } from "types/GuiRequest"
-import { Bucket } from "types/Bucket"
+import { Bucket, BucketService } from "types/Bucket"
 
 const useBucketsForUser = () => {
     const [buckets, setBuckets] = useState<Bucket[] | undefined>(undefined)
@@ -38,7 +38,7 @@ const useBucketsForUser = () => {
         })()
     }, [userId, googleIdToken, refreshCode, setErrorMessage])
 
-    const addBucket = useCallback((label: string, o: {service: 'google' | 'filebase', uri: string}) => {
+    const addBucket = useCallback((label: string, o: {service: BucketService, uri: string}) => {
         if (!userId) return
             ; (async () => {
                 const req: AddBucketRequest = {
