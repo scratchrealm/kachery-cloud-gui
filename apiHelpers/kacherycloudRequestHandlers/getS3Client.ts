@@ -47,23 +47,20 @@ interface S3Client {
     getSignedUrl: (operation: string, params: GetSignedUrlParamsX, callback: (err?: any, url?: string) => void) => void
 }
 
-const defaultS3Client = new AWS.S3({
-    apiVersion: "2006-03-01",
-    accessKeyId: process.env['FILEBASE_ACCESS_KEY'],
-    secretAccessKey: process.env['FILEBASE_SECRET_ACCESS_KEY'],
-    endpoint: "https://s3.filebase.com",
-    region: "us-east-1",
-    s3ForcePathStyle: true,
-    signatureVersion: 'v4'
-})
+// const defaultS3Client = new AWS.S3({
+//     apiVersion: "2006-03-01",
+//     accessKeyId: process.env['FILEBASE_ACCESS_KEY'],
+//     secretAccessKey: process.env['FILEBASE_SECRET_ACCESS_KEY'],
+//     endpoint: "https://s3.filebase.com",
+//     region: "us-east-1",
+//     s3ForcePathStyle: true,
+//     signatureVersion: 'v4'
+// })
 
 const expirationMSec = 1000 * 60 * 10
 const s3ClientObjectCache = new ObjectCache<S3Client>(expirationMSec)
 
-const getS3Client = (bucket?: Bucket): S3Client => {
-    if (!bucket) {
-        return defaultS3Client
-    }
+const getS3Client = (bucket: Bucket): S3Client => {
     const k = `${bucket.bucketId}:${bucket.uri}:${sha1OfString(bucket.credentials)}`
     const x = s3ClientObjectCache.get(k)
     if (x) return x

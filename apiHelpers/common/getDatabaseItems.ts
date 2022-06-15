@@ -4,6 +4,7 @@ import { isProject, Project } from "../../src/types/Project"
 import { isBucket, Bucket } from "../../src/types/Bucket"
 import { isProjectMembership, ProjectMembership } from "../../src/types/ProjectMembership"
 import firestoreDatabase from "./firestoreDatabase"
+import getDefaultBucketId from "../kacherycloudRequestHandlers/getDefaultBucketId"
 
 export class ObjectCache<ObjectType> {
     #cache: {[key: string]: {object: ObjectType, timestamp: number}} = {}
@@ -59,7 +60,8 @@ export const getProject = async (projectId: string) => {
     return project
 }
 
-export const getBucket = async (bucketId: string) => {
+export const getBucket = async (bucketId?: string) => {
+    if (!bucketId) bucketId = getDefaultBucketId()
     const x = bucketObjectCache.get(bucketId.toString())
     if (x) return x
     const db = firestoreDatabase()

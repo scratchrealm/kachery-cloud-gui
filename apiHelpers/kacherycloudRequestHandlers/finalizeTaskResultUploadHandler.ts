@@ -23,7 +23,7 @@ const finalizeTaskResultUploadHandler = async (request: FinalizeTaskResultUpload
     const userId = client.ownerId
 
     const project = await getProject(projectId)
-    const bucket = project.bucketId ? await getBucket(project.bucketId) : undefined
+    const bucket = await getBucket(project.bucketId)
     
     const pm = await getProjectMembership(projectId, userId)
     if ((!pm) || (!pm.permissions.write)) {

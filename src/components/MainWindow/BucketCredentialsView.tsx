@@ -37,10 +37,16 @@ const BucketCredentialsView: FunctionComponent<Props> = ({bucketId, service, buc
                             onCancel={() => {setEditing(false)}}
                         />
                     ) : (
-                        <p>
-                            <pre>{bucketCredentialsWithHiddenSecrets}</pre>
+                        <div>
+                            {
+                                bucketCredentials ? (
+                                    <pre>{bucketCredentialsWithHiddenSecrets}</pre>
+                                ) : (
+                                    <p style={{color: 'blue'}}>Click "Edit" to add bucket credentials</p>
+                                )
+                            }
                             <Hyperlink onClick={() => setEditing(true)}>edit</Hyperlink>
-                        </p>
+                        </div>
                     )
                 ) : (
                     <pre>{bucketCredentialsWithHiddenSecrets}</pre>

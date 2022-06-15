@@ -2,15 +2,17 @@ import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { BucketService } from "../../src/types/Bucket";
 import { GetProjectBucketBaseUrlRequest, GetProjectBucketBaseUrlResponse } from "../../src/types/KacherycloudRequest";
 import { getBucket, getProject } from "../common/getDatabaseItems";
+import getDefaultBucketId from "./getDefaultBucketId";
 
 const getProjectBucketBaseUrlHandler = async (request: GetProjectBucketBaseUrlRequest, verifiedClientId?: NodeId): Promise<GetProjectBucketBaseUrlResponse> => {
     const { projectId } = request.payload
 
     const project = await getProject(projectId)
-    const bucket = project.bucketId ? await getBucket(project.bucketId) : undefined
-    const service = bucket?.service || 'filebase' as BucketService
-    const cred = JSON.parse(bucket?.credentials || '{}')
-    const bucketUri = bucket?.uri || 'filebase://kachery-cloud'
+    const bucketId = project.bucketId ? project.bucketId : getDefaultBucketId()
+    const bucket = await getBucket(bucketId)
+    const service = bucket.service
+    const cred = JSON.parse(bucket.credentials || '{}')
+    const bucketUri = bucket.uri
     const bucketName = bucketUri.split('?')[0].split('/')[2]
     let bucketBaseUrl: string
     if (service === 'filebase') {

@@ -4,6 +4,7 @@ import useErrorMessage from "errorMessageContext/useErrorMessage"
 import { useCallback, useEffect, useState } from "react"
 import { AddBucketRequest, DeleteBucketRequest, GetBucketsForUserRequest, isAddBucketResponse, isDeleteBucketResponse, isGetBucketsForUserResponse } from "types/GuiRequest"
 import { Bucket, BucketService } from "types/Bucket"
+import useRoute from "components/useRoute"
 
 const useBucketsForUser = () => {
     const [buckets, setBuckets] = useState<Bucket[] | undefined>(undefined)
@@ -38,25 +39,30 @@ const useBucketsForUser = () => {
         })()
     }, [userId, googleIdToken, refreshCode, setErrorMessage])
 
-    const addBucket = useCallback((label: string, o: {service: BucketService, uri: string}) => {
+    const {setRoute} = useRoute()
+
+    const addBucket = useCallback((label: string, o: {service: BucketService, uri: string, navigateToBucketPage?: boolean}) => {
         if (!userId) return
-            ; (async () => {
-                const req: AddBucketRequest = {
-                    type: 'addBucket',
-                    label,
-                    service: o.service,
-                    uri: o.uri,
-                    ownerId: userId,
-                    auth: { userId, googleIdToken }
-                }
-                const resp = await guiApiRequest(req, { reCaptcha: true, setErrorMessage })
-                if (!resp) return
-                if (!isAddBucketResponse(resp)) {
-                    throw Error('Unexpected response')
-                }
-                refreshBuckets()
-            })()
-    }, [userId, googleIdToken, refreshBuckets, setErrorMessage])
+        ; (async () => {
+            const req: AddBucketRequest = {
+                type: 'addBucket',
+                label,
+                service: o.service,
+                uri: o.uri,
+                ownerId: userId,
+                auth: { userId, googleIdToken }
+            }
+            const resp = await guiApiRequest(req, { reCaptcha: true, setErrorMessage })
+            if (!resp) return
+            if (!isAddBucketResponse(resp)) {
+                throw Error('Unexpected response')
+            }
+            refreshBuckets()
+            if (o.navigateToBucketPage) {
+                setRoute({page: 'bucket', bucketId: resp.bucketId || ''})
+            }
+        })()
+    }, [userId, googleIdToken, refreshBuckets, setErrorMessage, setRoute])
 
     const deleteBucket = useCallback((bucketId: string) => {
         if (!userId) return

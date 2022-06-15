@@ -27,8 +27,6 @@ export type Route = {
     signature: Signature,
     label: string
 } | {
-    page: 'timing'
-} | {
     page: 'testTaskBackend',
     projectId: string
 } | {
@@ -103,11 +101,6 @@ const useRoute = () => {
             }
         }
     }
-    else if (p === '/timing') {
-        route = {
-            page: 'timing'
-        }
-    }
     else if (p.startsWith('/testTaskBackend')) {
         const x = p.split('/')
         if (x.length === 3) {
@@ -150,9 +143,6 @@ const useRoute = () => {
             pathname2 = `/registerClient/${route.clientId}`
             query2['signature'] = route.signature.toString()
             query2['label'] = route.label.toString()
-        }
-        else if (route.page === 'timing') {
-            pathname2 = '/timing'
         }
         else if (route.page === 'testTaskBackend') {
             pathname2 = `/testTaskBackend/${route.projectId}`

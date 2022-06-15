@@ -31,7 +31,6 @@ const HomePage: FunctionComponent<Props> = () => {
                     <ul>
                         <li><Hyperlink onClick={() => {setRoute({page: 'admin'})}}>admin</Hyperlink></li>
                         <li><Hyperlink onClick={() => {setRoute({page: 'testFeeds'})}}>test feeds</Hyperlink></li>
-                        <li><Hyperlink onClick={() => {setRoute({page: 'timing'})}}>test timing</Hyperlink></li>
                     </ul>
                 )
             }

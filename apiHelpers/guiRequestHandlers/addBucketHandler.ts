@@ -33,7 +33,8 @@ const addBucketHandler = async (request: AddBucketRequest, verifiedUserId?: User
     await collection.doc(bucketId).set(bucket)
 
     return {
-        type: 'addBucket'
+        type: 'addBucket',
+        bucketId
     }
 }
 

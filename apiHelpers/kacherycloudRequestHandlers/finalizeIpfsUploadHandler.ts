@@ -4,6 +4,7 @@ import { FinalizeIpfsUploadRequest, FinalizeIpfsUploadResponse } from "../../src
 import { FinalizeIpfsUploadLogItem } from "../../src/types/LogItem";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { getBucket, getClient, getProject, getProjectMembership } from "../common/getDatabaseItems";
+import getDefaultBucketId from "./getDefaultBucketId";
 import { MAX_UPLOAD_SIZE } from "./initiateIpfsUploadHandler";
 import { deleteObject, headObject } from "./s3Helpers";
 
@@ -25,7 +26,7 @@ const finalizeIpfsUploadHandler = async (request: FinalizeIpfsUploadRequest, ver
     const userId = client.ownerId
 
     const project = await getProject(projectId)
-    const bucket = project.bucketId ? await getBucket(project.bucketId) : undefined
+    const bucket = await getBucket(project.bucketId)
 
     const pm = await getProjectMembership(projectId, userId)
     if ((!pm) || (!pm.permissions.write)) {

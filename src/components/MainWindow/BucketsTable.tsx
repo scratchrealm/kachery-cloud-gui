@@ -4,7 +4,8 @@ import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
 import NiceTable from 'commonComponents/NiceTable/NiceTable';
 import useVisible from 'commonComponents/useVisible';
 import useRoute from 'components/useRoute';
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
+import { BucketService } from 'types/Bucket';
 import AddBucketControl from './AddBucketControl';
 import useBuckets from './useBucketsForUser';
 
@@ -82,6 +83,10 @@ const BucketsTable: FunctionComponent<Props> = () => {
         deleteBucket(bucketId)
     }, [deleteBucket])
 
+    const handleAddBucket = useCallback((bucketId: string, o: {service: BucketService, uri: string}) => {
+        addBucket(bucketId, {...o, navigateToBucketPage: true})
+    }, [addBucket])
+
     return (
         <div>
             <p>You can use your own storage buckets (Google, AWS, Wasabi, or Filebase). More than one project can use the same bucket.</p>
@@ -90,7 +95,7 @@ const BucketsTable: FunctionComponent<Props> = () => {
             {
                 addVisible.visible && (
                     <AddBucketControl
-                        onAdd={addBucket}
+                        onAdd={handleAddBucket}
                         onClose={addVisible.hide}
                     />
                 )

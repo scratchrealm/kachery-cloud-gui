@@ -6,6 +6,7 @@ import { getBucket, getClient, getProject, getProjectMembership } from "../commo
 import { MAX_UPLOAD_SIZE } from "./initiateFileUploadHandler";
 import { deleteObject, headObject } from "./s3Helpers";
 import { FileRecord } from '../../src/types/FileRecord'
+import getDefaultBucketId from "./getDefaultBucketId";
 
 const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, verifiedClientId?: NodeId): Promise<FinalizeFileUploadResponse> => {
     const { objectKey, hashAlg, hash } = request.payload
@@ -25,10 +26,11 @@ const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, ver
     const userId = client.ownerId
 
     const project = await getProject(projectId)
-    const bucket = project.bucketId ? await getBucket(project.bucketId) : undefined
-    const service = bucket?.service || 'filebase'
-    const cred = JSON.parse(bucket?.credentials || '{}')
-    const bucketUri = bucket?.uri || 'filebase://kachery-cloud'
+    const bucketId = project.bucketId ? project.bucketId : getDefaultBucketId()
+    const bucket = await getBucket(bucketId)
+    const service = bucket.service
+    const cred = JSON.parse(bucket.credentials || '{}')
+    const bucketUri = bucket.uri
     const bucketName = bucketUri.split('?')[0].split('/')[2]
     let bucketBaseUrl: string
     if (service === 'filebase') {

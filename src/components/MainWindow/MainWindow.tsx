@@ -13,7 +13,6 @@ import ProjectPage from './ProjectPage';
 import RegisterClientPage from './RegisterClientPage';
 import TestFeedsPage from './TestFeedsPage';
 import TestTaskBackendPage from './TestTaskBackendPage';
-import TimingPage from './TimingPage';
 
 type Props = {
 
@@ -47,9 +46,7 @@ const MainWindow: FunctionComponent<Props> = () => {
                     ) : <span />
                 }
                 {
-                    route.page === 'timing' ? (
-                        <TimingPage />
-                    ) : route.page === 'registerClient' ? (
+                    route.page === 'registerClient' ? (
                         <RegisterClientPage
                             clientId={route.clientId}
                             signature={route.signature}

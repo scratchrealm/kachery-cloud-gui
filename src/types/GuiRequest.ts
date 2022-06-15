@@ -181,11 +181,13 @@ export const isAddBucketRequest = (x: any): x is AddBucketRequest => {
 
 export type AddBucketResponse = {
     type: 'addBucket'
+    bucketId?: string // optional only for backward compatibility
 }
 
 export const isAddBucketResponse = (x: any): x is AddBucketResponse => {
     return _validateObject(x, {
-        type: isEqualTo('addBucket')
+        type: isEqualTo('addBucket'),
+        bucketId: optional(isString)
     })
 }
 
