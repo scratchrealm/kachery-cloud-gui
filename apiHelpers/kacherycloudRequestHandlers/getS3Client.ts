@@ -69,7 +69,7 @@ const getS3Client = (bucket?: Bucket): S3Client => {
     const x = s3ClientObjectCache.get(k)
     if (x) return x
     let ret: S3Client
-    if ((bucket.service === 'filebase') || (bucket.service === 'aws')) {
+    if ((bucket.service === 'filebase') || (bucket.service === 'aws') || (bucket.service === 'wasabi')) {
         const cred = JSON.parse(bucket.credentials || '{}')
         for (let k of ['region', 'accessKeyId', 'secretAccessKey']) {
             if (!cred[k]) {
@@ -89,6 +89,9 @@ const getS3Client = (bucket?: Bucket): S3Client => {
         }
         if (bucket.service === 'filebase') {
             o.endpoint = "https://s3.filebase.com"
+        }
+        else if (bucket.service === 'wasabi') {
+            o.endpoint = `https://s3.${region}.wasabisys.com`
         }
         ret = new AWS.S3(o)
     }

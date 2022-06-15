@@ -18,7 +18,7 @@ const EditBucketCredentials: FunctionComponent<Props> = ({service, bucketCredent
     const tableData = useMemo(() => {
         const c = JSON.parse(editCredentials || '{}')
         const x = JSON.parse(bucketCredentials || '{}')
-        if ((service === 'filebase') || (service === 'aws')) {
+        if ((service === 'filebase') || (service === 'aws') || (service === 'wasabi')) {
             return [
                 {key: 'region', label: 'region', value: x.region || ''},
                 {key: 'accessKeyId', label: 'Access Key ID', value: x.accessKeyId || ''},
@@ -51,7 +51,7 @@ const EditBucketCredentials: FunctionComponent<Props> = ({service, bucketCredent
             return []
         }
     }, [service, editCredentials, bucketCredentials])
-    if ((service === 'aws') || (service === 'filebase')) {
+    if ((service === 'aws') || (service === 'filebase') || (service === 'wasabi')) {
         return (
             <div>
                 <Table>

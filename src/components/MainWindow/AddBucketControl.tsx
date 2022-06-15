@@ -75,6 +75,9 @@ const uriForBucketName = (service: BucketService, name: string) => {
     else if (service === 'aws') {
         return `s3://${name}`
     }
+    else if (service === 'wasabi') {
+        return `wasabi://${name}`
+    }
     else {
         return `?${service}?://${name}`
     }
@@ -102,7 +105,7 @@ const ServiceSelect: FunctionComponent<ServiceSelectProps> = ({service, onChange
                 onChange={handleChange}
             >
                 {
-                    ['google', 'filebase', 'aws'].map(s => (
+                    ['google', 'filebase', 'aws', 'wasabi'].map(s => (
                         <MenuItem key={s} value={s}>{s}</MenuItem>
                     ))
                 }

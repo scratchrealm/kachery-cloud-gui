@@ -1,8 +1,8 @@
 import { isNumber, isString, isUserId, UserId, _validateObject } from "../commonInterface/kacheryTypes"
 
-export type BucketService = 'google' | 'filebase' | 'aws'
+export type BucketService = 'google' | 'filebase' | 'aws' | 'wasabi'
 
-export const isBucketService = (s: any): s is BucketService => (['google', 'filebase', 'aws'].includes(s))
+export const isBucketService = (s: any): s is BucketService => (['google', 'filebase', 'aws', 'wasabi'].includes(s))
 
 export type Bucket = {
     bucketId: string

@@ -27,6 +27,7 @@ const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, ver
     const project = await getProject(projectId)
     const bucket = project.bucketId ? await getBucket(project.bucketId) : undefined
     const service = bucket?.service || 'filebase'
+    const cred = JSON.parse(bucket?.credentials || '{}')
     const bucketUri = bucket?.uri || 'filebase://kachery-cloud'
     const bucketName = bucketUri.split('?')[0].split('/')[2]
     let bucketBaseUrl: string
@@ -35,6 +36,9 @@ const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, ver
     }
     else if (service === 'aws') {
         bucketBaseUrl = `https://${bucketName}.s3.amazonaws.com`
+    }
+    else if (service === 'wasabi') {
+        bucketBaseUrl = `https://s3.${cred.region || 'us-east-1'}.wasabisys.com/${bucketName}`
     }
     else {
         throw Error(`Unsupported service: ${service}`)
