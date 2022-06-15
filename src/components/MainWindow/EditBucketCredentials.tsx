@@ -18,7 +18,7 @@ const EditBucketCredentials: FunctionComponent<Props> = ({service, bucketCredent
     const tableData = useMemo(() => {
         const c = JSON.parse(editCredentials || '{}')
         const x = JSON.parse(bucketCredentials || '{}')
-        if ((service === 'filebase') || (service === 'aws') || (service === 'wasabi')) {
+        if (['filebase', 'aws', 'wasabi', 'google'].includes(service)) {
             return [
                 {key: 'region', label: 'region', value: x.region || ''},
                 {key: 'accessKeyId', label: 'Access Key ID', value: x.accessKeyId || ''},
@@ -44,14 +44,11 @@ const EditBucketCredentials: FunctionComponent<Props> = ({service, bucketCredent
                 }
             ))
         }
-        else if (service === 'google') {
-            return []
-        }
         else {
             return []
         }
     }, [service, editCredentials, bucketCredentials])
-    if ((service === 'aws') || (service === 'filebase') || (service === 'wasabi')) {
+    if (['filebase', 'aws', 'wasabi', 'google'].includes(service)) {
         return (
             <div>
                 <Table>
@@ -70,9 +67,6 @@ const EditBucketCredentials: FunctionComponent<Props> = ({service, bucketCredent
                 <Button onClick={() => {onCancel()}}>Cancel</Button>
             </div>
         )
-    }
-    else if (service === 'google') {
-        return <div>Service not yet supported: google</div>
     }
     else {
         return <div>Unexpected service: {service}</div>

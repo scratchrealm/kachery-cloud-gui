@@ -1,5 +1,4 @@
-import { google } from '@google-cloud/firestore/types/protos/firestore_v1beta1_proto_api';
-import AWS, { S3 } from 'aws-sdk';
+import AWS from 'aws-sdk';
 import { sha1OfString } from '../../src/commonInterface/kacheryTypes';
 import { Bucket } from '../../src/types/Bucket';
 import { ObjectCache } from '../common/getDatabaseItems';
@@ -69,9 +68,9 @@ const getS3Client = (bucket?: Bucket): S3Client => {
     const x = s3ClientObjectCache.get(k)
     if (x) return x
     let ret: S3Client
-    if ((bucket.service === 'filebase') || (bucket.service === 'aws') || (bucket.service === 'wasabi')) {
+    if (['filebase', 'aws', 'wasabi', 'google'].includes(bucket.service)) {
         const cred = JSON.parse(bucket.credentials || '{}')
-        for (let k of ['region', 'accessKeyId', 'secretAccessKey']) {
+        for (let k of ['accessKeyId', 'secretAccessKey']) {
             if (!cred[k]) {
                 throw Error(`Missing in credentals: ${k}`)
             }
@@ -91,12 +90,15 @@ const getS3Client = (bucket?: Bucket): S3Client => {
             o.endpoint = "https://s3.filebase.com"
         }
         else if (bucket.service === 'wasabi') {
+            if (!region) {
+                throw Error('Missing region in credentials')
+            }
             o.endpoint = `https://s3.${region}.wasabisys.com`
         }
+        else if (bucket.service === 'google') {
+            o.endpoint = "https://storage.googleapis.com"
+        }
         ret = new AWS.S3(o)
-    }
-    else if (bucket.service === 'google') {
-        throw Error('Google bucket not supported yet')
     }
     else {
         throw Error(`Unsupported bucket service: ${bucket.service}`)

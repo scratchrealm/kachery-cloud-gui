@@ -22,6 +22,9 @@ const getProjectBucketBaseUrlHandler = async (request: GetProjectBucketBaseUrlRe
     else if (service === 'wasabi') {
         bucketBaseUrl = `https://s3.${cred.region || 'us-east-1'}.wasabisys.com/${bucketName}`
     }
+    else if (service === 'google') {
+        bucketBaseUrl = `https://storage.googleapis.com/${bucketName}`
+    }
     else {
         throw Error(`Unsupported service: ${service}`)
     }

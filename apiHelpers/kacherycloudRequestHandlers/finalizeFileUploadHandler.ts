@@ -40,6 +40,9 @@ const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, ver
     else if (service === 'wasabi') {
         bucketBaseUrl = `https://s3.${cred.region || 'us-east-1'}.wasabisys.com/${bucketName}`
     }
+    else if (service === 'google') {
+        bucketBaseUrl = `https://storage.googleapis.com/${bucketName}`
+    }
     else {
         throw Error(`Unsupported service: ${service}`)
     }
