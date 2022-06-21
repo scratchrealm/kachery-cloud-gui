@@ -5,7 +5,7 @@ type Props = {
     tabLabels: string[]
 }
 
-const TabWidget: FunctionComponent<Props> = ({tabLabels, children}) => {
+const TabWidgetOld: FunctionComponent<Props> = ({tabLabels, children}) => {
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const c = children as any as ReactChild[]
     const currentChild = c[currentIndex]
@@ -41,4 +41,4 @@ const Header: FunctionComponent<{tabLabels: string[], currentIndex: number, onCh
     )
 }
 
-export default TabWidget
+export default TabWidgetOld

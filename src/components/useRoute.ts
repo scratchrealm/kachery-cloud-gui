@@ -6,6 +6,12 @@ import { useHistory, useLocation } from 'react-router-dom'
 export type Route = {
     page: 'home'
 } | {
+    page: 'projects'
+} | {
+    page: 'clients'
+} | {
+    page: 'buckets'
+} | {
     page: 'project',
     projectId: string
 } | {
@@ -42,7 +48,22 @@ const useRoute = () => {
 
     const p = location.pathname
     let route: Route = {page: 'home'}
-    if (p.startsWith('/project')) {
+    if (p === '/projects') {
+        route = {
+            page: 'projects'
+        }
+    }
+    else if (p === '/clients') {
+        route = {
+            page: 'clients'
+        }
+    }
+    else if (p === '/buckets') {
+        route = {
+            page: 'buckets'
+        }
+    }
+    else if (p.startsWith('/project')) {
         const x = p.split('/')
         if (x.length === 3) {
             route = {
@@ -124,7 +145,16 @@ const useRoute = () => {
     const setRoute = useCallback((route: Route) => {
         const query2 = {...query}
         let pathname2 = '/home'
-        if (route.page === 'project') {
+        if (route.page === 'projects') {
+            pathname2 = `/projects`
+        }
+        else if (route.page === 'clients') {
+            pathname2 = `/clients`
+        }
+        else if (route.page === 'buckets') {
+            pathname2 = `/buckets`
+        }
+        else if (route.page === 'project') {
             pathname2 = `/project/${route.projectId}`
         }
         else if (route.page === 'bucket') {

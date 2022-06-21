@@ -89,7 +89,12 @@ const BucketsTable: FunctionComponent<Props> = () => {
 
     return (
         <div>
-            <p>You can use your own storage buckets (Google, AWS, Wasabi, or Filebase). More than one project can use the same bucket.</p>
+            <div className="PageHeading">Buckets</div>
+            <div className="PageBlurb">
+                You can use your <Hyperlink href='https://github.com/flatironinstitute/kachery-cloud' target='_blank'>own storage bucket</Hyperlink>
+                &nbsp;(Google, AWS, Wasabi, or Filebase).
+                &nbsp;More than one project can use the same bucket.
+            </div>
             <IconButton onClick={refreshBuckets} title="Refresh buckets"><Refresh /></IconButton>
             <IconButton onClick={addVisible.show} title="Add bucket"><AddCircle /></IconButton>
             {

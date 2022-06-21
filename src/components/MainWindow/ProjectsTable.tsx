@@ -93,7 +93,12 @@ const ProjectsTable: FunctionComponent<Props> = () => {
 
     return (
         <div>
-            <p>Kachery cloud resources are organized into projects. Each project can be associated with a storage bucket. More than one project can use the same bucket.</p>
+            <div className="PageHeading">Projects</div>
+            <div className="PageBlurb">
+                Kachery cloud resources are organized into projects.
+                &nbsp;Each project can be associated with a storage bucket.
+                &nbsp;More than one project can use the same bucket.
+            </div>
             <IconButton onClick={refreshProjects} title="Refresh projects"><Refresh /></IconButton>
             <IconButton onClick={addVisible.show} title="Add project"><AddCircle /></IconButton>
             {

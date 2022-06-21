@@ -2,7 +2,6 @@ import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
 import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useRoute from 'components/useRoute';
 import { FunctionComponent } from 'react';
-import TabWindow from './TabWindow';
 
 const adminUsersJson = process.env.REACT_APP_ADMIN_USERS || "[]"
 const adminUsers = JSON.parse(adminUsersJson) as any as string[]
@@ -15,23 +14,38 @@ const HomePage: FunctionComponent<Props> = () => {
     const {setRoute} = useRoute()
     return (
         <div>
-            <h3>Welcome to kachery cloud</h3>
-            <p>
-            <a href="https://github.com/scratchrealm/kachery-cloud" target="_blank" rel="noreferrer">Get started</a>
-            </p>
+            <div className='PageHeading'>
+                Welcome to kachery cloud
+            </div>
             {
                 signedIn ? (
-                    <TabWindow />
+                    <p>You are signed in as {userId}</p>
                 ) : (
-                    <p>Sign in above</p>
+                    <p>You are not logged in. Sign in above.</p>
                 )
             }
+            <hr />
+            <p />
+            <div className='PageBlurb'>
+                Kachery cloud resources are organized into projects which are accessed via registered clients. Projects may be connected to cloud storage buckets.
+            </div>
+            <p />
+            <div><Hyperlink onClick={() => {setRoute({page: 'projects'})}}>Projects</Hyperlink></div>
+            <div><Hyperlink onClick={() => {setRoute({page: 'clients'})}}>Clients</Hyperlink></div>
+            <div><Hyperlink onClick={() => {setRoute({page: 'buckets'})}}>Buckets</Hyperlink></div>
+            <p />
+            <hr />
+            <p />
             {
                 userId && adminUsers.includes(userId.toString()) && (
-                    <ul>
-                        <li><Hyperlink onClick={() => {setRoute({page: 'admin'})}}>admin</Hyperlink></li>
-                        <li><Hyperlink onClick={() => {setRoute({page: 'testFeeds'})}}>test feeds</Hyperlink></li>
-                    </ul>
+                    <div>
+                        <hr />
+                        <h3>Admin</h3>
+                        <ul>
+                            <li><Hyperlink onClick={() => {setRoute({page: 'admin'})}}>admin</Hyperlink></li>
+                            <li><Hyperlink onClick={() => {setRoute({page: 'testFeeds'})}}>test feeds</Hyperlink></li>
+                        </ul>
+                    </div>
                 )
             }
         </div>

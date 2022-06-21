@@ -1,6 +1,7 @@
 import { UserId } from "../../src/commonInterface/kacheryTypes";
 import { AdminGetProjectsRequest, AdminGetProjectsResponse } from "../../src/types/GuiRequest";
 import { isProject, Project } from "../../src/types/Project";
+import { isProjectUsage, ProjectUsage } from "../../src/types/ProjectUsage";
 import firestoreDatabase from '../common/firestoreDatabase';
 import isAdminUser from "./helpers/isAdminUser";
 
@@ -10,7 +11,7 @@ const adminGetProjectsHandler = async (request: AdminGetProjectsRequest, verifie
     }
 
     const db = firestoreDatabase()
-    const projectsCollection = db.collection('kacherycloud.projects');
+    const projectsCollection = db.collection('kacherycloud.projects')
     const results = await projectsCollection.get()
     const projects: Project[] = []
     for (let doc of results.docs) {
@@ -20,9 +21,22 @@ const adminGetProjectsHandler = async (request: AdminGetProjectsRequest, verifie
         }
         projects.push(project)
     }
+
+    const projectUsagesCollection = db.collection('kacherycloud.projectUsages')
+    const results2 = await projectUsagesCollection.get()
+    const projectUsages: ProjectUsage[] = []
+    for (let doc of results2.docs) {
+        const projectUsage = doc.data()
+        if (!isProjectUsage(projectUsage)) {
+            throw Error('Invalid project usage in database')
+        }
+        projectUsages.push(projectUsage)
+    }
+
     return {
         type: 'adminGetProjects',
-        projects
+        projects,
+        projectUsages
     }
 }
 

@@ -692,12 +692,14 @@ export const isAdminGetProjectsRequest = (x: any): x is AdminGetProjectsRequest 
 export type AdminGetProjectsResponse = {
     type: 'adminGetProjects'
     projects: Project[]
+    projectUsages?: ProjectUsage[]
 }
 
 export const isAdminGetProjectsResponse = (x: any): x is AdminGetProjectsResponse => {
     return _validateObject(x, {
         type: isEqualTo('adminGetProjects'),
-        projects: isArrayOf(isProject)
+        projects: isArrayOf(isProject),
+        projectUsages: optional(isArrayOf(isProjectUsage))
     })
 }
 

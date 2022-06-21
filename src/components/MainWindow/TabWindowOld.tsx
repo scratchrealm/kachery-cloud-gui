@@ -32,7 +32,7 @@ function TabPanel(props: any) {
     );
 }
 
-const TabWindow: FunctionComponent<Props> = () => {
+const TabWindowOld: FunctionComponent<Props> = () => {
     const [tabValue, setTabValue] = React.useState(0)
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue)
@@ -65,4 +65,4 @@ const TabWindow: FunctionComponent<Props> = () => {
     )
 }
 
-export default TabWindow
+export default TabWindowOld
