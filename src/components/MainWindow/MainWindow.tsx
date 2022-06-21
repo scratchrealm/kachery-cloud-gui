@@ -64,10 +64,10 @@ const MainWindow: FunctionComponent<Props> = () => {
                                 signature={route.signature}
                                 label={route.label}
                             />
+                        ) : (route.page === 'home') ? (
+                            <HomePage />
                         ) : signedIn ? (
-                            (route.page === 'home') ? (
-                                <HomePage />
-                            ) : (route.page === 'projects') ? (
+                            (route.page === 'projects') ? (
                                 <ProjectsTable />
                             ) : route.page === 'clients' ? (
                                 <ClientsTable />
@@ -100,7 +100,10 @@ const MainWindow: FunctionComponent<Props> = () => {
                                 <AdminPage />
                             ) : <span />
                         ) : (
-                            <HomePage />
+                            <div>
+                                <p />
+                                <div className='PageBlurb'>You must sign in above.</div>
+                            </div>
                         )
                     }
                 </div>
