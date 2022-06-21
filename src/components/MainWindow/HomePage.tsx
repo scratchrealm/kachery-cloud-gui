@@ -38,14 +38,7 @@ const HomePage: FunctionComponent<Props> = () => {
             <p />
             {
                 userId && adminUsers.includes(userId.toString()) && (
-                    <div>
-                        <hr />
-                        <h3>Admin</h3>
-                        <ul>
-                            <li><Hyperlink onClick={() => {setRoute({page: 'admin'})}}>admin</Hyperlink></li>
-                            <li><Hyperlink onClick={() => {setRoute({page: 'testFeeds'})}}>test feeds</Hyperlink></li>
-                        </ul>
-                    </div>
+                    <Hyperlink onClick={() => {setRoute({page: 'testFeeds'})}}>test feeds</Hyperlink>
                 )
             }
         </div>

@@ -2,26 +2,40 @@ import useRoute, { Route } from "components/useRoute";
 import { FunctionComponent, useMemo } from "react";
 import LeftPanelItem from "./LeftPanelItem";
 import './LeftPanel.css'
-import { AccountTree, Home, ViewModule, Storage, HelpOutline } from "@material-ui/icons";
+import { AccountTree, Home, ViewModule, Storage, HelpOutline, CropSquare } from "@material-ui/icons";
+import { useSignedIn } from "components/googleSignIn/GoogleSignIn";
 
 type Props = {
     width: number
     height: number
 }
 
+const adminUsersJson = process.env.REACT_APP_ADMIN_USERS || "[]"
+const adminUsers = JSON.parse(adminUsersJson) as any as string[]
+
 const LeftPanel: FunctionComponent<Props> = ({width, height}) => {
     const {route, setRoute} = useRoute()
 
-    const items: {
-        label: string
-        route: Route
-        icon?: any
-    }[] = useMemo(() => ([
-        {label: 'Home', route: {page: 'home'}, icon: <Home />},
-        {label: 'Projects', route: {page: 'projects'}, icon: <AccountTree />},
-        {label: 'Clients', route: {page: 'clients'}, icon: <ViewModule />},
-        {label: 'Buckets', route: {page: 'buckets'}, icon: <Storage />}
-    ]), [])
+    const {userId} = useSignedIn()
+
+    const items = useMemo(() => {
+        const ret: {
+            label: string
+            route: Route
+            icon?: any
+        }[] = [
+            {label: 'Home', route: {page: 'home'}, icon: <Home />},
+            {label: 'Projects', route: {page: 'projects'}, icon: <AccountTree />},
+            {label: 'Clients', route: {page: 'clients'}, icon: <ViewModule />},
+            {label: 'Buckets', route: {page: 'buckets'}, icon: <Storage />}
+        ]
+        if ((userId) && (adminUsers.includes(userId.toString()))) {
+            ret.push({
+                label: 'Admin', route: {page: 'admin'}, icon: <CropSquare />
+            })
+        }
+        return ret
+    }, [userId])
 
     return (
         <div className="LeftPanel" style={{position: 'absolute', width, height}}>
