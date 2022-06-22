@@ -38,7 +38,6 @@ const addTimestampsToFiles = async (db: Firestore) => {
         const query2 = C.orderBy(FieldPath.documentId()).startAfter(lastVisible).limit(300)
         docSnapshots = await query2.get()
     }
-    throw Error('test')
 }
 
 const main = async () => {
