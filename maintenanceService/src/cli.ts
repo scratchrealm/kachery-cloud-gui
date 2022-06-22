@@ -3,6 +3,7 @@ import firestoreDatabase from '../../apiHelpers/common/firestoreDatabase'
 import { LogItem, isLogItem } from '../../src/types/LogItem'
 import { ProjectUsage, isProjectUsage } from '../../src/types/ProjectUsage'
 import fs from 'fs'
+import { FieldPath, Firestore } from "@google-cloud/firestore"
 
 const initialProjectUsage = (projectId: string): ProjectUsage => {
     return {
@@ -10,10 +11,44 @@ const initialProjectUsage = (projectId: string): ProjectUsage => {
     }
 }
 
+const addTimestampsToFiles = async (db: Firestore) => {
+    // Example of adding a field to a collection
+    console.info('Adding timestamps to files')
+    const C = db.collection('kacherycloud.files')
+    const query = C.orderBy(FieldPath.documentId()).limit(300)
+    let docSnapshots = await query.get()
+    let ct = 0
+    while (docSnapshots.size > 0) {
+        console.info(ct)
+        const batch = db.batch()
+        let batchSize = 0
+        for (let doc of docSnapshots.docs) {
+            if (!doc.data()['timestampCreated']) {
+                batch.update(doc.ref, {timestampCreated: Date.now()})
+                batchSize ++
+            }
+        }
+        console.info('Number of changes to make', batchSize)
+        if (batchSize > 0) {
+            await batch.commit()
+        }
+        ct += docSnapshots.size
+
+        const lastVisible = docSnapshots.docs[docSnapshots.docs.length - 1]
+        const query2 = C.orderBy(FieldPath.documentId()).startAfter(lastVisible).limit(300)
+        docSnapshots = await query2.get()
+    }
+    throw Error('test')
+}
+
 const main = async () => {
     const credentials = fs.readFileSync('googleCredentials.json', {encoding: 'utf-8'})
     process.env['GOOGLE_CREDENTIALS'] = credentials
     const db = firestoreDatabase()
+
+    // Example of adding a field to a collection
+    // await addTimestampsToFiles(db)
+
     const usageLogColletion = db.collection('kacherycloud.usageLog')
     const projectUsagesCollection = db.collection('kacherycloud.projectUsages')
     

@@ -1,4 +1,4 @@
-import { isNumber, isString, _validateObject } from "../commonInterface/kacheryTypes"
+import { isNumber, isString, optional, _validateObject } from "../commonInterface/kacheryTypes"
 
 export type FileRecord = {
     projectId: string
@@ -7,6 +7,7 @@ export type FileRecord = {
     uri: string
     size: number
     url: string
+    timestampCreated?: number // only optional for backward-compatibility
 }
 
 export const isFileRecord = (x: any): x is FileRecord => {
@@ -16,6 +17,7 @@ export const isFileRecord = (x: any): x is FileRecord => {
         hash: isString,
         uri: isString,
         size: isNumber,
-        url: isString
+        url: isString,
+        timestampCreated: optional(isNumber)
     })
 }

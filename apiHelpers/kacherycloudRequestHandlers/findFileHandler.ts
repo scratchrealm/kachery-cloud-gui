@@ -45,7 +45,9 @@ const findFileHandler = async (request: FindFileRequest, verifiedClientId?: Node
     }
     else {
         const uri = `${hashAlg}://${hash}`
-        const filesResult = await filesCollection.where('uri', '==', uri).get()
+        // important to order by timestampCreated so that we get the earliest version of a file (prevents an attack where attacker uploads incorrect content for an existing hash)
+        const filesResult = await filesCollection.where('uri', '==', uri).orderBy('timestampCreated').get()
+        // const filesResult = await filesCollection.where('uri', '==', uri).get()
         if (filesResult.docs.length === 0) {
             return {
                 type: 'findFile',
@@ -53,7 +55,7 @@ const findFileHandler = async (request: FindFileRequest, verifiedClientId?: Node
             }
         }
         else {
-            const fileData = filesResult.docs[0].data()
+            const fileData = filesResult.docs[0].data() // the first doc is the earliest because we ordered by timestampCreated
             if (!isFileRecord(fileData)) throw Error('Invalid file in database')
             fileRecord = fileData
         }

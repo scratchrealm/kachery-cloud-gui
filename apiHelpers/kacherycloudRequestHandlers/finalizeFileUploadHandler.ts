@@ -85,7 +85,8 @@ const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, ver
             hash,
             uri,
             size,
-            url
+            url,
+            timestampCreated: Date.now()
         }
         await filesCollection.doc(fKey).set(fileRecord)
     }

@@ -1,4 +1,35 @@
-# Getting Started with Create React App
+# kachery-cloud-gui
+
+This is the web app and serverless API associated with [kachery-cloud](https://github.com/flatironinstitute/kachery-cloud). It is deployed on vercel at cloud.kacheryhub.org.
+
+The following services are used:
+* pubnub
+* google firestore
+* google authentication
+* recaptcha
+
+The following environment variables need to be set on vercel.
+
+```
+DEFAULT_BUCKET_ID
+REACT_APP_ADMIN_USERS
+PUBNUB_UUID
+PUBNUB_SECRET_KEY
+PUBNUB_PUBLISH_KEY
+PUBNUB_SUBSCRIBE_KEY
+REACT_APP_GOOGLE_API_KEY
+REACT_APP_GOOGLE_CLIENT_ID
+GOOGLE_CREDENTIALS
+RECAPTCHA_SECRET_KEY
+REACT_APP_RECAPTCHA_KEY
+```
+
+The following composite index needs to be created on the firestore database
+```
+kacherycloud.files	uri: ASC timestampCreated: ASC	Collection
+```
+
+## Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
