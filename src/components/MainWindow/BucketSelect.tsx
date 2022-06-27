@@ -3,14 +3,15 @@ import { FunctionComponent, useCallback } from 'react';
 import useBucketsForUser from './useBucketsForUser';
 
 type Props = {
-    bucketId: string
-    setBucketId: (x: string) => void
+    bucketId: string | undefined
+    setBucketId: (x: string | undefined) => void
+    noneLabel: string
 }
 
-const BucketSelect: FunctionComponent<Props> = ({bucketId, setBucketId}) => {
+const BucketSelect: FunctionComponent<Props> = ({bucketId, setBucketId, noneLabel}) => {
     const handleChange = useCallback((e) => {
         const id = e.target.value
-        setBucketId(id !== '<none>' ? id : '')
+        setBucketId(id !== '<none>' ? id : undefined)
     }, [setBucketId])
     const {buckets} = useBucketsForUser()
     return (
@@ -22,7 +23,7 @@ const BucketSelect: FunctionComponent<Props> = ({bucketId, setBucketId}) => {
                         onChange={handleChange}
                     >
                         {
-                            <MenuItem key='<none>' value='<none>'>None</MenuItem>
+                            <MenuItem key='<none>' value='<none>'>{noneLabel}</MenuItem>
                         }
                         {
                             buckets.map(bucket => (

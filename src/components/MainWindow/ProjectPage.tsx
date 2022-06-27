@@ -42,7 +42,7 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
         })()
     }, [userId, googleIdToken, projectId, refreshProject, setErrorMessage])
 
-    const handleChangeBucket = useCallback((newBucketId: string) => {
+    const handleChangeBucket = useCallback((newBucketId: string | undefined) => {
         if (!userId) return
         if (!googleIdToken) return
         ;(async () => {

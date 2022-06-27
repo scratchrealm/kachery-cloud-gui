@@ -4,12 +4,12 @@ import BucketSelect from './BucketSelect'
 
 type Props = {
     onClose?: () => void
-    onAdd: (projectLabel: string, bucketId: string) => void
+    onAdd: (projectLabel: string, bucketId: string | undefined) => void
 }
 
 const AddProjectControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
     const [editLabel, setEditLabel] = useState<string>('')
-    const [editBucketId, setEditBucketId] = useState<string>('')
+    const [editBucketId, setEditBucketId] = useState<string | undefined>(undefined)
     
     const handleAdd = useCallback(() => {
         onAdd(editLabel, editBucketId)
@@ -26,7 +26,7 @@ const AddProjectControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
             <Table style={{maxWidth: 400}}>
                 <TableBody>
                     <TableRow>
-                        <TableCell>Project name</TableCell>
+                        <TableCell>Project label (for display)</TableCell>
                         <TableCell>
                             <input type="text" value={editLabel} onChange={handleChange} />
                         </TableCell>
@@ -37,6 +37,7 @@ const AddProjectControl: FunctionComponent<Props> = ({onClose, onAdd}) => {
                             <BucketSelect
                                 bucketId={editBucketId}
                                 setBucketId={setEditBucketId}
+                                noneLabel="<Use default>"
                             />
                         </TableCell>
                     </TableRow>

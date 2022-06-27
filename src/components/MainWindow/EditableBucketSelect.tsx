@@ -5,7 +5,7 @@ import BucketSelect from './BucketSelect';
 
 type Props = {
     bucket: Bucket | undefined
-    onChange: (id: string) => void
+    onChange: (id: string | undefined) => void
     onClick?: () => void
     tooltip?: string
 }
@@ -15,8 +15,9 @@ const EditableBucketSelect: FunctionComponent<Props> = ({bucket, onChange, onCli
     if (editing) {
         return (
             <BucketSelect
-                bucketId={bucket?.bucketId || ''}
+                bucketId={bucket?.bucketId || undefined}
                 setBucketId={onChange}
+                noneLabel="<Use default>"
             />
         )
     }

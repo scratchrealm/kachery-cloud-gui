@@ -38,7 +38,7 @@ const useProjectsForUser = () => {
         })()
     }, [userId, googleIdToken, refreshCode, setErrorMessage])
 
-    const addProject = useCallback((label: string, bucketId: string) => {
+    const addProject = useCallback((label: string, bucketId: string | undefined) => {
         if (!userId) return
             ; (async () => {
                 const req: AddProjectRequest = {
