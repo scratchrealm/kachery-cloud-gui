@@ -8,7 +8,7 @@ import { getClient, getProjectMembership } from '../common/getDatabaseItems';
 const setMutableHandler = async (request: SetMutableRequest, verifiedClientId?: NodeId): Promise<SetMutableResponse> => {
     const { mutableKey, value } = request.payload
 
-    if (value.length > 1000) {
+    if (value.length > 100000) {
         throw Error(`Size of mutable value is too large: ${value.length}`)
     }
 
