@@ -1,15 +1,19 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
 import axios from 'axios'
 import googleVerifyIdToken from '../apiHelpers/common/googleVerifyIdToken'
+import addAccessGroupHandler from '../apiHelpers/guiRequestHandlers/addAccessGroupHandler'
 import addBucketHandler from '../apiHelpers/guiRequestHandlers/addBucketHandler'
 import addClientHandler from '../apiHelpers/guiRequestHandlers/addClientHandler'
 import addProjectHandler from '../apiHelpers/guiRequestHandlers/addProjectHandler'
 import addProjectMembershipHandler from '../apiHelpers/guiRequestHandlers/addProjectMembershipHandler'
 import adminGetProjectsHandler from '../apiHelpers/guiRequestHandlers/adminGetProjectsHandler'
+import deleteAccessGroupHandler from '../apiHelpers/guiRequestHandlers/deleteAccessGroupHandler'
 import deleteBucketHandler from '../apiHelpers/guiRequestHandlers/deleteBucketHandler'
 import deleteClientHandler from '../apiHelpers/guiRequestHandlers/deleteClientHandler'
 import deleteProjectHandler from '../apiHelpers/guiRequestHandlers/deleteProjectHandler'
 import deleteProjectMembershipHandler from '../apiHelpers/guiRequestHandlers/deleteProjectMembershipHandler'
+import getAccessGroupHandler from '../apiHelpers/guiRequestHandlers/getAccessGroupHandler'
+import getAccessGroupsForUserHandler from '../apiHelpers/guiRequestHandlers/getAccessGroupsForUserHandler'
 import getBucketHandler from '../apiHelpers/guiRequestHandlers/getBucketHandler'
 import getBucketsForUserHandler from '../apiHelpers/guiRequestHandlers/getBucketsForUserHandler'
 import getClientsHandler from '../apiHelpers/guiRequestHandlers/getClientsHandler'
@@ -18,6 +22,7 @@ import getProjectMembershipsForUserHandler from '../apiHelpers/guiRequestHandler
 import getProjectsForUserHandler from '../apiHelpers/guiRequestHandlers/getProjectsForUserHandler'
 import getProjectUsageHandler from '../apiHelpers/guiRequestHandlers/getProjectUsageHandler'
 import getUserSettingsHandler from '../apiHelpers/guiRequestHandlers/getUserSettingsHandler'
+import setAccessGroupPropertiesHandler from '../apiHelpers/guiRequestHandlers/setAccessGroupPropertiesHandler'
 import setBucketCredentialsHandler from '../apiHelpers/guiRequestHandlers/setBucketCredentialsHandler'
 import setBucketLabelHandler from '../apiHelpers/guiRequestHandlers/setBucketLabelHandler'
 import setClientInfoHandler from '../apiHelpers/guiRequestHandlers/setClientInfoHandler'
@@ -136,6 +141,32 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
                 throw Error('ReCaptcha required')
             }
             return await setBucketCredentialsHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'addAccessGroup') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await addAccessGroupHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'deleteAccessGroup') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await deleteAccessGroupHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'getAccessGroupsForUser') {
+            // no recaptcha required
+            return await getAccessGroupsForUserHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'getAccessGroup') {
+            // no recaptcha required
+            return await getAccessGroupHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'setAccessGroupProperties') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await setAccessGroupPropertiesHandler(request, verifiedUserId)
         }
         else if (request.type === 'addClient') {
             if (!verifiedReCaptchaInfo) {

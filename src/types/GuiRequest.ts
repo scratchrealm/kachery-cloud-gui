@@ -1,4 +1,5 @@
-import { isArrayOf, isEqualTo, isNodeId, isOneOf, isSignature, isString, isUserId, NodeId, optional, Signature, UserId, _validateObject } from "../commonInterface/kacheryTypes"
+import { isArrayOf, isBoolean, isEqualTo, isNodeId, isOneOf, isSignature, isString, isUserId, NodeId, optional, Signature, UserId, _validateObject } from "../commonInterface/kacheryTypes"
+import { AccessGroup, AccessGroupUser, isAccessGroup, isAccessGroupUser } from "./AccessGroup"
 import { Auth, isAuth } from "./Auth"
 import { Bucket, BucketService, isBucket, isBucketService } from "./Bucket"
 import { Client, isClient } from "./Client"
@@ -302,6 +303,156 @@ export const isGetBucketResponse = (x: any): x is GetBucketResponse => {
     return _validateObject(x, {
         type: isEqualTo('getBucket'),
         bucket: isBucket
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// addAccessGroup
+
+export type AddAccessGroupRequest = {
+    type: 'addAccessGroup'
+    label: string
+    ownerId: UserId
+    auth: Auth
+}
+
+export const isAddAccessGroupRequest = (x: any): x is AddAccessGroupRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('addAccessGroup'),
+        label: isString,
+        ownerId: isUserId,
+        auth: isAuth
+    })
+}
+
+export type AddAccessGroupResponse = {
+    type: 'addAccessGroup'
+}
+
+export const isAddAccessGroupResponse = (x: any): x is AddAccessGroupResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('addAccessGroup'),
+        accessGroupId: optional(isString)
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// deleteAccessGroup
+
+export type DeleteAccessGroupRequest = {
+    type: 'deleteAccessGroup'
+    accessGroupId: string
+    auth: Auth
+}
+
+export const isDeleteAccessGroupRequest = (x: any): x is DeleteAccessGroupRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('deleteAccessGroup'),
+        accessGroupId: isString,
+        auth: isAuth
+    })
+}
+
+export type DeleteAccessGroupResponse = {
+    type: 'deleteAccessGroup'
+}
+
+export const isDeleteAccessGroupResponse = (x: any): x is DeleteAccessGroupResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('deleteAccessGroup')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// setAccessGroupProperties
+
+export type SetAccessGroupPropertiesRequest = {
+    type: 'setAccessGroupProperties'
+    accessGroupId: string
+    label?: string
+    publicRead?: boolean
+    publicWrite?: boolean
+    users?: AccessGroupUser[]
+    auth: Auth
+}
+
+export const isSetAccessGroupPropertiesRequest = (x: any): x is SetAccessGroupPropertiesRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('setAccessGroupProperties'),
+        accessGroupId: isString,
+        label: optional(isString),
+        publicRead: optional(isBoolean),
+        publicWrite: optional(isBoolean),
+        users: optional(isArrayOf(isAccessGroupUser)),
+        auth: isAuth
+    })
+}
+
+export type SetAccessGroupPropertiesResponse = {
+    type: 'setAccessGroupProperties'
+}
+
+export const isSetAccessGroupPropertiesResponse = (x: any): x is SetAccessGroupPropertiesResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('setAccessGroupProperties')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// getAccessGroupsForUser
+
+export type GetAccessGroupsForUserRequest = {
+    type: 'getAccessGroupsForUser'
+    userId?: UserId
+    auth: Auth
+}
+
+export const isGetAccessGroupsForUserRequest = (x: any): x is GetAccessGroupsForUserRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('getAccessGroupsForUser'),
+        userId: optional(isUserId),
+        auth: isAuth
+    })
+}
+
+export type GetAccessGroupsForUserResponse = {
+    type: 'getAccessGroupsForUser'
+    accessGroups: AccessGroup[]
+}
+
+export const isGetAccessGroupsForUserResponse = (x: any): x is GetAccessGroupsForUserResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('getAccessGroupsForUser'),
+        accessGroups: isArrayOf(isAccessGroup)
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// getAccessGroup
+
+export type GetAccessGroupRequest = {
+    type: 'getAccessGroup'
+    accessGroupId: string
+    auth: Auth
+}
+
+export const isGetAccessGroupRequest = (x: any): x is GetAccessGroupRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('getAccessGroup'),
+        accessGroupId: isString,
+        auth: isAuth
+    })
+}
+
+export type GetAccessGroupResponse = {
+    type: 'getAccessGroup'
+    accessGroup: AccessGroup
+}
+
+export const isGetAccessGroupResponse = (x: any): x is GetAccessGroupResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('getAccessGroup'),
+        accessGroup: isAccessGroup
     })
 }
 
@@ -749,6 +900,11 @@ export type GuiRequest =
     SetBucketCredentialsRequest |
     GetBucketsForUserRequest |
     GetBucketRequest |
+    AddAccessGroupRequest |
+    DeleteAccessGroupRequest |
+    SetAccessGroupPropertiesRequest |
+    GetAccessGroupsForUserRequest |
+    GetAccessGroupRequest |
     AddClientRequest |
     DeleteClientRequest |
     GetClientsRequest |
@@ -776,6 +932,11 @@ export const isGuiRequest = (x: any): x is GuiRequest => {
         isSetBucketCredentialsRequest,
         isGetBucketsForUserRequest,
         isGetBucketRequest,
+        isAddAccessGroupRequest,
+        isDeleteAccessGroupRequest,
+        isSetAccessGroupPropertiesRequest,
+        isGetAccessGroupsForUserRequest,
+        isGetAccessGroupRequest,
         isAddClientRequest,
         isDeleteClientRequest,
         isGetClientsRequest,
@@ -804,6 +965,11 @@ export type GuiResponse =
     SetBucketCredentialsResponse |
     GetBucketsForUserResponse |
     GetBucketResponse |
+    AddAccessGroupResponse |
+    DeleteAccessGroupResponse |
+    SetAccessGroupPropertiesResponse |
+    GetAccessGroupsForUserResponse |
+    GetAccessGroupResponse |
     AddClientResponse |
     DeleteClientResponse |
     GetClientsResponse |
@@ -831,6 +997,11 @@ export const isGuiResponse = (x: any): x is GuiResponse => {
         isSetBucketCredentialsResponse,
         isGetBucketsForUserResponse,
         isGetBucketResponse,
+        isAddAccessGroupResponse,
+        isDeleteAccessGroupResponse,
+        isSetAccessGroupPropertiesResponse,
+        isGetAccessGroupsForUserResponse,
+        isGetAccessGroupResponse,
         isAddClientResponse,
         isDeleteClientResponse,
         isGetClientsResponse,

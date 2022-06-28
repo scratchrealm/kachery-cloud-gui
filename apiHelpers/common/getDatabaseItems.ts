@@ -5,6 +5,7 @@ import { isBucket, Bucket } from "../../src/types/Bucket"
 import { isProjectMembership, ProjectMembership } from "../../src/types/ProjectMembership"
 import firestoreDatabase from "./firestoreDatabase"
 import getDefaultBucketId from "../kacherycloudRequestHandlers/getDefaultBucketId"
+import { AccessGroup, isAccessGroup } from "../../src/types/AccessGroup"
 
 export class ObjectCache<ObjectType> {
     #cache: {[key: string]: {object: ObjectType, timestamp: number}} = {}
@@ -26,12 +27,18 @@ export class ObjectCache<ObjectType> {
         }
         return a.object
     }
+    delete(key: string) {
+        if (this.#cache[key]) {
+            delete this.#cache[key]
+        }
+    }
 }
 
 const expirationMSec = 20000
 const clientObjectCache = new ObjectCache<Client>(expirationMSec)
 const projectObjectCache = new ObjectCache<Project>(expirationMSec)
 const bucketObjectCache = new ObjectCache<Bucket>(expirationMSec)
+const accessGroupObjectCache = new ObjectCache<AccessGroup>(expirationMSec)
 const projectMembershipObjectCache = new ObjectCache<ProjectMembership>(expirationMSec)
 
 export const getClient = async (clientId: NodeId) => {
@@ -72,6 +79,27 @@ export const getBucket = async (bucketId?: string) => {
     if (!isBucket(bucket)) throw Error('Invalid bucket in database')
     bucketObjectCache.set(bucketId.toString(), bucket)
     return bucket
+}
+
+export const invalidateBucketInCache = async (bucketId: string) => {
+    bucketObjectCache.delete(bucketId)
+}
+
+export const getAccessGroup = async (accessGroupId: string) => {
+    const x = accessGroupObjectCache.get(accessGroupId.toString())
+    if (x) return x
+    const db = firestoreDatabase()
+    const accessGroupsCollection = db.collection('kacherycloud.accessGroups')
+    const accessGroupSnapshot = await accessGroupsCollection.doc(accessGroupId).get()
+    if (!accessGroupSnapshot.exists) throw Error(`Access group does not exist: ${accessGroupId}`)
+    const accessGroup = accessGroupSnapshot.data()
+    if (!isAccessGroup(accessGroup)) throw Error('Invalid access group in database')
+    accessGroupObjectCache.set(accessGroupId.toString(), accessGroup)
+    return accessGroup
+}
+
+export const invalidateAccessGroupInCache = async (accessGroupId: string) => {
+    accessGroupObjectCache.delete(accessGroupId)
 }
 
 export const getProjectMembership = async (projectId: string, userId: UserId) => {

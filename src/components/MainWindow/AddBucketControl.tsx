@@ -5,7 +5,7 @@ import { BucketService, isBucketService } from 'types/Bucket'
 
 type Props = {
     onClose?: () => void
-    onAdd: (bucketId: string, o: {service: BucketService, uri: string}) => void
+    onAdd: (label: string, o: {service: BucketService, uri: string}) => void
 }
 
 const AddBucketControl: FunctionComponent<Props> = ({onClose, onAdd}) => {

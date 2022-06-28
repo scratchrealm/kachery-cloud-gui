@@ -1,4 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
+import accessGroupDecryptHandler from '../apiHelpers/kacherycloudRequestHandlers/accessGroupDecryptHandler'
+import accessGroupEncryptHandler from '../apiHelpers/kacherycloudRequestHandlers/accessGroupEncryptHandler'
 import appendFeedMessagesHandler from '../apiHelpers/kacherycloudRequestHandlers/appendFeedMessagesHandler'
 import createFeedHandler from '../apiHelpers/kacherycloudRequestHandlers/createFeedHandler'
 import finalizeFileUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/finalizeFileUploadHandler'
@@ -19,7 +21,7 @@ import setMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/setMuta
 import subscribeToPubsubChannelHandler from '../apiHelpers/kacherycloudRequestHandlers/subscribeToPubsubChannelHandler'
 import { hexToPublicKey, verifySignature } from '../src/commonInterface/crypto/signatures'
 import { JSONValue, NodeId, nodeIdToPublicKeyHex } from '../src/commonInterface/kacheryTypes'
-import { isAppendFeedMessagesRequest, isCreateFeedRequest, isFinalizeFileUploadRequest, isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindFileRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetFeedInfoRequest, isGetFeedMessagesRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateFileUploadRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isPublishToPubsubChannelRequest, isSetMutableRequest, isSubscribeToPubsubChannelRequest } from '../src/types/KacherycloudRequest'
+import { isAccessGroupDecryptRequest, isAccessGroupEncryptRequest, isAppendFeedMessagesRequest, isCreateFeedRequest, isFinalizeFileUploadRequest, isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindFileRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetFeedInfoRequest, isGetFeedMessagesRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateFileUploadRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isPublishToPubsubChannelRequest, isSetMutableRequest, isSubscribeToPubsubChannelRequest } from '../src/types/KacherycloudRequest'
 
 module.exports = (req: VercelRequest, res: VercelResponse) => {    
     const {body: request} = req
@@ -72,6 +74,12 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         else if (isGetProjectBucketBaseUrlRequest(request)) {
             return await getProjectBucketBaseUrlHandler(request, verifiedClientId)
+        }
+        else if (isAccessGroupEncryptRequest(request)) {
+            return await accessGroupEncryptHandler(request, verifiedClientId)
+        }
+        else if (isAccessGroupDecryptRequest(request)) {
+            return await accessGroupDecryptHandler(request, verifiedClientId)
         }
         else if (isInitiateIpfsUploadRequest(request)) {
             return await initiateIpfsUploadHandler(request, verifiedClientId)

@@ -1,7 +1,7 @@
 import guiApiRequest from "common/guiApiRequest"
 import { useSignedIn } from "components/googleSignIn/GoogleSignIn"
 import useErrorMessage from "errorMessageContext/useErrorMessage"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Bucket } from "types/Bucket"
 import { GetBucketRequest, isGetBucketResponse, isSetBucketCredentialsResponse, SetBucketCredentialsRequest } from "types/GuiRequest"
 
@@ -40,25 +40,23 @@ const useBucket = (bucketId: string | undefined) => {
         })()
     }, [userId, googleIdToken, bucketId, setErrorMessage, refreshCode])
 
-    const setBucketCredentials = useCallback((o: {bucketCredentials: string}) => {
+    const setBucketCredentials = useMemo(() => (async (o: {bucketCredentials: string}) => {
         if (!bucketId) return
         const {bucketCredentials} = o
         if (!userId) return
-            ; (async () => {
-                const req: SetBucketCredentialsRequest = {
-                    type: 'setBucketCredentials',
-                    bucketId,
-                    bucketCredentials,
-                    auth: { userId, googleIdToken }
-                }
-                const resp = await guiApiRequest(req, { reCaptcha: true, setErrorMessage })
-                if (!resp) return
-                if (!isSetBucketCredentialsResponse(resp)) {
-                    throw Error('Unexpected response')
-                }
-                refresh()
-            })()
-    }, [bucketId, userId, googleIdToken, refresh, setErrorMessage])
+        const req: SetBucketCredentialsRequest = {
+            type: 'setBucketCredentials',
+            bucketId,
+            bucketCredentials,
+            auth: { userId, googleIdToken }
+        }
+        const resp = await guiApiRequest(req, { reCaptcha: true, setErrorMessage })
+        if (!resp) return
+        if (!isSetBucketCredentialsResponse(resp)) {
+            throw Error('Unexpected response')
+        }
+        refresh()
+    }), [bucketId, userId, googleIdToken, refresh, setErrorMessage])
 
     return { bucket, setBucketCredentials, refreshBucket: refresh }
 }

@@ -54,7 +54,7 @@ export const isGetClientInfoResponse = (x: any): x is GetClientInfoResponse => {
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-// getProjectInfo
+// getProjectBucketBaseUrl
 
 export type GetProjectBucketBaseUrlRequest = {
     payload: {
@@ -92,6 +92,90 @@ export const isGetProjectBucketBaseUrlResponse = (x: any): x is GetProjectBucket
         type: isEqualTo('getProjectBucketBaseUrl'),
         found: isBoolean,
         projectBaseUrl: optional(isString)
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// accessGroupEncrypt
+
+export type AccessGroupEncryptRequest = {
+    payload: {
+        type: 'accessGroupEncrypt'
+        timestamp: number
+        accessGroupId: string
+        text: string
+    }
+    fromClientId?: NodeId
+    signature?: Signature
+}
+
+export const isAccessGroupEncryptRequest = (x: any): x is AccessGroupEncryptRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('accessGroupEncrypt'),
+            timestamp: isNumber,
+            accessGroupId: isString,
+            text: isString
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: optional(isNodeId),
+        signature: optional(isSignature)
+    })
+}
+
+export type AccessGroupEncryptResponse = {
+    type: 'accessGroupEncrypt'
+    encryptedText: string
+}
+
+export const isAccessGroupEncryptResponse = (x: any): x is AccessGroupEncryptResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('accessGroupEncrypt'),
+        encryptedText: isString
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// accessGroupEncrypt
+
+export type AccessGroupDecryptRequest = {
+    payload: {
+        type: 'accessGroupDecrypt'
+        timestamp: number
+        accessGroupId: string
+        encryptedText: string
+    }
+    fromClientId?: NodeId
+    signature?: Signature
+}
+
+export const isAccessGroupDecryptRequest = (x: any): x is AccessGroupDecryptRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('accessGroupDecrypt'),
+            timestamp: isNumber,
+            accessGroupId: isString,
+            encryptedText: isString
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: optional(isNodeId),
+        signature: optional(isSignature)
+    })
+}
+
+export type AccessGroupDecryptResponse = {
+    type: 'accessGroupDecrypt'
+    decryptedText: string
+}
+
+export const isAccessGroupDecryptResponse = (x: any): x is AccessGroupDecryptResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('accessGroupDecrypt'),
+        decryptedText: isString
     })
 }
 
@@ -814,6 +898,8 @@ export const isGetFeedMessagesResponse = (x: any): x is GetFeedMessagesResponse 
 export type KacherycloudRequest =
     GetClientInfoRequest |
     GetProjectBucketBaseUrlRequest |
+    AccessGroupEncryptRequest |
+    AccessGroupDecryptRequest |
     InitiateIpfsUploadRequest |
     FinalizeIpfsUploadRequest |
     FindIpfsFileRequest |
@@ -835,6 +921,8 @@ export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
     return isOneOf([
         isGetClientInfoRequest,
         isGetProjectBucketBaseUrlRequest,
+        isAccessGroupEncryptRequest,
+        isAccessGroupDecryptRequest,
         isInitiateIpfsUploadRequest,
         isFinalizeIpfsUploadRequest,
         isFindIpfsFileRequest,
@@ -857,7 +945,8 @@ export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
 export type KacherycloudResponse =
     GetClientInfoResponse |
     GetProjectBucketBaseUrlResponse |
-    GetProjectBucketBaseUrlResponse |
+    AccessGroupEncryptResponse |
+    AccessGroupDecryptResponse |
     InitiateIpfsUploadResponse |
     FinalizeIpfsUploadResponse |
     FindIpfsFileResponse |
@@ -879,6 +968,8 @@ export const isKacherycloudResponse = (x: any): x is KacherycloudResponse => {
     return isOneOf([
         isGetClientInfoResponse,
         isGetProjectBucketBaseUrlResponse,
+        isAccessGroupEncryptResponse,
+        isAccessGroupDecryptResponse,
         isInitiateIpfsUploadResponse,
         isFinalizeIpfsUploadResponse,
         isFindIpfsFileResponse,

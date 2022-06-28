@@ -2,6 +2,7 @@ import { UserId } from "../../src/commonInterface/kacheryTypes";
 import { isBucket } from "../../src/types/Bucket";
 import { SetBucketCredentialsRequest, SetBucketCredentialsResponse } from "../../src/types/GuiRequest";
 import firestoreDatabase from '../common/firestoreDatabase';
+import { getBucket, invalidateBucketInCache } from "../common/getDatabaseItems";
 
 const setBucketCredentialsHandler = async (request: SetBucketCredentialsRequest, verifiedUserId?: UserId): Promise<SetBucketCredentialsResponse> => {
     const { bucketId, bucketCredentials } = request
@@ -22,6 +23,7 @@ const setBucketCredentialsHandler = async (request: SetBucketCredentialsRequest,
     bucket.credentials = bucketCredentials
     bucket.timestampLastModified = Date.now()
     await collection.doc(bucketId.toString()).set(bucket)
+    invalidateBucketInCache(bucketId)
     return {
         type: 'setBucketCredentials'
     }

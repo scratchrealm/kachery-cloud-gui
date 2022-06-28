@@ -7,7 +7,7 @@ type Props = {
     bucketId: string
     service: BucketService
     bucketCredentials: string
-    setBucketCredentials?: (o: {bucketId: string, bucketCredentials: string}) => void
+    setBucketCredentials?: (o: {bucketId: string, bucketCredentials: string}) => Promise<void>
 }
 
 const BucketCredentialsView: FunctionComponent<Props> = ({bucketId, service, bucketCredentials, setBucketCredentials}) => {
