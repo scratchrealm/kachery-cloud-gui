@@ -33,6 +33,7 @@ const HomePage: FunctionComponent<Props> = () => {
             <div><Hyperlink onClick={() => {setRoute({page: 'projects'})}}>Projects</Hyperlink></div>
             <div><Hyperlink onClick={() => {setRoute({page: 'clients'})}}>Clients</Hyperlink></div>
             <div><Hyperlink onClick={() => {setRoute({page: 'buckets'})}}>Buckets</Hyperlink></div>
+            <div><Hyperlink onClick={() => {setRoute({page: 'accessGroups'})}}>Access Groups</Hyperlink></div>
             <p />
             <hr />
             <p />

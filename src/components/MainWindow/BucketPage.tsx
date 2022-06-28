@@ -70,6 +70,7 @@ const BucketPage: FunctionComponent<Props> = ({bucketId}) => {
     if (!tableData) return <div />
     return (
         <div>
+            <p /><hr /><p />
             <Hyperlink onClick={handleBack}>Back</Hyperlink>
             <Table className="NiceTable2">
                 <TableBody>
@@ -83,12 +84,14 @@ const BucketPage: FunctionComponent<Props> = ({bucketId}) => {
                     }
                 </TableBody>
             </Table>
+            <p /><hr /><p />
             <BucketCredentialsView
                 bucketId={bucket.bucketId}
                 service={bucket.service}
                 bucketCredentials={bucket.credentials}
                 setBucketCredentials={setBucketCredentials}
             />
+            <p /><hr /><p />
         </div>
     )
 }

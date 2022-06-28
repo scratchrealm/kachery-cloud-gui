@@ -5,24 +5,23 @@ import NiceTable from 'commonComponents/NiceTable/NiceTable';
 import useVisible from 'commonComponents/useVisible';
 import useRoute from 'components/useRoute';
 import { FunctionComponent, useCallback, useMemo } from 'react';
-import { BucketService } from 'types/Bucket';
-import AddBucketControl from './AddBucketControl';
-import useBuckets from './useBucketsForUser';
+import AddAccessGroupControl from './AddAccessGroupControl';
+import useAccessGroups from './useAccessGroupsForUser';
 
 type Props = {
 }
 
-const BucketsTable: FunctionComponent<Props> = () => {
+const AccessGroupsTable: FunctionComponent<Props> = () => {
     const addVisible = useVisible()
 
     const {setRoute} = useRoute()
 
-    const { buckets, refreshBuckets, addBucket, deleteBucket } = useBuckets()
+    const { accessGroups, refreshAccessGroups, addAccessGroup, deleteAccessGroup } = useAccessGroups()
 
     const columns = useMemo(() => ([
         {
-            key: 'bucket',
-            label: 'Bucket'
+            key: 'accessGroup',
+            label: 'Access Group'
         },
         {
             key: 'label',
@@ -51,56 +50,52 @@ const BucketsTable: FunctionComponent<Props> = () => {
     ]), [])
 
     const rows = useMemo(() => (
-        (buckets || []).map((bucket) => ({
-            key: bucket.bucketId.toString(),
+        (accessGroups || []).map((accessGroup) => ({
+            key: accessGroup.accessGroupId.toString(),
             columnValues: {
-                bucket: {
-                    text: bucket.bucketId,
+                accessGroup: {
+                    text: accessGroup.accessGroupId,
                     element: (
-                        <Hyperlink onClick={() => {setRoute({page: 'bucket', bucketId: bucket.bucketId})}}>
-                            {bucket.bucketId}
+                        <Hyperlink onClick={() => {setRoute({page: 'accessGroup', accessGroupId: accessGroup.accessGroupId})}}>
+                            {accessGroup.accessGroupId}
                         </Hyperlink>
                     )
                 },
                 label: {
-                    text: bucket.label,
+                    text: accessGroup.label,
                     element: (
-                        <Hyperlink onClick={() => {setRoute({page: 'bucket', bucketId: bucket.bucketId})}}>
-                            {bucket.label}
+                        <Hyperlink onClick={() => {setRoute({page: 'accessGroup', accessGroupId: accessGroup.accessGroupId})}}>
+                            {accessGroup.label}
                         </Hyperlink>
                     )
                 },
-                ownerId: bucket.ownerId.toString(),
-                timestampCreated: timeSince(bucket.timestampCreated),
-                timestampLastModified: timeSince(bucket.timestampLastModified),
-                service: bucket.service,
-                uri: bucket.uri
+                ownerId: accessGroup.ownerId.toString(),
+                timestampCreated: timeSince(accessGroup.timestampCreated),
+                timestampLastModified: timeSince(accessGroup.timestampLastModified)
             }
         }))
-    ), [buckets, setRoute])
+    ), [accessGroups, setRoute])
 
-    const handleDeleteBucket = useCallback((bucketId: string) => {
-        deleteBucket(bucketId)
-    }, [deleteBucket])
+    const handleDeleteAccessGroup = useCallback((accessGroupId: string) => {
+        deleteAccessGroup(accessGroupId)
+    }, [deleteAccessGroup])
 
-    const handleAddBucket = useCallback((label: string, o: {service: BucketService, uri: string}) => {
-        addBucket(label, {...o, navigateToBucketPage: true})
-    }, [addBucket])
+    const handleAddAccessGroup = useCallback((label: string) => {
+        addAccessGroup(label, {navigateToAccessGroupPage: true})
+    }, [addAccessGroup])
 
     return (
         <div>
-            <div className="PageHeading">Buckets</div>
+            <div className="PageHeading">Access Groups</div>
             <div className="PageBlurb">
-                You can use your <Hyperlink href='https://github.com/flatironinstitute/kachery-cloud' target='_blank'>own storage bucket</Hyperlink>
-                &nbsp;(Google, AWS, Wasabi, or Filebase).
-                &nbsp;More than one project can use the same bucket.
+                Access groups allow you to restrict access to resources.
             </div>
-            <IconButton onClick={refreshBuckets} title="Refresh buckets"><Refresh /></IconButton>
-            <IconButton onClick={addVisible.show} title="Add bucket"><AddCircle /></IconButton>
+            <IconButton onClick={refreshAccessGroups} title="Refresh access groups"><Refresh /></IconButton>
+            <IconButton onClick={addVisible.show} title="Add access group"><AddCircle /></IconButton>
             {
                 addVisible.visible && (
-                    <AddBucketControl
-                        onAdd={handleAddBucket}
+                    <AddAccessGroupControl
+                        onAdd={handleAddAccessGroup}
                         onClose={addVisible.hide}
                     />
                 )
@@ -108,11 +103,11 @@ const BucketsTable: FunctionComponent<Props> = () => {
             <NiceTable
                 columns={columns}
                 rows={rows}
-                onDeleteRow={handleDeleteBucket}
+                onDeleteRow={handleDeleteAccessGroup}
             />
             {
-                !buckets ? (
-                    <div>Loading buckets...</div>
+                !accessGroups ? (
+                    <div>Loading access groups...</div>
                 ) : <span />
             }
         </div>
@@ -147,4 +142,4 @@ export function timeSince(date: number) {
     return Math.floor(seconds) + " seconds";
 }
 
-export default BucketsTable
+export default AccessGroupsTable

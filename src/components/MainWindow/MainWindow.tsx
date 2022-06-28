@@ -19,6 +19,8 @@ import RegisterClientPage from './RegisterClientPage';
 import TestFeedsPage from './TestFeedsPage';
 import TestTaskBackendPage from './TestTaskBackendPage';
 import './MainWindow.css'
+import AccessGroupsTable from './AccessGroupsTable';
+import AccessGroupPage from './AccessGroupPage';
 
 type Props = {
 }
@@ -73,6 +75,8 @@ const MainWindow: FunctionComponent<Props> = () => {
                                 <ClientsTable />
                             ) : route.page === 'buckets' ? (
                                 <BucketsTable />
+                            ) : route.page === 'accessGroups' ? (
+                                <AccessGroupsTable />
                             ) : route.page === 'project' ? (
                                 <ProjectPage
                                     projectId={route.projectId}
@@ -80,6 +84,10 @@ const MainWindow: FunctionComponent<Props> = () => {
                             ) : route.page === 'bucket' ? (
                                 <BucketPage
                                     bucketId={route.bucketId}
+                                />
+                            ) : route.page === 'accessGroup' ? (
+                                <AccessGroupPage
+                                    accessGroupId={route.accessGroupId}
                                 />
                             ) : route.page === 'projectMembership' ? (
                                 <ProjectMembershipPage

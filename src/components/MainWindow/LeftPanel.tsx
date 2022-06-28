@@ -27,7 +27,8 @@ const LeftPanel: FunctionComponent<Props> = ({width, height}) => {
             {label: 'Home', route: {page: 'home'}, icon: <Home />},
             {label: 'Projects', route: {page: 'projects'}, icon: <AccountTree />},
             {label: 'Clients', route: {page: 'clients'}, icon: <ViewModule />},
-            {label: 'Buckets', route: {page: 'buckets'}, icon: <Storage />}
+            {label: 'Buckets', route: {page: 'buckets'}, icon: <Storage />},
+            {label: 'Access Groups', route: {page: 'accessGroups'}, icon: <Storage />}
         ]
         if ((userId) && (adminUsers.includes(userId.toString()))) {
             ret.push({

@@ -12,11 +12,16 @@ export type Route = {
 } | {
     page: 'buckets'
 } | {
+    page: 'accessGroups'
+} | {
     page: 'project',
     projectId: string
 } | {
     page: 'bucket',
     bucketId: string
+} | {
+    page: 'accessGroup',
+    accessGroupId: string
 } | {
     page: 'projectMembership',
     projectId: string,
@@ -63,6 +68,11 @@ const useRoute = () => {
             page: 'buckets'
         }
     }
+    else if (p === '/accessGroups') {
+        route = {
+            page: 'accessGroups'
+        }
+    }
     else if (p.startsWith('/project')) {
         const x = p.split('/')
         if (x.length === 3) {
@@ -85,6 +95,15 @@ const useRoute = () => {
             route = {
                 page: 'bucket',
                 bucketId: x[2]
+            }
+        }
+    }
+    else if (p.startsWith('/accessGroup')) {
+        const x = p.split('/')
+        if (x.length === 3) {
+            route = {
+                page: 'accessGroup',
+                accessGroupId: x[2]
             }
         }
     }
@@ -154,11 +173,17 @@ const useRoute = () => {
         else if (route.page === 'buckets') {
             pathname2 = `/buckets`
         }
+        else if (route.page === 'accessGroups') {
+            pathname2 = `/accessGroups`
+        }
         else if (route.page === 'project') {
             pathname2 = `/project/${route.projectId}`
         }
         else if (route.page === 'bucket') {
             pathname2 = `/bucket/${route.bucketId}`
+        }
+        else if (route.page === 'accessGroup') {
+            pathname2 = `/accessGroup/${route.accessGroupId}`
         }
         else if (route.page === 'projectMembership') {
             pathname2 = `/project/${route.projectId}/member/${route.memberId}`

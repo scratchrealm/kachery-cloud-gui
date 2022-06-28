@@ -110,6 +110,7 @@ const ClientPage: FunctionComponent<Props> = ({clientId}) => {
     if (!tableData) return <div />
     return (
         <div>
+            <p /><hr /><p />
             <Hyperlink onClick={handleBack}>Back</Hyperlink>
             <Table>
                 <TableBody>
@@ -123,6 +124,7 @@ const ClientPage: FunctionComponent<Props> = ({clientId}) => {
                     }
                 </TableBody>
             </Table>
+            <p /><hr /><p />
         </div>
     )
 }

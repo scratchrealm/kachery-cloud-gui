@@ -326,13 +326,14 @@ export const isAddAccessGroupRequest = (x: any): x is AddAccessGroupRequest => {
 }
 
 export type AddAccessGroupResponse = {
-    type: 'addAccessGroup'
+    type: 'addAccessGroup',
+    accessGroupId: string
 }
 
 export const isAddAccessGroupResponse = (x: any): x is AddAccessGroupResponse => {
     return _validateObject(x, {
         type: isEqualTo('addAccessGroup'),
-        accessGroupId: optional(isString)
+        accessGroupId: isString
     })
 }
 

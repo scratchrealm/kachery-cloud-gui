@@ -2,7 +2,6 @@ import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
 import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useRoute from 'components/useRoute';
-import useErrorMessage from 'errorMessageContext/useErrorMessage';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import AccessGroupPropertiesView from './AccessGroupPropertiesView';
 import EditableTextField from './EditableTextField';
@@ -13,10 +12,8 @@ type Props = {
 }
 
 const AccessGroupPage: FunctionComponent<Props> = ({accessGroupId}) => {
-    const { accessGroup, setAccessGroupProperties, refreshAccessGroup } = useAccessGroup(accessGroupId)
+    const { accessGroup, setAccessGroupProperties } = useAccessGroup(accessGroupId)
     const { setRoute } = useRoute()
-
-    const { setErrorMessage } = useErrorMessage()
 
     const { userId, googleIdToken } = useSignedIn()
 
@@ -26,7 +23,7 @@ const AccessGroupPage: FunctionComponent<Props> = ({accessGroupId}) => {
         ;(async () => {
             await setAccessGroupProperties({label: newLabel})
         })()
-    }, [userId, googleIdToken, accessGroupId, refreshAccessGroup, setErrorMessage])
+    }, [userId, googleIdToken, setAccessGroupProperties])
 
     const tableData = useMemo(() => {
         if (!accessGroup) return undefined
@@ -42,7 +39,7 @@ const AccessGroupPage: FunctionComponent<Props> = ({accessGroupId}) => {
                 )
             },
             { key: 'accessGroupId', label: 'Access group ID', value: accessGroup.accessGroupId.toString() },
-            { key: 'ownerId', label: 'Owner', value: accessGroup.accessGroupId.toString() },
+            { key: 'ownerId', label: 'Owner', value: accessGroup.ownerId.toString() },
             { key: 'timestampCreated', label: 'Created', value: `${new Date(accessGroup.timestampCreated)}` },
             { key: 'timestampLastModified', label: 'Modified', value: `${new Date(accessGroup.timestampLastModified)}` }
         ]
@@ -59,6 +56,7 @@ const AccessGroupPage: FunctionComponent<Props> = ({accessGroupId}) => {
     if (!tableData) return <div />
     return (
         <div>
+            <p /><hr /><p />
             <Hyperlink onClick={handleBack}>Back</Hyperlink>
             <Table className="NiceTable2">
                 <TableBody>
@@ -72,10 +70,12 @@ const AccessGroupPage: FunctionComponent<Props> = ({accessGroupId}) => {
                     }
                 </TableBody>
             </Table>
+            <p /><hr /><p />
             <AccessGroupPropertiesView
                 accessGroup={accessGroup}
                 setAccessGroupProperties={setAccessGroupProperties}
             />
+            <p /><hr /><p />
         </div>
     )
 }

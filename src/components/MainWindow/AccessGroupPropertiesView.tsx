@@ -1,41 +1,92 @@
-import Hyperlink from 'components/Hyperlink/Hyperlink';
-import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { Button, Checkbox } from '@material-ui/core';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { AccessGroup, AccessGroupUser } from 'types/AccessGroup';
-import EditAccessGroupProperties from './EditAccessGroupProperties';
+import AccessGroupUsersTable from './AccessGroupUsersTable';
+
+export type EditedAccessGroupProperties = {
+    publicRead: boolean
+    publicWrite: boolean
+    users: AccessGroupUser[]
+}
 
 type Props = {
     accessGroup: AccessGroup
-    setAccessGroupProperties?: (o: {label?: string, publicRead?: boolean, publicWrite?: boolean, users?: AccessGroupUser[]}) => Promise<void>
+    setAccessGroupProperties?: (properties: EditedAccessGroupProperties) => Promise<void>
 }
 
 const AccessGroupPropertiesView: FunctionComponent<Props> = ({accessGroup, setAccessGroupProperties}) => {
     const [editing, setEditing] = useState<boolean>(false)
-    const handleSetAccessGroupProperties = useCallback((o: {label?: string, publicRead?: boolean, publicWrite?: boolean, users?: AccessGroupUser[]}) => {
+    const [internalProperties, setInternalProperties] = useState<EditedAccessGroupProperties | undefined>(undefined)
+    useEffect(() => {
+        if (!editing) {
+            setInternalProperties({
+                publicRead: accessGroup.publicRead,
+                publicWrite: accessGroup.publicWrite,
+                users: [...accessGroup.users]
+            })
+        }
+    }, [editing, accessGroup])
+    const handleSet = useCallback(() => {
         if (!setAccessGroupProperties) return
-        const {label, publicRead, publicWrite, users} = o
-        setAccessGroupProperties({label, publicRead, publicWrite, users})
+        if (!internalProperties) return
+        setAccessGroupProperties(internalProperties)
         setEditing(false)
-    }, [setAccessGroupProperties])
+    }, [setAccessGroupProperties, internalProperties])
     return (
         <div>
-            <h3>Access group properties</h3>
             {
-                setAccessGroupProperties ? (
-                    editing ? (
-                        <EditAccessGroupProperties
-                            accessGroup={accessGroup}
-                            setAccessGroupProperties={handleSetAccessGroupProperties}
-                            onCancel={() => {setEditing(false)}}
-                        />
-                    ) : (
+                internalProperties ? (
+                    <div>
+                        {
+                            editing ? (
+                                <span>
+                                    <div style={{color: 'red'}}>
+                                        Click the save button for changes to take effect.
+                                    </div>
+                                    <div>
+                                        <Button onClick={handleSet}>Save</Button>
+                                        <Button onClick={() => {setEditing(false)}}>Cancel</Button>
+                                    </div>
+                                </span>
+                            ) : (
+                                <span>
+                                    <Button onClick={() => {setEditing(true)}}>Edit</Button>
+                                </span>
+                            )
+                        }
                         <div>
-                            <pre>{JSON.stringify(accessGroup)}</pre>
-                            <Hyperlink onClick={() => setEditing(true)}>edit</Hyperlink>
+                            <Checkbox
+                                checked={internalProperties.publicRead}
+                                disabled={!editing}
+                                onClick={() => {
+                                    setInternalProperties({
+                                        ...internalProperties,
+                                        publicRead: !internalProperties.publicRead
+                                    })
+                                }}
+                            /> Public Read
                         </div>
-                    )
-                ) : (
-                    <pre>{JSON.stringify(accessGroup)}</pre>
-                )
+                        <div>
+                            <Checkbox
+                                checked={internalProperties.publicWrite}
+                                disabled={!editing}
+                                onClick={() => {
+                                    setInternalProperties({
+                                        ...internalProperties,
+                                        publicWrite: !internalProperties.publicWrite
+                                    })
+                                }}
+                            /> Public Write
+                        </div>
+                        <div>
+                            <AccessGroupUsersTable
+                                accessGroupUsers={internalProperties.users}
+                                setAccessGroupUsers={(users: AccessGroupUser[]) => {setInternalProperties({...internalProperties, users})}}
+                                readonly={!editing}
+                            />
+                        </div>
+                    </div>
+                ) : <div>Loading...</div>
             }
         </div>
     )

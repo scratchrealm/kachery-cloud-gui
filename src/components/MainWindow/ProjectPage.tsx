@@ -107,6 +107,7 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
     if (!tableData) return <div />
     return (
         <div>
+            <p /><hr /><p />
             <Hyperlink onClick={handleBack}>Back</Hyperlink>
             <Table className="NiceTable2">
                 <TableBody>
@@ -120,22 +121,26 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
                     }
                 </TableBody>
             </Table>
+            <p /><hr /><p />
             <ProjectSettingsView
                 projectId={project.projectId}
                 projectSettings={project.settings}
                 setProjectSettings={setProjectSettings}
             />
+            <p /><hr /><p />
             <ProjectMembershipsTable
                 projectId={project.projectId}
                 projectMemberships={projectMemberships}
                 addProjectMembership={addProjectMembership}
                 deleteProjectMembership={deleteProjectMembership}
             />
+            <p /><hr /><p />
             <ProjectUsageView
                 projectId={project.projectId}
             />
-            <div>&nbsp;</div>
+            <p /><hr /><p />
             <Hyperlink onClick={handleTestTaskBackend}>Test task backend</Hyperlink>
+            <p /><hr /><p />
         </div>
     )
 }

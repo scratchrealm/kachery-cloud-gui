@@ -10,9 +10,10 @@ const accessGroupDecryptHandler = async (request: AccessGroupDecryptRequest, ver
     const accessGroup = await getAccessGroup(accessGroupId)
     const client = verifiedClientId ? await getClient(verifiedClientId) : undefined
     if (!accessGroup.publicRead) {
-        if (!client) throw Error('Not authorized to read from this access group (no client)')
-        if (!accessGroup.users.map(u => (u.userId)).includes(client.ownerId.toString())) {
-            throw Error('Not authorized to read from this access group')
+        if (!client) throw Error('Not authorized to read in this access group (no client)')
+        const user = accessGroup.users.filter(u => (u.userId === client.ownerId.toString()))[0]
+        if ((!user) || (!user.read)) {
+            throw Error('Not authorized to read in this access group')
         }
     }
 

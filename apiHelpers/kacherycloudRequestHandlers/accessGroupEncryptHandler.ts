@@ -10,9 +10,10 @@ const accessGroupEncryptHandler = async (request: AccessGroupEncryptRequest, ver
     const accessGroup = await getAccessGroup(accessGroupId)
     const client = verifiedClientId ? await getClient(verifiedClientId) : undefined
     if (!accessGroup.publicWrite) {
-        if (!client) throw Error('Not authorized to write to this access group (no client)')
-        if (!accessGroup.users.map(u => (u.userId)).includes(client.ownerId.toString())) {
-            throw Error('Not authorized to write to this access group')
+        if (!client) throw Error('Not authorized to write in this access group (no client)')
+        const user = accessGroup.users.filter(u => (u.userId === client.ownerId.toString()))[0]
+        if ((!user) || (!user.write)) {
+            throw Error('Not authorized to write in this access group')
         }
     }
 

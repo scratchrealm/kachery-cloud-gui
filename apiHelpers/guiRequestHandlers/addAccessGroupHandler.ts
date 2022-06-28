@@ -41,7 +41,8 @@ const addAccessGroupHandler = async (request: AddAccessGroupRequest, verifiedUse
     await collection.doc(accessGroupId).set(accessGroup)
 
     return {
-        type: 'addAccessGroup'
+        type: 'addAccessGroup',
+        accessGroupId
     }
 }
 
