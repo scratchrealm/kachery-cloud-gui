@@ -19,7 +19,7 @@ type Props = {
 }
 
 const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
-    const { project, projectMemberships, addProjectMembership, deleteProjectMembership, setProjectSettings, refreshProject } = useProject(projectId)
+    const { project, projectMemberships, setProjectMembershipPermissions, addProjectMembership, deleteProjectMembership, setProjectSettings, refreshProject } = useProject(projectId)
     const { bucket } = useBucket(project?.bucketId)
     const { setRoute } = useRoute()
 
@@ -133,6 +133,7 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
                 projectMemberships={projectMemberships}
                 addProjectMembership={addProjectMembership}
                 deleteProjectMembership={deleteProjectMembership}
+                setProjectMembershipPermissions={setProjectMembershipPermissions}
             />
             <p /><hr /><p />
             <ProjectUsageView

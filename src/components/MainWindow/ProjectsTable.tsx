@@ -26,10 +26,6 @@ const ProjectsTable: FunctionComponent<Props> = () => {
             label: 'Project'
         },
         {
-            key: 'label',
-            label: 'Label'
-        },
-        {
             key: 'ownerId',
             label: 'Owner'
         },
@@ -42,8 +38,8 @@ const ProjectsTable: FunctionComponent<Props> = () => {
             label: 'Modified'
         },
         {
-            key: 'numNodes',
-            label: 'Num. nodes'
+            key: 'numMembers',
+            label: 'Num. members'
         },
         {
             key: 'bucketId',
@@ -56,25 +52,17 @@ const ProjectsTable: FunctionComponent<Props> = () => {
             key: project.projectId.toString(),
             columnValues: {
                 project: {
-                    text: project.projectId,
-                    element: (
-                        <Hyperlink onClick={() => {setRoute({page: 'project', projectId: project.projectId})}}>
-                            {project.projectId}
-                        </Hyperlink>
-                    )
-                },
-                label: {
                     text: project.label,
                     element: (
                         <Hyperlink onClick={() => {setRoute({page: 'project', projectId: project.projectId})}}>
-                            {project.label}
+                            {project.label} ({project.projectId})
                         </Hyperlink>
                     )
                 },
                 ownerId: project.ownerId.toString(),
                 timestampCreated: timeSince(project.timestampCreated),
                 timestampLastModified: timeSince(project.timestampLastModified),
-                numNodes: `${(projectMemberships || []).filter(cn => (cn.projectId === project.projectId)).length}`,
+                numMembers: `${(projectMemberships || []).filter(cn => (cn.projectId === project.projectId)).length}`,
                 bucketId: {
                     text: project.bucketId || '',
                     element: project.bucketId ? (
@@ -92,7 +80,7 @@ const ProjectsTable: FunctionComponent<Props> = () => {
     }, [deleteProject])
 
     return (
-        <div>
+        <div style={{maxWidth: 1000}}>
             <div className="PageHeading">Projects</div>
             <div className="PageBlurb">
                 Kachery cloud resources are organized into projects.

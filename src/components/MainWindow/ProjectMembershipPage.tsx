@@ -3,7 +3,7 @@ import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
 import { UserId } from 'commonInterface/kacheryTypes';
 import useRoute from 'components/useRoute';
 import React, { FunctionComponent, useMemo } from 'react';
-import { ProjectMembership } from 'types/ProjectMembership';
+import { ProjectMembership, ProjectMembershipPermissions } from 'types/ProjectMembership';
 import ProjectMembershipPermissionsView from './ProjectMembershipPermissionsView';
 import useProject from './useProject';
 
@@ -13,7 +13,7 @@ type Props = {
 }
 
 const ProjectMembershipPage: FunctionComponent<Props> = ({projectId, memberId}) => {
-    const { projectMemberships } = useProject(projectId)
+    const { projectMemberships, setProjectMembershipPermissions } = useProject(projectId)
     const { setRoute } = useRoute()
 
     const projectMembership: ProjectMembership | undefined = useMemo(() => (
@@ -32,11 +32,6 @@ const ProjectMembershipPage: FunctionComponent<Props> = ({projectId, memberId}) 
                 key: 'memberId',
                 label: 'Member',
                 value: <Hyperlink onClick={() => {setRoute({page: 'user', userId: projectMembership.memberId})}}>{projectMembership.memberId.toString()}</Hyperlink>
-            },
-            {
-                key: 'permissions',
-                label: 'Permissions',
-                value: <ProjectMembershipPermissionsView projectMembership={projectMembership} />
             }
         ]
     }, [projectMembership, setRoute])
@@ -65,6 +60,12 @@ const ProjectMembershipPage: FunctionComponent<Props> = ({projectId, memberId}) 
                     }
                 </TableBody>
             </Table>
+            <p /><hr /><p />
+            <ProjectMembershipPermissionsView
+                projectMembership={projectMembership}
+                setProjectMembershipPermissions={(p: ProjectMembershipPermissions) => setProjectMembershipPermissions({memberId, projectMembershipPermissions: p})}
+            />
+            <p /><hr /><p />
         </div>
     )
 }

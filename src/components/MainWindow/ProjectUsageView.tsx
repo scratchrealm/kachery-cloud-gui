@@ -38,7 +38,7 @@ const ProjectUsageView: FunctionComponent<Props> = ({projectId}) => {
         ))
     }, [projectUsage])
     return (
-        <div>
+        <div style={{maxWidth: 500}}>
             <h3>Project usage</h3>
             <Table className="NiceTable2">
                 <TableBody>

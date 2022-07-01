@@ -1,13 +1,52 @@
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { Client } from "../../src/types/Client";
 import { FileRecord, isFileRecord } from "../../src/types/FileRecord";
-import { FindFileRequest, FindFileResponse } from "../../src/types/KacherycloudRequest";
+import { AccessGroupDecryptRequest, FindFileRequest, FindFileResponse } from "../../src/types/KacherycloudRequest";
 import { FindFileLogItem } from "../../src/types/LogItem";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { getClient } from "../common/getDatabaseItems";
+import accessGroupDecryptHandler from './accessGroupDecryptHandler';
 
 const findFileHandler = async (request: FindFileRequest, verifiedClientId?: NodeId): Promise<FindFileResponse> => {
     const { hashAlg, hash } = request.payload
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // handle access group encryption
+    if (hashAlg === 'sha1-enc') {
+        // Example: 4dc5679dfcd586c5e211cfad3699505d36f9dd8c275b8c6e67c94674ad8bcda3bc8af5a571a38120dff3570af057f957.ag_kddvtdrlrl
+        const a = hash.split('.')
+        if (a.length !== 2) throw Error(`Invalid hash for sha1-enc`)
+        const sha1Enc = a[0]
+        const b = a[1]
+        if (!b.startsWith('ag_')) throw Error(`Invalid hash for sha1-enc`)
+        const accessGroupId = b.slice(3)
+        const req2: AccessGroupDecryptRequest = {
+            payload: {
+                type: 'accessGroupDecrypt',
+                timestamp: request.payload.timestamp,
+                accessGroupId,
+                encryptedText: sha1Enc
+            },
+            fromClientId: request.fromClientId,
+            signature: undefined // we don't need to check the signature since this is an internal call
+        }
+        const resp2 = await accessGroupDecryptHandler(req2, verifiedClientId)
+        const sha1 = resp2.decryptedText
+        const req3: FindFileRequest = {
+            payload: {
+                type: 'findFile',
+                timestamp: request.payload.timestamp,
+                hashAlg: 'sha1',
+                hash: sha1,
+                projectId: request.payload.projectId
+            },
+            fromClientId: request.fromClientId,
+            signature: undefined // we don't need to check the signature since this is an internal call
+        }
+        return await findFileHandler(req3, verifiedClientId)
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     let projectId  = request.payload.projectId
     const clientId = verifiedClientId
 

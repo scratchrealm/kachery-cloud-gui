@@ -6,7 +6,7 @@ import useVisible from 'commonComponents/useVisible';
 import { isUserId, UserId } from 'commonInterface/kacheryTypes';
 import useRoute from 'components/useRoute';
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
-import { ProjectMembership } from 'types/ProjectMembership';
+import { ProjectMembership, ProjectMembershipPermissions } from 'types/ProjectMembership';
 import AddProjectMembershipControl from './AddProjectMembershipControl';
 import ProjectMembershipPermissionsView from './ProjectMembershipPermissionsView';
 
@@ -15,9 +15,10 @@ type Props = {
     projectMemberships: ProjectMembership[]
     addProjectMembership: (memberId: UserId) => void
     deleteProjectMembership: (memberId: UserId) => void
+    setProjectMembershipPermissions: (o: {memberId: UserId, projectMembershipPermissions: ProjectMembershipPermissions}) => void
 }
 
-const ProjectMembershipsTable: FunctionComponent<Props> = ({projectId, projectMemberships, addProjectMembership, deleteProjectMembership}) => {
+const ProjectMembershipsTable: FunctionComponent<Props> = ({projectId, projectMemberships, addProjectMembership, deleteProjectMembership, setProjectMembershipPermissions}) => {
     const addVisible = useVisible()
     const { setRoute } = useRoute()
 
@@ -42,11 +43,11 @@ const ProjectMembershipsTable: FunctionComponent<Props> = ({projectId, projectMe
                 },
                 permissions: {
                     text: '',
-                    element: <ProjectMembershipPermissionsView projectMembership={projectMembership} />
+                    element: <ProjectMembershipPermissionsView projectMembership={projectMembership} setProjectMembershipPermissions={(p: ProjectMembershipPermissions) => setProjectMembershipPermissions({memberId: projectMembership.memberId, projectMembershipPermissions: p})} />
                 }
             }
         }))
-    ), [projectMemberships, setRoute])
+    ), [projectMemberships, setRoute, setProjectMembershipPermissions])
 
     const handleDeleteProjectMembership = useCallback((memberId: string) => {
         if (!isUserId(memberId)) return
@@ -54,7 +55,7 @@ const ProjectMembershipsTable: FunctionComponent<Props> = ({projectId, projectMe
     }, [deleteProjectMembership])
 
     return (
-        <div>
+        <div style={{maxWidth: 800}}>
             <h3>Project members</h3>
             <IconButton onClick={addVisible.show} title="Add project member"><AddCircle /></IconButton>
             {

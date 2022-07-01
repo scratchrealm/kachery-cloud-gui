@@ -35,6 +35,7 @@ const getFeedMessagesHandler = async (request: GetFeedMessagesRequest, verifiedC
     for (let doc of result.docs) {
         const docData = doc.data()
         if (!isFeedMessageDocument(docData)) {
+            console.warn(docData)
             throw Error('Invalid feed message document in database')
         }
         messageDocs.push(docData)

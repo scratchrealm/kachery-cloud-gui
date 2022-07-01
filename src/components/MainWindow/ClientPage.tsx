@@ -84,15 +84,26 @@ const ClientPage: FunctionComponent<Props> = ({clientId}) => {
                 key: 'defaultProject',
                 label: 'Default project',
                 value: (
-                    <SelectProjectControl
-                        projects={projects}
-                        selectedProjectId={client.defaultProjectId || ''}
-                        setSelectedProjectId={handleSetSelectedProject}
-                    />
+                    <div>
+                        <SelectProjectControl
+                            projects={projects}
+                            selectedProjectId={client.defaultProjectId || ''}
+                            setSelectedProjectId={handleSetSelectedProject}
+                        />
+                        {
+                            client.defaultProjectId && (
+                                <div>
+                                    <Hyperlink onClick={() => setRoute({page: 'project', projectId: client.defaultProjectId || ''})}>
+                                        Go to project
+                                    </Hyperlink>
+                                </div>
+                            )
+                        }
+                    </div>
                 )
             }
         ]
-    }, [client, projects, handleSetSelectedProject, handleLabelChange])
+    }, [client, projects, handleSetSelectedProject, handleLabelChange, setRoute])
 
     const handleBack = useCallback(() => {
         setRoute({page: 'home'})

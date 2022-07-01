@@ -4,6 +4,8 @@ import useErrorMessage from 'errorMessageContext/useErrorMessage';
 import { FunctionComponent, useCallback } from 'react';
 import ApplicationBar from '../ApplicationBar/ApplicationBar';
 import useRoute from '../useRoute';
+import AccessGroupPage from './AccessGroupPage';
+import AccessGroupsTable from './AccessGroupsTable';
 import AdminPage from './AdminPage';
 import BucketPage from './BucketPage';
 import BucketsTable from './BucketsTable';
@@ -12,15 +14,13 @@ import ClientsTable from './ClientsTable';
 import HomePage from './HomePage';
 import kacheryLogoFull from './kacheryLogoFull.png';
 import LeftPanel from './LeftPanel';
+import './MainWindow.css';
 import ProjectMembershipPage from './ProjectMembershipPage';
 import ProjectPage from './ProjectPage';
 import ProjectsTable from './ProjectsTable';
 import RegisterClientPage from './RegisterClientPage';
 import TestFeedsPage from './TestFeedsPage';
 import TestTaskBackendPage from './TestTaskBackendPage';
-import './MainWindow.css'
-import AccessGroupsTable from './AccessGroupsTable';
-import AccessGroupPage from './AccessGroupPage';
 
 type Props = {
 }

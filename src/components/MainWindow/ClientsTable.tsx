@@ -21,12 +21,8 @@ const ClientsTable: FunctionComponent<Props> = () => {
 
     const columns = useMemo(() => ([
         {
-            key: 'clientId',
+            key: 'client',
             label: 'Client'
-        },
-        {
-            key: 'label',
-            label: 'Label'
         },
         {
             key: 'ownerId',
@@ -47,13 +43,11 @@ const ClientsTable: FunctionComponent<Props> = () => {
             return {
                 key: client.clientId.toString(),
                 columnValues: {
-                    clientId: {
+                    client: {
                         text: client.clientId.toString(),
-                        element: <Hyperlink onClick={() => {setRoute({page: 'client', clientId: client.clientId})}}>{client.clientId}</Hyperlink>
-                    },
-                    label: {
-                        text: client.label,
-                        element: <Hyperlink onClick={() => {setRoute({page: 'client', clientId: client.clientId})}}>{client.label}</Hyperlink>
+                        element: <Hyperlink onClick={() => {setRoute({page: 'client', clientId: client.clientId})}}>
+                            {client.label} ({client.clientId.slice(0, 10)}...)
+                        </Hyperlink>
                     },
                     ownerId: client.ownerId.toString(),
                     defaultProject: {
@@ -73,7 +67,7 @@ const ClientsTable: FunctionComponent<Props> = () => {
     }, [deleteClient])
 
     return (
-        <div>
+        <div style={{maxWidth: 1000}}>
             <div className="PageHeading">Clients</div>
             <div className="PageBlurb">
                 Clients are used to access kachery cloud resources on your behalf.
