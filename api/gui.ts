@@ -22,6 +22,7 @@ import getProjectMembershipsForUserHandler from '../apiHelpers/guiRequestHandler
 import getProjectsForUserHandler from '../apiHelpers/guiRequestHandlers/getProjectsForUserHandler'
 import getProjectUsageHandler from '../apiHelpers/guiRequestHandlers/getProjectUsageHandler'
 import getUserSettingsHandler from '../apiHelpers/guiRequestHandlers/getUserSettingsHandler'
+import manualDeleteFileRecordHandler from '../apiHelpers/guiRequestHandlers/manualDeleteFileRecord'
 import setAccessGroupPropertiesHandler from '../apiHelpers/guiRequestHandlers/setAccessGroupPropertiesHandler'
 import setBucketCredentialsHandler from '../apiHelpers/guiRequestHandlers/setBucketCredentialsHandler'
 import setBucketLabelHandler from '../apiHelpers/guiRequestHandlers/setBucketLabelHandler'
@@ -223,6 +224,12 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         else if (request.type === 'adminGetProjects') {
             return await adminGetProjectsHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'manualDeleteFileRecord') {
+            if (!verifiedReCaptchaInfo) {
+                throw Error('ReCaptcha required')
+            }
+            return await manualDeleteFileRecordHandler(request, verifiedUserId)
         }
         else {
             throw Error(`Unexpected request type: ${request.type}`)

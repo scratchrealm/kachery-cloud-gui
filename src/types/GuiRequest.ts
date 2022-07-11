@@ -885,6 +885,37 @@ export const isSetBucketLabelResponse = (x: any): x is SetBucketLabelResponse =>
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// manualDeleteFileRecord
+
+export type ManualDeleteFileRecordRequest = {
+    type: 'manualDeleteFileRecord'
+    projectId: string
+    hashAlg: string
+    hash: string
+    auth: Auth
+}
+
+export const isManualDeleteFileRecordRequest = (x: any): x is ManualDeleteFileRecordRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('manualDeleteFileRecord'),
+        projectId: isString,
+        hashAlg: isString,
+        hash: isString,
+        auth: isAuth
+    })
+}
+
+export type ManualDeleteFileRecordResponse = {
+    type: 'manualDeleteFileRecord'
+}
+
+export const isManualDeleteFileRecordResponse = (x: any): x is ManualDeleteFileRecordResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('manualDeleteFileRecord')
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type GuiRequest =
     GetProjectsForUserRequest |
@@ -915,7 +946,8 @@ export type GuiRequest =
     SetProjectInfoRequest |
     SetBucketLabelRequest |
     GetProjectUsageRequest |
-    AdminGetProjectsRequest
+    AdminGetProjectsRequest |
+    ManualDeleteFileRecordRequest
 
 export const isGuiRequest = (x: any): x is GuiRequest => {
     return isOneOf([
@@ -947,7 +979,8 @@ export const isGuiRequest = (x: any): x is GuiRequest => {
         isSetProjectInfoRequest,
         isSetBucketLabelRequest,
         isGetProjectUsageRequest,
-        isAdminGetProjectsRequest
+        isAdminGetProjectsRequest,
+        isManualDeleteFileRecordRequest
     ])(x)
 }
 
@@ -980,7 +1013,8 @@ export type GuiResponse =
     SetProjectInfoResponse |
     SetBucketLabelResponse |
     GetProjectUsageResponse |
-    AdminGetProjectsResponse
+    AdminGetProjectsResponse |
+    ManualDeleteFileRecordResponse
 
 export const isGuiResponse = (x: any): x is GuiResponse => {
     return isOneOf([
@@ -1012,6 +1046,7 @@ export const isGuiResponse = (x: any): x is GuiResponse => {
         isSetProjectInfoResponse,
         isSetBucketLabelResponse,
         isGetProjectUsageResponse,
-        isAdminGetProjectsResponse
+        isAdminGetProjectsResponse,
+        isManualDeleteFileRecordResponse
     ])(x)
 }

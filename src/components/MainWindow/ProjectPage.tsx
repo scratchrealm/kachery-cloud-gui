@@ -8,6 +8,7 @@ import { FunctionComponent, useCallback, useMemo } from 'react';
 import { SetProjectInfoRequest } from 'types/GuiRequest';
 import EditableBucketSelect from './EditableBucketSelect';
 import EditableTextField from './EditableTextField';
+import ManualDeleteFileRecordView from './ManualDeleteFileRecordView';
 import ProjectMembershipsTable from './ProjectMembershipsTable';
 import ProjectSettingsView from './ProjectSettingsView';
 import ProjectUsageView from './ProjectUsageView';
@@ -137,6 +138,10 @@ const ProjectPage: FunctionComponent<Props> = ({projectId}) => {
             />
             <p /><hr /><p />
             <ProjectUsageView
+                projectId={project.projectId}
+            />
+            <p /><hr /><p />
+            <ManualDeleteFileRecordView
                 projectId={project.projectId}
             />
             <p /><hr /><p />
