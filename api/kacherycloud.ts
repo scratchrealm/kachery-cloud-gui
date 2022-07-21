@@ -56,7 +56,10 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         const { payload, fromClientId, signature } = request
         const { timestamp } = payload
         const elapsed = Date.now() - timestamp
-        if ((elapsed > 30000) || (elapsed < -500)) {
+        if ((elapsed > 30000) || (elapsed < -30000)) { 
+            // Note the range used to be narrower, but was running into problems
+            // For example, got elapsed = -662
+            // Not sure the best way to do this check
             throw Error(`Invalid timestamp. ${timestamp} ${Date.now()} ${elapsed}`)
         }
         if (fromClientId) {

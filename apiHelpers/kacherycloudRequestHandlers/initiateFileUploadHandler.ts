@@ -2,10 +2,21 @@ import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { InitiateFileUploadRequest, InitiateFileUploadResponse } from "../../src/types/KacherycloudRequest";
 import { InitiateFileUploadLogItem } from "../../src/types/LogItem";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { getBucket, getClient, getProject, getProjectMembership } from "../common/getDatabaseItems";
+import { getBucket, getClient, getProject, getProjectMembership, ObjectCache } from "../common/getDatabaseItems";
 import { getSignedUploadUrl } from "./s3Helpers";
 
 export const MAX_UPLOAD_SIZE = 5 * 1000 * 1000 * 1000
+
+export type PendingUpload = {
+    projectId: string
+    hashAlg: string
+    hash: string
+    timestamp: number
+}
+export const getPendingUploadKey = ({hash, hashAlg, projectId}: {hash: string, hashAlg: string, projectId: string}) => {
+    return `${projectId}::${hashAlg}://${hash}`
+}
+export const pendingUploads = new ObjectCache<PendingUpload>(1000 * 60 * 5)
 
 const initiateFileUploadHandler = async (request: InitiateFileUploadRequest, verifiedClientId?: NodeId): Promise<InitiateFileUploadResponse> => {
     const { size, hashAlg, hash } = request.payload
@@ -24,6 +35,23 @@ const initiateFileUploadHandler = async (request: InitiateFileUploadRequest, ver
 
     const projectId = request.payload.projectId || client.defaultProjectId
     if (!projectId) throw Error('No project ID')
+
+    const puKey = getPendingUploadKey({hash, hashAlg, projectId})
+    const a = pendingUploads.get(puKey)
+    if (a) {
+        const elapsed = Date.now() - a.timestamp
+        if (elapsed >= 1000 * 60) {
+            pendingUploads.delete(puKey)
+        }
+        else {
+            return {
+                type: 'initiateFileUpload',
+                alreadyPending: true
+            }
+        }
+    }
+    pendingUploads.set(puKey, {hash, hashAlg, projectId, timestamp: Date.now()})
+
     const userId = client.ownerId
     const project = await getProject(projectId)
     const bucket = await getBucket(project.bucketId)

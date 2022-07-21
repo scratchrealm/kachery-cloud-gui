@@ -352,6 +352,7 @@ export type InitiateFileUploadResponse = {
     alreadyExists?: boolean
     objectKey?: string
     signedUploadUrl?: string
+    alreadyPending?: boolean
 }
 
 export const isInitiateFileUploadResponse = (x: any): x is InitiateFileUploadResponse => {
@@ -359,7 +360,8 @@ export const isInitiateFileUploadResponse = (x: any): x is InitiateFileUploadRes
         type: isEqualTo('initiateFileUpload'),
         alreadyExists: isBoolean,
         objectKey: optional(isString),
-        signedUploadUrl: optional(isString)
+        signedUploadUrl: optional(isString),
+        alreadyPending: optional(isBoolean)
     })
 }
 

@@ -3,7 +3,7 @@ import { FinalizeFileUploadRequest, FinalizeFileUploadResponse } from "../../src
 import { FinalizeFileUploadLogItem } from "../../src/types/LogItem";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { getBucket, getClient, getProject, getProjectMembership } from "../common/getDatabaseItems";
-import { MAX_UPLOAD_SIZE } from "./initiateFileUploadHandler";
+import { getPendingUploadKey, MAX_UPLOAD_SIZE, pendingUploads } from "./initiateFileUploadHandler";
 import { deleteObject, headObject } from "./s3Helpers";
 import { FileRecord } from '../../src/types/FileRecord'
 import getDefaultBucketId from "./getDefaultBucketId";
@@ -23,6 +23,7 @@ const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, ver
 
     const projectId = request.payload.projectId || client.defaultProjectId
     if (!projectId) throw Error('No default project ID')
+
     const userId = client.ownerId
 
     const project = await getProject(projectId)
@@ -106,6 +107,12 @@ const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, ver
         timestamp: Date.now()
     }
     await usageLogCollection.add(logItem)
+
+    const puKey = getPendingUploadKey({hash, hashAlg, projectId})
+    const a = pendingUploads.get(puKey)
+    if (a) {
+        pendingUploads.delete(puKey)
+    }
 
     return {
         type: 'finalizeFileUpload'
