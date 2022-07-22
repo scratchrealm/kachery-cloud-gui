@@ -128,7 +128,7 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
         userId,
         feedId,
         numMessages: messagesJson.length,
-        size: sum(messagesJson.map(messageJson => (messagesJson.length))),
+        size: sum(messagesJson.map(messageJson => (messageJson.length))),
         timestamp: Date.now()
     }
     await usageLogCollection.add(logItem)
