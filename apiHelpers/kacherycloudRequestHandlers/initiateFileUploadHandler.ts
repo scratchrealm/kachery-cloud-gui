@@ -36,21 +36,24 @@ const initiateFileUploadHandler = async (request: InitiateFileUploadRequest, ver
     const projectId = request.payload.projectId || client.defaultProjectId
     if (!projectId) throw Error('No project ID')
 
-    const puKey = getPendingUploadKey({hash, hashAlg, projectId})
-    const a = pendingUploads.get(puKey)
-    if (a) {
-        const elapsed = Date.now() - a.timestamp
-        if (elapsed >= 1000 * 60) {
-            pendingUploads.delete(puKey)
-        }
-        else {
-            return {
-                type: 'initiateFileUpload',
-                alreadyPending: true
-            }
-        }
-    }
-    pendingUploads.set(puKey, {hash, hashAlg, projectId, timestamp: Date.now()})
+    /////////////////////////////////////////////////////////////////////
+    // not working as hoped - probably because we get a different instance between initiate and finalize
+    // const puKey = getPendingUploadKey({hash, hashAlg, projectId})
+    // const a = pendingUploads.get(puKey)
+    // if (a) {
+    //     const elapsed = Date.now() - a.timestamp
+    //     if (elapsed >= 1000 * 60) {
+    //         pendingUploads.delete(puKey)
+    //     }
+    //     else {
+    //         return {
+    //             type: 'initiateFileUpload',
+    //             alreadyPending: true
+    //         }
+    //     }
+    // }
+    // pendingUploads.set(puKey, {hash, hashAlg, projectId, timestamp: Date.now()})
+    /////////////////////////////////////////////////////////////////////
 
     const userId = client.ownerId
     const project = await getProject(projectId)

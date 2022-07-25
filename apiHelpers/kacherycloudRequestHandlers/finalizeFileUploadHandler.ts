@@ -1,12 +1,12 @@
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
+import { FileRecord } from '../../src/types/FileRecord';
 import { FinalizeFileUploadRequest, FinalizeFileUploadResponse } from "../../src/types/KacherycloudRequest";
 import { FinalizeFileUploadLogItem } from "../../src/types/LogItem";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { getBucket, getClient, getProject, getProjectMembership } from "../common/getDatabaseItems";
-import { getPendingUploadKey, MAX_UPLOAD_SIZE, pendingUploads } from "./initiateFileUploadHandler";
-import { deleteObject, headObject } from "./s3Helpers";
-import { FileRecord } from '../../src/types/FileRecord'
 import getDefaultBucketId from "./getDefaultBucketId";
+import { MAX_UPLOAD_SIZE } from "./initiateFileUploadHandler";
+import { deleteObject, headObject } from "./s3Helpers";
 
 const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, verifiedClientId?: NodeId): Promise<FinalizeFileUploadResponse> => {
     const { objectKey, hashAlg, hash } = request.payload
@@ -108,11 +108,14 @@ const finalizeFileUploadHandler = async (request: FinalizeFileUploadRequest, ver
     }
     await usageLogCollection.add(logItem)
 
-    const puKey = getPendingUploadKey({hash, hashAlg, projectId})
-    const a = pendingUploads.get(puKey)
-    if (a) {
-        pendingUploads.delete(puKey)
-    }
+    /////////////////////////////////////////////////////////////////////
+    // not working as hoped - probably because we get a different instance between initiate and finalize
+    // const puKey = getPendingUploadKey({hash, hashAlg, projectId})
+    // const a = pendingUploads.get(puKey)
+    // if (a) {
+    //     pendingUploads.delete(puKey)
+    // }
+    /////////////////////////////////////////////////////////////////////
 
     return {
         type: 'finalizeFileUpload'

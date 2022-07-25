@@ -358,7 +358,7 @@ export type InitiateFileUploadResponse = {
 export const isInitiateFileUploadResponse = (x: any): x is InitiateFileUploadResponse => {
     return _validateObject(x, {
         type: isEqualTo('initiateFileUpload'),
-        alreadyExists: isBoolean,
+        alreadyExists: optional(isBoolean),
         objectKey: optional(isString),
         signedUploadUrl: optional(isString),
         alreadyPending: optional(isBoolean)
