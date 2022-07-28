@@ -36,25 +36,6 @@ const initiateFileUploadHandler = async (request: InitiateFileUploadRequest, ver
     const projectId = request.payload.projectId || client.defaultProjectId
     if (!projectId) throw Error('No project ID')
 
-    /////////////////////////////////////////////////////////////////////
-    // not working as hoped - probably because we get a different instance between initiate and finalize
-    // const puKey = getPendingUploadKey({hash, hashAlg, projectId})
-    // const a = pendingUploads.get(puKey)
-    // if (a) {
-    //     const elapsed = Date.now() - a.timestamp
-    //     if (elapsed >= 1000 * 60) {
-    //         pendingUploads.delete(puKey)
-    //     }
-    //     else {
-    //         return {
-    //             type: 'initiateFileUpload',
-    //             alreadyPending: true
-    //         }
-    //     }
-    // }
-    // pendingUploads.set(puKey, {hash, hashAlg, projectId, timestamp: Date.now()})
-    /////////////////////////////////////////////////////////////////////
-
     const userId = client.ownerId
     const project = await getProject(projectId)
     const bucket = await getBucket(project.bucketId)
@@ -81,6 +62,25 @@ const initiateFileUploadHandler = async (request: InitiateFileUploadRequest, ver
     const objectKey = `projects/${projectId}/${hashAlg}/${h[0]}${h[1]}/${h[2]}${h[3]}/${h[4]}${h[5]}/${hash}`
 
     const signedUploadUrl = await getSignedUploadUrl(bucket, objectKey)
+
+    /////////////////////////////////////////////////////////////////////
+    // not working as hoped - maybe because we get a different instance between initiate and finalize
+    // const puKey = getPendingUploadKey({hash, hashAlg, projectId})
+    // const a = pendingUploads.get(puKey)
+    // if (a) {
+    //     const elapsed = Date.now() - a.timestamp
+    //     if (elapsed >= 1000 * 60) {
+    //         pendingUploads.delete(puKey)
+    //     }
+    //     else {
+    //         return {
+    //             type: 'initiateFileUpload',
+    //             alreadyPending: true
+    //         }
+    //     }
+    // }
+    // pendingUploads.set(puKey, {hash, hashAlg, projectId, timestamp: Date.now()})
+    /////////////////////////////////////////////////////////////////////
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
     const logItem: InitiateFileUploadLogItem = {

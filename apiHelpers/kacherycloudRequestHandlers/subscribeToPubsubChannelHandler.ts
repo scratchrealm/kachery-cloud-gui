@@ -65,7 +65,7 @@ const subscribeToPubsubChannelHandler = async (request: SubscribeToPubsubChannel
 const grantSubscribeToken = async (o: {uuid: string, pubsubChannelName: string}) => {
     return new Promise<string>((resolve, reject) => {
         pubnub.grantToken({
-            ttl: 10, // token is good for 10 minutes
+            ttl: 30, // token is good for 30 minutes
             authorized_uuid: o.uuid,
             resources: {
                 channels: {
