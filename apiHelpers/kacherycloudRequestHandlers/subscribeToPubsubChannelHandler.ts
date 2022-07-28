@@ -38,7 +38,7 @@ const subscribeToPubsubChannelHandler = async (request: SubscribeToPubsubChannel
 
     const pubsubChannelName = `${projectId}.${channelName}`
 
-    const uuid = clientId ? clientId.toString() : 'kachery-cloud-anonymous'
+    const uuid = request.payload.uuid || (clientId ? clientId.toString() : 'kachery-cloud-anonymous')
     const token = await grantSubscribeToken({uuid, pubsubChannelName})
 
     const db = firestoreDatabase()
