@@ -1,4 +1,4 @@
-import { isNodeId, isNumber, isString, isUserId, NodeId, optional, UserId, _validateObject } from "../commonInterface/kacheryTypes"
+import { isNodeId, isNumber, isPrivateKeyHex, isString, isUserId, NodeId, optional, PrivateKeyHex, UserId, _validateObject } from "../commonInterface/kacheryTypes"
 
 export type Client = {
     clientId: NodeId
@@ -6,6 +6,7 @@ export type Client = {
     timestampCreated: number
     label: string
     defaultProjectId?: string
+    privateKeyHex?: PrivateKeyHex
 }
 
 export const isClient = (x: any): x is Client => {
@@ -14,6 +15,7 @@ export const isClient = (x: any): x is Client => {
         ownerId: isUserId,
         timestampCreated: isNumber,
         label: isString,
-        defaultProjectId: optional(isString)
+        defaultProjectId: optional(isString),
+        privateKeyHex: optional(isPrivateKeyHex)
     })
 }

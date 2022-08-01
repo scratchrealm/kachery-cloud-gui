@@ -7,7 +7,7 @@ import firestoreDatabase from '../common/firestoreDatabase';
 const MAX_NUM_CLIENTS_PER_USER = 25
 
 const addClientHandler = async (request: AddClientRequest, verifiedUserId?: UserId): Promise<AddClientResponse> => {
-    const { clientId, ownerId, label, defaultProjectId } = request
+    const { clientId, ownerId, label, defaultProjectId, privateKeyHex } = request
 
     if (ownerId !== verifiedUserId) {
         throw Error('Mismatch between ownerId and verifiedUserId')
@@ -41,6 +41,7 @@ const addClientHandler = async (request: AddClientRequest, verifiedUserId?: User
         label,
         defaultProjectId
     }
+    if (privateKeyHex) client.privateKeyHex = privateKeyHex
     await clientsCollection.doc(clientId.toString()).set(client)
     return {
         type: 'addClient'

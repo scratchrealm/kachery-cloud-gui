@@ -41,16 +41,20 @@ const bucketObjectCache = new ObjectCache<Bucket>(expirationMSec)
 const accessGroupObjectCache = new ObjectCache<AccessGroup>(expirationMSec)
 const projectMembershipObjectCache = new ObjectCache<ProjectMembership>(expirationMSec)
 
-export const getClient = async (clientId: NodeId) => {
+export const getClient = async (clientId: NodeId, o: {includeSecrets?: boolean}={}) => {
     const x = clientObjectCache.get(clientId.toString())
-    if (x) return x
+    if (x) {
+        if (!o.includeSecrets) x.privateKeyHex = undefined
+        return x
+    }
     const db = firestoreDatabase()
     const clientsCollection = db.collection('kacherycloud.clients')
     const clientSnapshot = await clientsCollection.doc(clientId.toString()).get()
     if (!clientSnapshot.exists) throw Error('Client not registered. Use kachery-cloud-init to register this kachery-cloud client.')
     const client = clientSnapshot.data()
     if (!isClient(client)) throw Error('Invalid client in database')
-    clientObjectCache.set(clientId.toString(), client)
+    clientObjectCache.set(clientId.toString(), {...client})
+    if (!o.includeSecrets) client.privateKeyHex = undefined
     return client
 }
 

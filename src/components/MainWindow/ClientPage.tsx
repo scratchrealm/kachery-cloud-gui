@@ -1,11 +1,12 @@
-import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import { IconButton, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
 import guiApiRequest from 'common/guiApiRequest';
 import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
-import { NodeId } from 'commonInterface/kacheryTypes';
+import { NodeId, PrivateKeyHex } from 'commonInterface/kacheryTypes';
 import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useRoute from 'components/useRoute';
 import useErrorMessage from 'errorMessageContext/useErrorMessage';
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import React, { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { SetClientInfoRequest } from 'types/GuiRequest';
 import EditableTextField from './EditableTextField';
 import SelectProjectControl from './SelectProjectControl';
@@ -68,6 +69,13 @@ const ClientPage: FunctionComponent<Props> = ({clientId}) => {
         if (!projects) return undefined
         return [
             { key: 'clientId', label: 'Client ID', value: client.clientId.toString() },
+            {
+                key: 'privateKey',
+                label: 'Private Key',
+                value: (
+                    <PrivateKey privateKey={client.privateKeyHex} />
+                )
+            },
             {
                 key: 'label',
                 label: 'Label',
@@ -138,6 +146,23 @@ const ClientPage: FunctionComponent<Props> = ({clientId}) => {
             <p /><hr /><p />
         </div>
     )
+}
+
+const PrivateKey: FunctionComponent<{privateKey?: PrivateKeyHex}> = ({privateKey}) => {
+    const [visible, setVisible] = useState<boolean>(false)
+    if (!privateKey) return <span>Not available</span>
+    if (!visible) {
+        return <span>
+            <IconButton onClick={() => setVisible(true)}><VisibilityOff /></IconButton>
+            &nbsp;***hidden***
+        </span>
+    }
+    else {
+        return <span>
+            <IconButton onClick={() => setVisible(false)}><Visibility /></IconButton>
+            &nbsp;{privateKey}
+        </span>
+    }
 }
 
 export default ClientPage

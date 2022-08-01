@@ -1,10 +1,12 @@
 import { IconButton } from '@material-ui/core';
-import { Refresh } from '@material-ui/icons';
+import { AddCircle, Refresh } from '@material-ui/icons';
 import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
 import NiceTable from 'commonComponents/NiceTable/NiceTable';
 import { isNodeId } from 'commonInterface/kacheryTypes';
+import useVisible from 'components/misc/useVisible';
 import useRoute from 'components/useRoute';
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import CreateClientControl from './CreateClientControl';
 import useClients from './useClients';
 import useProjectsForUser from './useProjectsForUser';
 
@@ -12,11 +14,11 @@ type Props = {
 }
 
 const ClientsTable: FunctionComponent<Props> = () => {
-    // const addVisible = useVisible()
+    const createClientVisible = useVisible()
 
     const {setRoute} = useRoute()
 
-    const { clients, refreshClients, deleteClient } = useClients()
+    const { clients, refreshClients, deleteClient, createClient } = useClients()
     const { projects } = useProjectsForUser()
 
     const columns = useMemo(() => ([
@@ -66,6 +68,10 @@ const ClientsTable: FunctionComponent<Props> = () => {
         deleteClient(clientId)
     }, [deleteClient])
 
+    const handleCreateClient = useCallback((label: string) => {
+        createClient(label, {navigateToClientPage: true})
+    }, [createClient])
+
     return (
         <div style={{maxWidth: 1000}}>
             <div className="PageHeading">Clients</div>
@@ -76,7 +82,15 @@ const ClientsTable: FunctionComponent<Props> = () => {
                 &nbsp;you can register a client by installing the kachery-cloud Python package and running <span style={{fontFamily: 'courier'}}>kachery-cloud-init</span>.
             </div>
             <IconButton onClick={refreshClients} title="Refresh clients"><Refresh /></IconButton>
-            {/* <IconButton onClick={addVisible.show} title="Add client"><AddCircle /></IconButton> */}
+            <IconButton onClick={createClientVisible.show} title="Create client"><AddCircle /></IconButton>
+            {
+                createClientVisible.visible && (
+                    <CreateClientControl
+                        onCreate={handleCreateClient}
+                        onClose={createClientVisible.hide}
+                    />
+                )
+            }
             <NiceTable
                 columns={columns}
                 rows={rows}
