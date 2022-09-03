@@ -898,6 +898,50 @@ export const isGetFeedMessagesResponse = (x: any): x is GetFeedMessagesResponse 
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// deleteMutable
+
+export type DeleteMutableRequest = {
+    payload: {
+        type: 'deleteMutable'
+        timestamp: number
+        projectId?: string
+        mutableKey: string
+        isFolder: boolean
+    }
+    fromClientId: NodeId
+    signature: Signature
+}
+
+export const isDeleteMutableRequest = (x: any): x is DeleteMutableRequest => {
+    const isPayload = (y: any) => {
+        return _validateObject(y, {
+            type: isEqualTo('deleteMutable'),
+            timestamp: isNumber,
+            projectId: optional(isString),
+            mutableKey: isString,
+            isFolder: isBoolean
+        })
+    }
+    return _validateObject(x, {
+        payload: isPayload,
+        fromClientId: isNodeId,
+        signature: isSignature
+    })
+}
+
+export type DeleteMutableResponse = {
+    type: 'deleteMutable'
+    projectId: string
+}
+
+export const isDeleteMutableResponse = (x: any): x is DeleteMutableResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('deleteMutable'),
+        projectId: isString
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 export type KacherycloudRequest =
     GetClientInfoRequest |
@@ -919,7 +963,8 @@ export type KacherycloudRequest =
     CreateFeedRequest |
     GetFeedInfoRequest |
     AppendFeedMessagesRequest |
-    GetFeedMessagesRequest
+    GetFeedMessagesRequest |
+    DeleteMutableRequest
 
 export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
     return isOneOf([
@@ -942,7 +987,8 @@ export const isKacherycloudRequest = (x: any): x is KacherycloudRequest => {
         isCreateFeedRequest,
         isGetFeedInfoRequest,
         isAppendFeedMessagesRequest,
-        isGetFeedMessagesRequest
+        isGetFeedMessagesRequest,
+        isDeleteMutableRequest
     ])(x)
 }
 
@@ -966,7 +1012,8 @@ export type KacherycloudResponse =
     CreateFeedResponse |
     GetFeedInfoResponse |
     AppendFeedMessagesResponse |
-    GetFeedMessagesResponse
+    GetFeedMessagesResponse |
+    DeleteMutableResponse
 
 export const isKacherycloudResponse = (x: any): x is KacherycloudResponse => {
     return isOneOf([
@@ -989,6 +1036,7 @@ export const isKacherycloudResponse = (x: any): x is KacherycloudResponse => {
         isCreateFeedResponse,
         isGetFeedInfoResponse,
         isAppendFeedMessagesResponse,
-        isGetFeedMessagesResponse
+        isGetFeedMessagesResponse,
+        isDeleteMutableResponse
     ])(x)
 }

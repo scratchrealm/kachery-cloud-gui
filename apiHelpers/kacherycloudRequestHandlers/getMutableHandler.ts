@@ -5,6 +5,7 @@ import { GetMutableLogItem } from "../../src/types/LogItem";
 import { isMutableRecord, MutableRecord } from "../../src/types/MutableRecord";
 import firestoreDatabase from '../common/firestoreDatabase';
 import { getClient } from "../common/getDatabaseItems";
+import { _createNewMutableKey } from "./setMutableHandler";
 
 const getMutableHandler = async (request: GetMutableRequest, verifiedClientId?: NodeId): Promise<GetMutableResponse> => {
     const { mutableKey } = request.payload
@@ -20,6 +21,8 @@ const getMutableHandler = async (request: GetMutableRequest, verifiedClientId?: 
     const projectId = request.payload.projectId || (client ? client.defaultProjectId : undefined)
     if (!projectId) throw Error('No project ID')
 
+    const newMutableKey = _createNewMutableKey(mutableKey, {isFolder: false})
+
     // const projectsCollection = db.collection('kacherycloud.projects')
     // const projectSnapshot = await projectsCollection.doc(projectId).get()
     // if (!projectSnapshot.exists) throw Error(`Project does not exist: ${projectId}`)
@@ -28,7 +31,8 @@ const getMutableHandler = async (request: GetMutableRequest, verifiedClientId?: 
     // const project = projectData
 
     const mutablesCollection = db.collection('kacherycloud.mutables')
-    const mKey = `${projectId}:${mutableKey.split('/').join(':')}`
+    // const mKey = `${projectId}:${mutableKey.split('/').join(':')}`
+    const mKey = `${projectId}:${newMutableKey}`
     const mutableSnapshot = await mutablesCollection.doc(mKey).get()
     const found = mutableSnapshot.exists
     let mutableRecord: MutableRecord | undefined = undefined

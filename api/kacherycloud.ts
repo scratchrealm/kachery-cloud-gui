@@ -18,10 +18,11 @@ import initiateIpfsUploadHandler from '../apiHelpers/kacherycloudRequestHandlers
 import initiateTaskResultUploadHandler from '../apiHelpers/kacherycloudRequestHandlers/initiateTaskResultUploadHandler'
 import publishToPubsubChannelHandler from '../apiHelpers/kacherycloudRequestHandlers/publishToPubsubChannelHandler'
 import setMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/setMutableHandler'
+import deleteMutableHandler from '../apiHelpers/kacherycloudRequestHandlers/deleteMutableHandler'
 import subscribeToPubsubChannelHandler from '../apiHelpers/kacherycloudRequestHandlers/subscribeToPubsubChannelHandler'
 import { hexToPublicKey, verifySignature } from '../src/commonInterface/crypto/signatures'
 import { JSONValue, NodeId, nodeIdToPublicKeyHex } from '../src/commonInterface/kacheryTypes'
-import { isAccessGroupDecryptRequest, isAccessGroupEncryptRequest, isAppendFeedMessagesRequest, isCreateFeedRequest, isFinalizeFileUploadRequest, isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindFileRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetFeedInfoRequest, isGetFeedMessagesRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateFileUploadRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isPublishToPubsubChannelRequest, isSetMutableRequest, isSubscribeToPubsubChannelRequest } from '../src/types/KacherycloudRequest'
+import { isAccessGroupDecryptRequest, isAccessGroupEncryptRequest, isAppendFeedMessagesRequest, isCreateFeedRequest, isDeleteMutableRequest, isFinalizeFileUploadRequest, isFinalizeIpfsUploadRequest, isFinalizeTaskResultUploadRequest, isFindFileRequest, isFindIpfsFileRequest, isGetClientInfoRequest, isGetFeedInfoRequest, isGetFeedMessagesRequest, isGetMutableRequest, isGetProjectBucketBaseUrlRequest, isInitiateFileUploadRequest, isInitiateIpfsUploadRequest, isInitiateTaskResultUploadRequest, isKacherycloudRequest, isPublishToPubsubChannelRequest, isSetMutableRequest, isSubscribeToPubsubChannelRequest } from '../src/types/KacherycloudRequest'
 
 module.exports = (req: VercelRequest, res: VercelResponse) => {    
     const {body: request} = req
@@ -131,6 +132,9 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         else if (isGetFeedMessagesRequest(request)) {
             return await getFeedMessagesHandler(request, verifiedClientId)
+        }
+        else if (isDeleteMutableRequest(request)) {
+            return await deleteMutableHandler(request, verifiedClientId)
         }
         else {
             throw Error(`Unexpected request type: ${payload.type}`)

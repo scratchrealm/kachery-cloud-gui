@@ -17,6 +17,8 @@ const setMutableHandler = async (request: SetMutableRequest, verifiedClientId?: 
         throw Error('No verified client ID')
     }
 
+    const newMutableKey = _createNewMutableKey(mutableKey, {isFolder: false})
+
     const db = firestoreDatabase()
     const client = await getClient(clientId)
 
@@ -33,7 +35,8 @@ const setMutableHandler = async (request: SetMutableRequest, verifiedClientId?: 
     }
 
     const mutablesCollection = db.collection('kacherycloud.mutables')
-    const mKey = `${projectId}:${mutableKey.split('/').join(':')}`
+    // const mKey = `${projectId}:${mutableKey.split('/').join(':')}`
+    const mKey = `${projectId}:${newMutableKey}`
     const mutableSnapshot = await mutablesCollection.doc(mKey).get()
     const alreadyExisted = mutableSnapshot.exists
     const mutableRecord: MutableRecord = {
@@ -60,6 +63,36 @@ const setMutableHandler = async (request: SetMutableRequest, verifiedClientId?: 
         type: 'setMutable',
         projectId
     }
+}
+
+export const _createNewMutableKey = (mutableKey: string, o: {isFolder: boolean}) => {
+    const mutableKeyItems = mutableKey.split('/')
+    const newMutableKeyItems: string[] = []
+    for (let i = 0; i < mutableKeyItems.length; i++) {
+        const item = mutableKeyItems[i]
+        if (i < mutableKeyItems.length - 1) {
+            if (!item.startsWith('@')) {
+                throw Error(`Invalid mutable key: ${mutableKey} (${i} ${item})`)
+            }
+            newMutableKeyItems.push('@')
+            newMutableKeyItems.push(item.slice(1))
+        }
+        else {
+            if (o.isFolder) {
+                if (!item.startsWith('@')) {
+                    throw Error(`Invalid folder mutable key: ${mutableKey}`)
+                }
+            }
+            else {
+                if (item.startsWith('@')) {
+                    throw Error(`Invalid mutable key: ${mutableKey}`)
+                }
+            }
+            newMutableKeyItems.push(item)
+        }
+    }
+    const newMutableKey = newMutableKeyItems.join('/')
+    return newMutableKey
 }
 
 export default setMutableHandler
