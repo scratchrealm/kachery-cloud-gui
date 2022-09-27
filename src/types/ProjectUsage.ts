@@ -29,6 +29,7 @@ export type ProjectUsage = {
     numFeedMessageBytesAppended?: number
     numGetMutable?: number
     numSetMutable?: number
+    numDeleteMutable?: number
 }
 
 export const isProjectUsage = (x: any): x is ProjectUsage => (
@@ -60,6 +61,7 @@ export const isProjectUsage = (x: any): x is ProjectUsage => (
         numFeedMessagesAppended: optional(isNumber),
         numFeedMessageBytesAppended: optional(isNumber),
         numGetMutable: optional(isNumber),
-        numSetMutable: optional(isNumber)
+        numSetMutable: optional(isNumber),
+        numDeleteMutable: optional(isNumber)
     })
 )

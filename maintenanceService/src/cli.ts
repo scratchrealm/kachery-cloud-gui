@@ -178,6 +178,10 @@ const main = async () => {
                     projectUsage.numSetMutable = (projectUsage.numSetMutable || 0) + 1
                     handled = true
                 }
+                else if (logItem.type === 'deleteMutable') {
+                    projectUsage.numDeleteMutable = (projectUsage.numDeleteMutable || 0) + 1
+                    handled = true
+                }
                 if (handled) {
                     projectUsage.numLogItems = (projectUsage.numLogItems || 0) + 1
                 }
@@ -207,6 +211,10 @@ const main = async () => {
                     if (handled) {
                         console.info('Deleting document', logItem.type)
                         usageDoc.ref.delete()
+                    }
+                    else {
+                        console.warn(logItem)
+                        throw Error(`Did not handle log item ${logItem.type}`)
                     }
                 }
             }
