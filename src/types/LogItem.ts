@@ -211,7 +211,7 @@ export type DeleteMutableLogItem = {
 
 export const isDeleteMutableLogItem = (x: any): x is DeleteMutableLogItem => (
     _validateObject(x, {
-        type: isEqualTo('setMutable'),
+        type: isEqualTo('deleteMutable'),
         clientId: isNodeId,
         projectId: isString,
         userId: isUserId,
