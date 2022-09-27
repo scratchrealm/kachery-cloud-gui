@@ -64,7 +64,7 @@ const main = async () => {
         //     console.info(pu)
         // }
 
-        const result = await usageLogColletion.orderBy('timestamp').limit(50).get()
+        const result = await usageLogColletion.orderBy('timestamp').limit(500).get()
         if (result.docs.length > 0) {
 
             const usageByProject: {[key: string]: ProjectUsage} = {}
