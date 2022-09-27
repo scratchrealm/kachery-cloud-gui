@@ -70,7 +70,8 @@ const main = async () => {
             const usageByProject: {[key: string]: ProjectUsage} = {}
 
             const processLogItem = async (logItem: LogItem) => {
-                console.info(`${logItem.type} ${logItem.projectId} ${logItem.userId}`)
+                const timestampString = new Date(logItem.timestamp).toUTCString()
+                console.info(`${timestampString} ${logItem.type} ${logItem.projectId} ${logItem.userId}`)
                 const projectId = logItem.projectId
                 if ((projectId) && (!usageByProject[projectId])) {
                     const snapshot = await projectUsagesCollection.doc(projectId).get()
