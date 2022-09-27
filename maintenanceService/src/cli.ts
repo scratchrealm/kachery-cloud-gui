@@ -209,7 +209,6 @@ const main = async () => {
                 else {
                     const handled = await processLogItem(logItem)
                     if (handled) {
-                        console.info('Deleting document', logItem.type)
                         usageDoc.ref.delete()
                     }
                     else {
