@@ -190,20 +190,22 @@ const main = async () => {
                 if (!isLogItem(logItem)) {
                     console.warn('Invalid log item:')
                     console.warn(logItem)
-                    if ((logItem.type === 'initiateTaskResultUpload') && (logItem.taskType) && (logItem.taskInputHash)) {
-                        await usageDoc.ref.delete() // only during development
-                    }
-                    else if ((logItem.type === 'finalizeTaskResultUpload') && (logItem.taskType) && (logItem.taskInputHash)) {
-                        await usageDoc.ref.delete() // only during development
-                    }
-                    else {
-                        throw Error('Invalid log item')
-                    }
+                    // if ((logItem.type === 'initiateTaskResultUpload') && (logItem.taskType) && (logItem.taskInputHash)) {
+                    //     await usageDoc.ref.delete() // only during development
+                    // }
+                    // else if ((logItem.type === 'finalizeTaskResultUpload') && (logItem.taskType) && (logItem.taskInputHash)) {
+                    //     await usageDoc.ref.delete() // only during development
+                    // }
+                    // else {
+                    //     throw Error('Invalid log item')
+                    // }
+                    throw Error('Invalid log item')
                     // await usageDoc.ref.delete() // only during development
                 }
                 else {
                     const handled = await processLogItem(logItem)
                     if (handled) {
+                        console.info('Deleting document', logItem.type)
                         usageDoc.ref.delete()
                     }
                 }
