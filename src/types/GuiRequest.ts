@@ -858,6 +858,33 @@ export const isAdminGetProjectsResponse = (x: any): x is AdminGetProjectsRespons
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+// adminGetClients
+
+export type AdminGetClientsRequest = {
+    type: 'adminGetClients'
+    auth: Auth
+}
+
+export const isAdminGetClientsRequest = (x: any): x is AdminGetClientsRequest => {
+    return _validateObject(x, {
+        type: isEqualTo('adminGetClients'),
+        auth: isAuth
+    })
+}
+
+export type AdminGetClientsResponse = {
+    type: 'adminGetClients'
+    clients: Client[]
+}
+
+export const isAdminGetClientsResponse = (x: any): x is AdminGetClientsResponse => {
+    return _validateObject(x, {
+        type: isEqualTo('adminGetClients'),
+        clients: isArrayOf(isClient)
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 // setBucketLabel
 
 export type SetBucketLabelRequest = {
@@ -949,6 +976,7 @@ export type GuiRequest =
     SetBucketLabelRequest |
     GetProjectUsageRequest |
     AdminGetProjectsRequest |
+    AdminGetClientsRequest |
     ManualDeleteFileRecordRequest
 
 export const isGuiRequest = (x: any): x is GuiRequest => {
@@ -982,6 +1010,7 @@ export const isGuiRequest = (x: any): x is GuiRequest => {
         isSetBucketLabelRequest,
         isGetProjectUsageRequest,
         isAdminGetProjectsRequest,
+        isAdminGetClientsRequest,
         isManualDeleteFileRecordRequest
     ])(x)
 }
@@ -1016,6 +1045,7 @@ export type GuiResponse =
     SetBucketLabelResponse |
     GetProjectUsageResponse |
     AdminGetProjectsResponse |
+    AdminGetClientsResponse |
     ManualDeleteFileRecordResponse
 
 export const isGuiResponse = (x: any): x is GuiResponse => {
@@ -1049,6 +1079,7 @@ export const isGuiResponse = (x: any): x is GuiResponse => {
         isSetBucketLabelResponse,
         isGetProjectUsageResponse,
         isAdminGetProjectsResponse,
+        isAdminGetClientsResponse,
         isManualDeleteFileRecordResponse
     ])(x)
 }

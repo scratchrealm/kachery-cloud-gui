@@ -1,11 +1,11 @@
 import { Tab, Tabs } from '@material-ui/core';
-import React, { FunctionComponent, ReactChild, useCallback, useState } from 'react';
+import React, { FunctionComponent, PropsWithChildren, ReactChild, useCallback, useState } from 'react';
 
 type Props = {
     tabLabels: string[]
 }
 
-const TabWidgetOld: FunctionComponent<Props> = ({tabLabels, children}) => {
+const TabWidgetOld: FunctionComponent<PropsWithChildren<Props>> = ({tabLabels, children}) => {
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const c = children as any as ReactChild[]
     const currentChild = c[currentIndex]

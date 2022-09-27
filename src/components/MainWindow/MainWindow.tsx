@@ -37,6 +37,9 @@ const MainWindow: FunctionComponent<Props> = () => {
 
     const { signedIn } = useSignedIn()
 
+    const W = width - 290
+    const H = height - 50
+
     return (
         <div>
             <div>
@@ -53,7 +56,7 @@ const MainWindow: FunctionComponent<Props> = () => {
                         height={height - 50}
                     />
                 </div>
-                <div style={{position: 'absolute', left: 270, width: width - 290}}>
+                <div style={{position: 'absolute', left: 270, width: W, height: H, overflowY: 'auto'}}>
                     {
                         errorMessage ? (
                             <span style={{color: 'red'}}>{errorMessage}</span>
@@ -105,7 +108,10 @@ const MainWindow: FunctionComponent<Props> = () => {
                             ) : route.page === 'testFeeds' ? (
                                 <TestFeedsPage />
                             ) : route.page === 'admin' ? (
-                                <AdminPage />
+                                <AdminPage
+                                    width={W}
+                                    height={H}
+                                />
                             ) : <span />
                         ) : (
                             <div>

@@ -7,6 +7,7 @@ import addClientHandler from '../apiHelpers/guiRequestHandlers/addClientHandler'
 import addProjectHandler from '../apiHelpers/guiRequestHandlers/addProjectHandler'
 import addProjectMembershipHandler from '../apiHelpers/guiRequestHandlers/addProjectMembershipHandler'
 import adminGetProjectsHandler from '../apiHelpers/guiRequestHandlers/adminGetProjectsHandler'
+import adminGetClientsHandler from '../apiHelpers/guiRequestHandlers/adminGetClientsHandler'
 import deleteAccessGroupHandler from '../apiHelpers/guiRequestHandlers/deleteAccessGroupHandler'
 import deleteBucketHandler from '../apiHelpers/guiRequestHandlers/deleteBucketHandler'
 import deleteClientHandler from '../apiHelpers/guiRequestHandlers/deleteClientHandler'
@@ -224,6 +225,9 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         }
         else if (request.type === 'adminGetProjects') {
             return await adminGetProjectsHandler(request, verifiedUserId)
+        }
+        else if (request.type === 'adminGetClients') {
+            return await adminGetClientsHandler(request, verifiedUserId)
         }
         else if (request.type === 'manualDeleteFileRecord') {
             if (!verifiedReCaptchaInfo) {
