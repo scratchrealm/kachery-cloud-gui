@@ -30,6 +30,7 @@ export type ProjectUsage = {
     numGetMutable?: number
     numSetMutable?: number
     numDeleteMutable?: number
+    timestampLastActivity?: number
 }
 
 export const isProjectUsage = (x: any): x is ProjectUsage => (

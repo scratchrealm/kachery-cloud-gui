@@ -83,6 +83,9 @@ const main = async () => {
                     usageByProject[projectId] = projectUsage0
                 }
                 const projectUsage = projectId ? usageByProject[projectId] : {projectId} as ProjectUsage
+                if (projectId) {
+                    projectUsage.timestampLastActivity = Math.max(projectUsage.timestampLastActivity || 0, logItem.timestamp)
+                }
                 let handled = false
                 if (logItem.type === 'initiateIpfsUpload') {
                     projectUsage.numInitiatedIpfsUploads = (projectUsage.numInitiatedIpfsUploads || 0) + 1

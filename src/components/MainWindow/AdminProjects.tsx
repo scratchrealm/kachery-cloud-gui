@@ -45,13 +45,17 @@ const AdminProjects: FunctionComponent<Props> = ({width, height}) => {
             label: 'Modified'
         },
         {
+            key: 'timestampLastActivity',
+            label: 'Last activity'
+        },
+        {
             key: 'usage',
             label: 'Usage'
         }
     ]), [])
 
     const projectUsagesById = useMemo(() => {
-        if (!projectUsages) return undefined
+        if (!projectUsages) return {}
         const ret: {[key: string]: ProjectUsage} = {}
         for (let x of projectUsages) {
             ret[x.projectId] = x
@@ -60,8 +64,19 @@ const AdminProjects: FunctionComponent<Props> = ({width, height}) => {
     }, [projectUsages])
 
     const rows = useMemo(() => (
-        (projects || []).sort((p1, p2) => (p2.timestampLastModified - p1.timestampLastModified)).map((project) => {
-            const usage = projectUsagesById ? projectUsagesById[project.projectId] : undefined
+        (projects || []).sort((p1, p2) => {
+            const u1 = projectUsagesById[p1.projectId]
+            const u2 = projectUsagesById[p2.projectId]
+            const t1 = u1?.timestampLastActivity || 0
+            const t2 = u2?.timestampLastActivity || 0
+            if (t1 === t2) {
+                return p2.timestampLastModified - p1.timestampLastModified
+            }
+            else {
+                return t2 - t1
+            }
+        }).map((project) => {
+            const usage = projectUsagesById[project.projectId]
             const usageText = `${formatByteCount(usage?.numFileBytesUploaded || 0)} / ${formatByteCount(usage?.numTaskResultBytesUploaded || 0)} / ${usage?.numFeedMessagesAppended || 0} / ${formatByteCount(usage?.numIpfsFileFindBytes || 0)}`
             return {
                 key: project.projectId.toString(),
@@ -78,6 +93,7 @@ const AdminProjects: FunctionComponent<Props> = ({width, height}) => {
                     ownerId: project.ownerId.toString(),
                     timestampCreated: timeSince(project.timestampCreated),
                     timestampLastModified: timeSince(project.timestampLastModified),
+                    timestampLastActivity: usage?.timestampLastActivity ? timeSince(usage.timestampLastActivity) : '',
                     usage: usageText
                 }
             }
