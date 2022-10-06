@@ -5,7 +5,7 @@ import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import formatByteCount from 'components/misc/formatByteCount';
 import useRoute from 'components/useRoute';
 import useErrorMessage from 'errorMessageContext/useErrorMessage';
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { AdminGetProjectsRequest, isAdminGetProjectsResponse } from 'types/GuiRequest';
 import { Project } from 'types/Project';
 import { ProjectUsage } from 'types/ProjectUsage';
@@ -49,8 +49,8 @@ const AdminProjects: FunctionComponent<Props> = ({width, height}) => {
             label: 'Last activity'
         },
         {
-            key: 'usage',
-            label: 'Usage'
+            key: 'uploaded',
+            label: 'Uploaded'
         }
     ]), [])
 
@@ -76,8 +76,8 @@ const AdminProjects: FunctionComponent<Props> = ({width, height}) => {
                 return t2 - t1
             }
         }).map((project) => {
-            const usage = projectUsagesById[project.projectId]
-            const usageText = `${formatByteCount(usage?.numFileBytesUploaded || 0)} / ${formatByteCount(usage?.numTaskResultBytesUploaded || 0)} / ${usage?.numFeedMessagesAppended || 0} / ${formatByteCount(usage?.numIpfsFileFindBytes || 0)}`
+            const usage: ProjectUsage | undefined = projectUsagesById[project.projectId]
+            const uploadedText = `${formatByteCount(usage?.numFileBytesUploaded || 0)} (${usage?.numFinalizedFileUploads || 0} files)`
             return {
                 key: project.projectId.toString(),
                 columnValues: {
@@ -94,7 +94,7 @@ const AdminProjects: FunctionComponent<Props> = ({width, height}) => {
                     timestampCreated: timeSince(project.timestampCreated),
                     timestampLastModified: timeSince(project.timestampLastModified),
                     timestampLastActivity: usage?.timestampLastActivity ? timeSince(usage.timestampLastActivity) : '',
-                    usage: usageText
+                    uploaded: uploadedText
                 }
             }
         })
