@@ -5,6 +5,7 @@ import useErrorMessage from 'errorMessageContext/useErrorMessage';
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { GetProjectUsageRequest, isGetProjectUsageResponse } from 'types/GuiRequest';
 import { ProjectUsage } from 'types/ProjectUsage';
+import { timeSince } from './ProjectsTable';
 
 type Props = {
     projectId: string
@@ -40,6 +41,8 @@ const ProjectUsageView: FunctionComponent<Props> = ({projectId}) => {
     return (
         <div style={{maxWidth: 500}}>
             <h3>Project usage</h3>
+            <div>Last activity: {projectUsage?.timestampLastActivity ? timeSince(projectUsage?.timestampLastActivity) : ''}</div>
+            <div>&nbsp;</div>
             <Table className="NiceTable2">
                 <TableBody>
                     {

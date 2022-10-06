@@ -63,6 +63,7 @@ export const isProjectUsage = (x: any): x is ProjectUsage => (
         numFeedMessageBytesAppended: optional(isNumber),
         numGetMutable: optional(isNumber),
         numSetMutable: optional(isNumber),
-        numDeleteMutable: optional(isNumber)
+        numDeleteMutable: optional(isNumber),
+        timestampLastActivity: optional(isNumber)
     })
 )
