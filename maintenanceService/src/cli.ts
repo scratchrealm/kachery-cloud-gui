@@ -50,6 +50,7 @@ const main = async () => {
 
     const usageLogColletion = db.collection('kacherycloud.usageLog')
     const projectUsagesCollection = db.collection('kacherycloud.projectUsages')
+    const filesCollection = db.collection('kacherycloud.files')
     
     while (true) {
         // const a = await projectUsagesCollection.get()
@@ -68,6 +69,7 @@ const main = async () => {
         if (result.docs.length > 0) {
 
             const usageByProject: {[key: string]: ProjectUsage} = {}
+            const filesAccessed: {projectId: string, hashAlg: string, hash : string, timestamp: number}[] = []
 
             const processLogItem = async (logItem: LogItem) => {
                 const timestampString = new Date(logItem.timestamp).toUTCString()
@@ -105,6 +107,13 @@ const main = async () => {
                 }
                 else if (logItem.type === 'initiateFileUpload') {
                     projectUsage.numInitiatedFileUploads = (projectUsage.numInitiatedFileUploads || 0) + 1
+                    // mark this as an access, even if already uploaded
+                    filesAccessed.push({
+                        projectId: logItem.projectId,
+                        hashAlg: logItem.hashAlg,
+                        hash: logItem.hash,
+                        timestamp: logItem.timestamp
+                    })
                     handled = true
                 }
                 else if (logItem.type === 'finalizeFileUpload') {
@@ -117,7 +126,15 @@ const main = async () => {
                     if (logItem.found) {
                         projectUsage.numFileFindBytes = (projectUsage.numFileFindBytes || 0) + (logItem.size || 0)
                     }
-                    handled = true
+                    if (logItem.projectId) { // should always be true
+                        filesAccessed.push({
+                            projectId: logItem.projectId,
+                            hashAlg: logItem.hashAlg,
+                            hash: logItem.hash,
+                            timestamp: logItem.timestamp
+                        })
+                        handled = true
+                    }
                 }
                 else if (logItem.type === 'subscribeToPubsubChannel') {
                     if (logItem.channelName === 'feedUpdates') {
@@ -222,6 +239,17 @@ const main = async () => {
             }
             for (let projectId in usageByProject) {
                 await projectUsagesCollection.doc(projectId).set(usageByProject[projectId])
+            }
+            for (let x of filesAccessed) {
+                const {projectId, hashAlg, hash} = x
+                const fKey = `${projectId}:${hashAlg}:${hash}`
+                const fileSnapshot = await filesCollection.doc(fKey).get()
+                if (fileSnapshot.exists) {
+                    console.info(`Updating access timestamp for file: ${fKey}`)
+                    fileSnapshot.ref.update({
+                        timestampAccessed: x.timestamp
+                    })
+                }
             }
         }
         else {

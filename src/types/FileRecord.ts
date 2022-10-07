@@ -8,6 +8,7 @@ export type FileRecord = {
     size: number
     url: string
     timestampCreated?: number // only optional for backward-compatibility
+    timestampAccessed?: number // only optional for backward-compatibility
 }
 
 export const isFileRecord = (x: any): x is FileRecord => {
@@ -18,6 +19,7 @@ export const isFileRecord = (x: any): x is FileRecord => {
         uri: isString,
         size: isNumber,
         url: isString,
-        timestampCreated: optional(isNumber)
+        timestampCreated: optional(isNumber),
+        timestampAccessed: optional(isNumber)
     })
 }

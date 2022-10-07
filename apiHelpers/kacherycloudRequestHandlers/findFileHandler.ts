@@ -102,6 +102,8 @@ const findFileHandler = async (request: FindFileRequest, verifiedClientId?: Node
 
     const size = fileRecord.size
     const url = fileRecord.url
+    const timestampCreated = fileRecord.timestampCreated
+    const timestampAccessed = fileRecord.timestampAccessed
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
     const logItem: FindFileLogItem = {
@@ -123,7 +125,9 @@ const findFileHandler = async (request: FindFileRequest, verifiedClientId?: Node
         found: true,
         projectId,
         size,
-        url
+        url,
+        timestampCreated,
+        timestampAccessed
     }
 }
 

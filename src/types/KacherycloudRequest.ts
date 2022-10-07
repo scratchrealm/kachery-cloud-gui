@@ -447,6 +447,8 @@ export type FindFileResponse = {
     projectId?: string
     size?: number
     url?: string
+    timestampCreated?: number
+    timestampAccessed?: number
 }
 
 export const isFindFileResponse = (x: any): x is FindFileResponse => {
@@ -455,7 +457,9 @@ export const isFindFileResponse = (x: any): x is FindFileResponse => {
         found: isBoolean,
         projectId: optional(isString),
         size: optional(isNumber),
-        url: optional(isString)
+        url: optional(isString),
+        timestampCreated: optional(isNumber),
+        timestampAccessed: optional(isNumber)
     })
 }
 
