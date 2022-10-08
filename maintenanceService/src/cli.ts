@@ -3,7 +3,6 @@ import firestoreDatabase from '../../apiHelpers/common/firestoreDatabase'
 import { LogItem, isLogItem } from '../../src/types/LogItem'
 import { ProjectUsage, isProjectUsage } from '../../src/types/ProjectUsage'
 import fs from 'fs'
-import { FieldPath, Firestore } from "@google-cloud/firestore"
 
 const initialProjectUsage = (projectId: string): ProjectUsage => {
     return {
@@ -11,34 +10,34 @@ const initialProjectUsage = (projectId: string): ProjectUsage => {
     }
 }
 
-const addTimestampsToFiles = async (db: Firestore) => {
-    // Example of adding a field to a collection
-    console.info('Adding timestamps to files')
-    const C = db.collection('kacherycloud.files')
-    const query = C.orderBy(FieldPath.documentId()).limit(300)
-    let docSnapshots = await query.get()
-    let ct = 0
-    while (docSnapshots.size > 0) {
-        console.info(ct)
-        const batch = db.batch()
-        let batchSize = 0
-        for (let doc of docSnapshots.docs) {
-            if (!doc.data()['timestampCreated']) {
-                batch.update(doc.ref, {timestampCreated: Date.now()})
-                batchSize ++
-            }
-        }
-        console.info('Number of changes to make', batchSize)
-        if (batchSize > 0) {
-            await batch.commit()
-        }
-        ct += docSnapshots.size
+// const addTimestampsToFiles = async (db: Firestore) => {
+//     // Example of adding a field to a collection
+//     console.info('Adding timestamps to files')
+//     const C = db.collection('kacherycloud.files')
+//     const query = C.orderBy(FieldPath.documentId()).limit(300)
+//     let docSnapshots = await query.get()
+//     let ct = 0
+//     while (docSnapshots.size > 0) {
+//         console.info(ct)
+//         const batch = db.batch()
+//         let batchSize = 0
+//         for (let doc of docSnapshots.docs) {
+//             if (!doc.data()['timestampCreated']) {
+//                 batch.update(doc.ref, {timestampCreated: Date.now()})
+//                 batchSize ++
+//             }
+//         }
+//         console.info('Number of changes to make', batchSize)
+//         if (batchSize > 0) {
+//             await batch.commit()
+//         }
+//         ct += docSnapshots.size
 
-        const lastVisible = docSnapshots.docs[docSnapshots.docs.length - 1]
-        const query2 = C.orderBy(FieldPath.documentId()).startAfter(lastVisible).limit(300)
-        docSnapshots = await query2.get()
-    }
-}
+//         const lastVisible = docSnapshots.docs[docSnapshots.docs.length - 1]
+//         const query2 = C.orderBy(FieldPath.documentId()).startAfter(lastVisible).limit(300)
+//         docSnapshots = await query2.get()
+//     }
+// }
 
 const main = async () => {
     const credentials = fs.readFileSync('googleCredentials.json', {encoding: 'utf-8'})
@@ -240,17 +239,30 @@ const main = async () => {
             for (let projectId in usageByProject) {
                 await projectUsagesCollection.doc(projectId).set(usageByProject[projectId])
             }
+
+            /////////////////////////////////////////////////////////////////////////////////////////////
+            // need to go through these hoops so we don't update the same document more than once in this batch
+            const accessedKeyUpdates: {[fKey: string]: number} = {}
             for (let x of filesAccessed) {
                 const {projectId, hashAlg, hash} = x
                 const fKey = `${projectId}:${hashAlg}:${hash}`
+                if (fKey in accessedKeyUpdates) {
+                    accessedKeyUpdates[fKey] = Math.max(accessedKeyUpdates[fKey], x.timestamp)
+                }
+                else {
+                    accessedKeyUpdates[fKey] = x.timestamp
+                }
+            }
+            for (let fKey in accessedKeyUpdates) {
                 const fileSnapshot = await filesCollection.doc(fKey).get()
                 if (fileSnapshot.exists) {
                     console.info(`Updating access timestamp for file: ${fKey}`)
                     fileSnapshot.ref.update({
-                        timestampAccessed: x.timestamp
+                        timestampAccessed: accessedKeyUpdates[fKey]
                     })
                 }
             }
+            /////////////////////////////////////////////////////////////////////////////////////////////
         }
         else {
             console.warn('No more log items to process. Waiting 60 seconds.')
