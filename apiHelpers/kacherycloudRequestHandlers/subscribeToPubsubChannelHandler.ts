@@ -36,7 +36,7 @@ const subscribeToPubsubChannelHandler = async (request: SubscribeToPubsubChannel
         throw Error(`Unexpected channel ${channelName}`)
     }
 
-    const pubsubChannelName = `${projectId}.${channelName}`
+    const pubsubChannelName = `new.${projectId}.${channelName}`
 
     const uuid = request.payload.uuid || (clientId ? clientId.toString() : 'kachery-cloud-anonymous')
     const token = await grantSubscribeToken({uuid, pubsubChannelName})

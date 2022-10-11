@@ -111,7 +111,7 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
         }
     }
 
-    const pubsubChannelName = `${projectId}.feedUpdates`
+    const pubsubChannelName = `new.${projectId}.feedUpdates`
     const pubsubMessage: PubsubMessage = {
         type: 'feedMessagesAppended',
         projectId,

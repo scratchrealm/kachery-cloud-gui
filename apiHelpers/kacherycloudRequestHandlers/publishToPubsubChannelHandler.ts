@@ -46,7 +46,7 @@ const publishToPubsubChannelHandler = async (request: PublishToPubsubChannelRequ
         throw Error(`Unexpected channel ${channelName}`)
     }
 
-    const pubsubChannelName = `${projectId}.${channelName}`
+    const pubsubChannelName = `new.${projectId}.${channelName}`
     await publishPubsubMessage(pubsubChannelName, message)
 
     const db = firestoreDatabase()
