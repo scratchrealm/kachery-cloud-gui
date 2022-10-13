@@ -111,14 +111,14 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
         }
     }
 
-    const pubsubChannelName = `new.${projectId}.feedUpdates`
-    const pubsubMessage: PubsubMessage = {
-        type: 'feedMessagesAppended',
-        projectId,
-        feedId,
-        numMessagesAppended: messagesJson.length
-    }
-    await publishPubsubMessage(pubsubChannelName, pubsubMessage)
+    // const pubsubChannelName = `new.${projectId}.feedUpdates`
+    // const pubsubMessage: PubsubMessage = {
+    //     type: 'feedMessagesAppended',
+    //     projectId,
+    //     feedId,
+    //     numMessagesAppended: messagesJson.length
+    // }
+    // await publishPubsubMessage(pubsubChannelName, pubsubMessage)
 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
     const logItem: AppendFeedMessagesLogItem = {
