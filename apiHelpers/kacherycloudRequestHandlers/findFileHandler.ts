@@ -1,3 +1,4 @@
+import axios from "axios";
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { Client } from "../../src/types/Client";
 import { FileRecord, isFileRecord } from "../../src/types/FileRecord";
@@ -88,10 +89,7 @@ const findFileHandler = async (request: FindFileRequest, verifiedClientId?: Node
         const filesResult = await filesCollection.where('uri', '==', uri).orderBy('timestampCreated').get()
         // const filesResult = await filesCollection.where('uri', '==', uri).get()
         if (filesResult.docs.length === 0) {
-            return {
-                type: 'findFile',
-                found: false
-            }
+            return await tryKacheryGateway(hashAlg, hash)
         }
         else {
             const fileData = filesResult.docs[0].data() // the first doc is the earliest because we ordered by timestampCreated
@@ -128,6 +126,26 @@ const findFileHandler = async (request: FindFileRequest, verifiedClientId?: Node
         url,
         timestampCreated,
         timestampAccessed
+    }
+}
+
+const tryKacheryGateway = async (hashAlg: string, hash: string): Promise<FindFileResponse> => {
+    const s = hash
+    const url = `https://s3.us-east-1.wasabisys.com/kachery-cloud/sha1/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`
+    const resp = await axios.head(url)
+    if (resp.status === 200) {
+        return {
+            type: 'findFile',
+            found: true,
+            size: parseInt(resp.headers["content-length"]),
+            url,
+            timestampAccessed: 0,
+            timestampCreated: 0
+        }
+    }
+    return {
+        type: 'findFile',
+        found: false
     }
 }
 
