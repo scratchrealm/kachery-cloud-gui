@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { NodeId } from "../../src/commonInterface/kacheryTypes";
 import { Client } from "../../src/types/Client";
 import { FileRecord, isFileRecord } from "../../src/types/FileRecord";
@@ -84,12 +84,17 @@ const findFileHandler = async (request: FindFileRequest, verifiedClientId?: Node
         fileRecord = fileData
     }
     else {
+        const try1 = await tryKacheryGateway(hashAlg, hash)
+        if (try1.found) return try1
         const uri = `${hashAlg}://${hash}`
         // important to order by timestampCreated so that we get the earliest version of a file (prevents an attack where attacker uploads incorrect content for an existing hash)
         const filesResult = await filesCollection.where('uri', '==', uri).orderBy('timestampCreated').get()
         // const filesResult = await filesCollection.where('uri', '==', uri).get()
         if (filesResult.docs.length === 0) {
-            return await tryKacheryGateway(hashAlg, hash)
+            return {
+                type: 'findFile',
+                found: false
+            }
         }
         else {
             const fileData = filesResult.docs[0].data() // the first doc is the earliest because we ordered by timestampCreated
@@ -131,16 +136,28 @@ const findFileHandler = async (request: FindFileRequest, verifiedClientId?: Node
 
 const tryKacheryGateway = async (hashAlg: string, hash: string): Promise<FindFileResponse> => {
     const s = hash
-    const url = `https://s3.us-east-1.wasabisys.com/kachery-cloud/sha1/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`
-    const resp = await axios.head(url)
-    if (resp.status === 200) {
-        return {
-            type: 'findFile',
-            found: true,
-            size: parseInt(resp.headers["content-length"]),
-            url,
-            timestampAccessed: 0,
-            timestampCreated: 0
+    const bucketBaseUrl = `https://s3.us-east-1.wasabisys.com/kachery-cloud`
+    const urls = [
+        `${bucketBaseUrl}/sha1/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`,
+        `${bucketBaseUrl}/uploads/sha1/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`,
+    ]
+    for (let url of urls) {
+        let resp: AxiosResponse | undefined = undefined
+        try {
+            resp = await axios.head(url)
+        }
+        catch(err) {
+            // continue
+        }
+        if ((resp) && (resp.status === 200)) {
+            return {
+                type: 'findFile',
+                found: true,
+                size: parseInt(resp.headers["content-length"]),
+                url,
+                timestampAccessed: 0,
+                timestampCreated: 0
+            }
         }
     }
     return {

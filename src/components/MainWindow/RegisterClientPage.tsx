@@ -108,7 +108,8 @@ const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, labe
     return (
         <div>
             <h2>Register a client</h2>
-            <p>You are associating this client with your logged in user and a kachery-cloud project.</p>
+            <p>Please upgrade your version of kachery-cloud to 0.3.1 or later.</p>
+            {/* <p>You are associating this client with your logged in user and a kachery-cloud project.</p>
             <p>Complete this form and then click the REGISTER CLIENT button below.</p>
             <Table>
                 <TableBody>
@@ -177,7 +178,7 @@ const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, labe
                 status === 'error' && (
                     <p><span style={{color: 'red'}}>Error registering client: {errorMessage}</span></p>
                 )
-            }
+            } */}
         </div>
     )
 }
