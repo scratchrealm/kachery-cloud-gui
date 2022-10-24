@@ -1,14 +1,10 @@
-import { Button, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import guiApiRequest from 'common/guiApiRequest';
-import Hyperlink from 'commonComponents/Hyperlink/Hyperlink';
 import { NodeId, Signature } from 'commonInterface/kacheryTypes';
 import { useSignedIn } from 'components/googleSignIn/GoogleSignIn';
 import useRoute from 'components/useRoute';
 import useErrorMessage from 'errorMessageContext/useErrorMessage';
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { AddClientRequest } from 'types/GuiRequest';
-import EditableTextField from './EditableTextField';
-import SelectProjectControl from './SelectProjectControl';
 import useProjectsForUser from './useProjectsForUser';
 
 type Props = {
@@ -22,22 +18,22 @@ type Status = 'waiting' | 'starting' | 'running' | 'error' | 'finished'
 const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, label}) => {
     const {userId, googleIdToken, signedIn} = useSignedIn()
     const [status, setStatus] = useState<Status>('waiting')
-    const { errorMessage, setErrorMessage } = useErrorMessage()
+    const { setErrorMessage } = useErrorMessage()
     const { setRoute } = useRoute()
     const { projects, addProject } = useProjectsForUser()
     const [defaultProjectId, setDefaultProjectId] = useState<string | undefined>()
 
-    const handleRegister = useCallback(() => {
-        setStatus('starting')
-    }, [])
+    // const handleRegister = useCallback(() => {
+    //     setStatus('starting')
+    // }, [])
 
     const [editLabel, setEditLabel] = useState<string>('')
     useEffect(() => {
         setEditLabel(label)
     }, [label])
-    const handleLabelChange = useCallback((x: string) => {
-        setEditLabel(x)
-    }, [])
+    // const handleLabelChange = useCallback((x: string) => {
+    //     setEditLabel(x)
+    // }, [])
 
     useEffect(() => {
         if (!userId) return
@@ -89,12 +85,12 @@ const RegisterClientPage: FunctionComponent<Props> = ({clientId, signature, labe
         setDefaultProjectId(projects[0].projectId)
     }, [projects])
 
-    const submitOkay = useMemo(() => {
-        if (!userId) return false
-        if (!label) return false
-        if (!defaultProjectId) return false
-        return true
-    }, [label, userId, defaultProjectId])
+    // const submitOkay = useMemo(() => {
+    //     if (!userId) return false
+    //     if (!label) return false
+    //     if (!defaultProjectId) return false
+    //     return true
+    // }, [label, userId, defaultProjectId])
 
     if (!signedIn) {
         return (

@@ -3,13 +3,12 @@ import { isFeedRecord } from "../../src/types/FeedRecord";
 import { GetFeedInfoRequest, GetFeedInfoResponse } from "../../src/types/KacherycloudRequest";
 import { GetFeedInfoLogItem } from "../../src/types/LogItem";
 import firestoreDatabase from "../common/firestoreDatabase";
-import { getClient } from "../common/getDatabaseItems";
 
 const getFeedInfoHandler = async (request: GetFeedInfoRequest, verifiedClientId?: NodeId): Promise<GetFeedInfoResponse> => {
     let { feedId } = request.payload
 
-    const clientId = verifiedClientId
-    let client = clientId ? await getClient(clientId) : undefined
+    // const clientId = verifiedClientId
+    // let client = clientId ? await getClient(clientId) : undefined
 
     // const project = await getProject(projectId)
 
@@ -29,8 +28,9 @@ const getFeedInfoHandler = async (request: GetFeedInfoRequest, verifiedClientId?
     const usageLogCollection = db.collection('kacherycloud.usageLog')
     const logItem: GetFeedInfoLogItem = {
         type: 'getFeedInfo',
-        clientId,
-        userId: client ? client.ownerId : undefined,
+        clientId: verifiedClientId,
+        // userId: client ? client.ownerId : undefined,
+        userId: undefined,
         projectId,
         feedId,
         timestamp: Date.now()

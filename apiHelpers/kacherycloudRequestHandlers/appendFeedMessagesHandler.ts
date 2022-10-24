@@ -2,10 +2,7 @@ import { isJSONObject, isNumber, isString, JSONObject, NodeId, UserId, _validate
 import { isFeedRecord } from "../../src/types/FeedRecord";
 import { AppendFeedMessagesRequest, AppendFeedMessagesResponse } from "../../src/types/KacherycloudRequest";
 import { AppendFeedMessagesLogItem } from "../../src/types/LogItem";
-import { PubsubMessage } from "../../src/types/PubsubMessage";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { getClient, getProjectMembership } from "../common/getDatabaseItems";
-import { publishPubsubMessage } from "./publishToPubsubChannelHandler";
 
 const MAX_FEED_MESSAGE_SIZE = 500 * 1000
 const MAX_NUM_FEED_MESSAGES_TO_APPEND = 100
@@ -47,7 +44,7 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
         }
     }
 
-    const client = await getClient(clientId)
+    // const client = await getClient(clientId)
 
     const db = firestoreDatabase()
 
@@ -62,14 +59,14 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
     }
     const projectId = feedRecord.projectId
 
-    const userId = client.ownerId
+    // const userId = client.ownerId
 
     // const project = await getProject(projectId)
 
-    const pm = await getProjectMembership(projectId, userId)
-    if ((!pm) || (!pm.permissions.write)) {
-        throw Error(`User ${userId} does not have write access on project ${projectId}`)
-    }
+    // const pm = await getProjectMembership(projectId, userId)
+    // if ((!pm) || (!pm.permissions.write)) {
+    //     throw Error(`User ${userId} does not have write access on project ${projectId}`)
+    // }
 
     const feedMessagesCollection = feedSnapshot.ref.collection('messages')
 
@@ -91,7 +88,7 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
             const messageDoc: FeedMessageDocument = {
                 feedId,
                 messageNumber: lastMessageNumber + 1,
-                userId,
+                userId: '' as any as UserId,
                 timestamp: Date.now(),
                 message: JSON.parse(msgJson)
             }
@@ -123,9 +120,9 @@ const appendFeedMessagesHandler = async (request: AppendFeedMessagesRequest, ver
     const usageLogCollection = db.collection('kacherycloud.usageLog')
     const logItem: AppendFeedMessagesLogItem = {
         type: 'appendFeedMessages',
-        clientId: client.clientId,
+        clientId: verifiedClientId,
         projectId,
-        userId,
+        userId: '' as any as UserId,
         feedId,
         numMessages: messagesJson.length,
         size: sum(messagesJson.map(messageJson => (messageJson.length))),

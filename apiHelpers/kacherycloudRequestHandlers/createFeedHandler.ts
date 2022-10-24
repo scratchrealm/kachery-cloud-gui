@@ -1,9 +1,8 @@
-import { NodeId } from "../../src/commonInterface/kacheryTypes";
+import { NodeId, UserId } from "../../src/commonInterface/kacheryTypes";
 import { FeedRecord } from "../../src/types/FeedRecord";
 import { CreateFeedRequest, CreateFeedResponse } from "../../src/types/KacherycloudRequest";
 import { CreateFeedLogItem } from "../../src/types/LogItem";
 import firestoreDatabase from '../common/firestoreDatabase';
-import { getClient, getProjectMembership } from "../common/getDatabaseItems";
 import { randomAlphaLowerString } from "../guiRequestHandlers/helpers/randomAlphaString";
 
 const createFeedHandler = async (request: CreateFeedRequest, verifiedClientId?: NodeId): Promise<CreateFeedResponse> => {
@@ -12,14 +11,16 @@ const createFeedHandler = async (request: CreateFeedRequest, verifiedClientId?: 
         throw Error('No verified client ID')
     }
 
-    const client = await getClient(clientId)
+    // const client = await getClient(clientId)
 
-    const projectId = request.payload.projectId || client.defaultProjectId
-    if (!projectId) throw Error('No project ID')
-    const projectMembership = await getProjectMembership(projectId, client.ownerId)
-    if ((!projectMembership) || (!projectMembership.permissions.write)) {
-        throw Error('Not authorized to create a feed for this project')
-    }
+    // const projectId = request.payload.projectId || client.defaultProjectId
+    // if (!projectId) throw Error('No project ID')
+    // const projectMembership = await getProjectMembership(projectId, client.ownerId)
+    // if ((!projectMembership) || (!projectMembership.permissions.write)) {
+    //     throw Error('Not authorized to create a feed for this project')
+    // }
+
+    const projectId = 'interim'
 
     const db = firestoreDatabase()
 
@@ -34,9 +35,11 @@ const createFeedHandler = async (request: CreateFeedRequest, verifiedClientId?: 
     const usageLogCollection = db.collection('kacherycloud.usageLog')
     const logItem: CreateFeedLogItem = {
         type: 'createFeed',
-        clientId: client.clientId,
+        // clientId: client.clientId,
+        clientId: verifiedClientId,
         projectId,
-        userId: client.ownerId,
+        // userId: client.ownerId,
+        userId: '' as any as UserId,
         feedId,
         timestamp: Date.now()
     }
